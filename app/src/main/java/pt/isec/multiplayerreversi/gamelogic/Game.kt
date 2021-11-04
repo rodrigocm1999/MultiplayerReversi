@@ -9,18 +9,18 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
     private val currentPlayer: Player = startingPlayer
 
     private val directions = arrayOf(
-        Point(-1, -1), Point(0, -1), Point(1, -1),
-        Point(-1, 0),  /*     Center    */Point(1, 0),
-        Point(-1, 1), Point(0, 1), Point(1, 1)
+        Vector(-1, -1), Vector(0, -1), Vector(1, -1),
+        Vector(-1, 0),  /*     Center    */Vector(1, 0),
+        Vector(-1, 1), Vector(0, 1), Vector(1, 1)
     )
 
-    private fun playAt(position: Point) {
+    private fun playAt(position: Vector) {
         if (gameArea[position.y][position.x] != null) return
 
         val currPlayerPiece = currentPlayer.getPiece()
 
         for (offset in directions) {
-            val currPos = Point(position.x, position.y)
+            val currPos = Vector(position.x, position.y)
             var distance = 0
             var foundPieceToConnect = false
 
@@ -28,8 +28,11 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
                 currPos.add(offset)
                 distance++
 
-                if (currPos.x < 0 || currPos.x >= width || currPos.y < 0 || currPos.y >= height)
-                    break
+                if (currPos.x < 0 || currPos.x >= width
+                    || currPos.y < 0 || currPos.y >= height
+                    || gameArea[currPos.y][currPos.x] == null
+                ) break
+
                 if (gameArea[currPos.y][currPos.x] == currPlayerPiece)
                     foundPieceToConnect = true
             }

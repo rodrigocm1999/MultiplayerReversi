@@ -55,7 +55,7 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
             for (line in 0 until height) {
                 val pos = Vector(column, line)
 
-                if (checkCanPlayAt(currentPlayer.getPiece(), pos))
+                if (checkCanPlayAt(player, pos))
                     possibleMoves.add(pos)
             }
         }

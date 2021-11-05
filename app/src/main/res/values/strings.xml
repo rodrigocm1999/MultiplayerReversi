@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">MultiplayerReversi</string>
+    <string name="app_name" translatable="false">MultiplayerReversi</string>
+    <string name="local_1v1">Local 1v1</string>
+    <string name="remote_1v1">Remote 1v1</string>
+    <string name="remote_1v1v1">Remote 1v1v1</string>
+    <string name="notYetImplemented">Not yet implemented</string>
 </resources>

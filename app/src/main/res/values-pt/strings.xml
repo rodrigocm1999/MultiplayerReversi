@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_1v1">Local 1v1</string>
+    <string name="remote_1v1">Remoto 1v1</string>
+    <string name="remote_1v1v1">Remoto 1v1v1</string>
+    <string name="notYetImplemented">Ainda não se encontra implementado</string>
+
+</resources>

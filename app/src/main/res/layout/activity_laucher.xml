@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.LauncherActivity">
+
+    <ImageView
+        android:id="@+id/avatarIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="20dp"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/avatar_icon" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <Button
+            android:id="@+id/btnLocal1v1"
+            style="@style/MainMenuBtn"
+            android:text="@string/local_1v1" />
+
+        <Button
+            android:id="@+id/btnRemote1v1"
+            style="@style/MainMenuBtn"
+            android:text="@string/remote_1v1" />
+
+        <Button
+            android:id="@+id/btnRemote1v1v1"
+            style="@style/MainMenuBtn"
+            android:text="@string/remote_1v1v1" />
+
+    </LinearLayout>
+</FrameLayout>

@@ -7,11 +7,11 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
     private val height = height
     private val players: List<Player> = players
     private val currentPlayer: Player = startingPlayer
-    private val possibleMoves: ArrayList<Vector>? = null
+    private lateinit var possibleMoves: ArrayList<Vector>
 
     private val directions = arrayOf(
         Vector(-1, -1), Vector(0, -1), Vector(1, -1),
-        Vector(-1, 0),  /*     Center    */Vector(1, 0),
+        Vector(-1, 0), /*     Center    */  Vector(1, 0),
         Vector(-1, 1), Vector(0, 1), Vector(1, 1)
     )
 
@@ -31,8 +31,10 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
 
                 if (currPos.x < 0 || currPos.x >= width
                     || currPos.y < 0 || currPos.y >= height
-                    || gameArea[currPos.y][currPos.x] == Piece.Empty
                 ) break
+
+                if(gameArea[currPos.y][currPos.x] == Piece.Empty)
+                    break
 
                 if (gameArea[currPos.y][currPos.x] == currPlayerPiece)
                     foundPieceToConnect = true

@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.gamelogic
+package pt.isec.multiplayerreversi.game.logic
 
 class Vector(var x: Int, var y: Int) {
 

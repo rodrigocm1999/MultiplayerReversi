@@ -1,9 +1,15 @@
-package pt.isec.multiplayerreversi.game.gamelogic
+package pt.isec.multiplayerreversi.game.logic
 
 class Player(
     private val piece: Piece,
     private val profile: Profile
 ) {
+
+    constructor(piece: Piece, profile: Profile, hasUsedBomb: Boolean, hasUsedTrade: Boolean)
+            : this(piece, profile) {
+        this.hasUsedBomb = hasUsedBomb
+        this.hasUsedTrade = hasUsedTrade
+    }
 
     private var hasUsedBomb = false
     private var hasUsedTrade = false

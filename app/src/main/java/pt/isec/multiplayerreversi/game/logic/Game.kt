@@ -1,9 +1,5 @@
 package pt.isec.multiplayerreversi.game.logic
 
-import pt.isec.multiplayerreversi.game.gamelogic.Piece
-import pt.isec.multiplayerreversi.game.gamelogic.Player
-import pt.isec.multiplayerreversi.game.gamelogic.Vector
-
 class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
 
     private val sideLength = sideLength

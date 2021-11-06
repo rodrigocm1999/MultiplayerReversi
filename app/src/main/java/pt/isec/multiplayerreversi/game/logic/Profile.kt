@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.gamelogic
+package pt.isec.multiplayerreversi.game.logic
 
 class Profile {
     private val name = ""

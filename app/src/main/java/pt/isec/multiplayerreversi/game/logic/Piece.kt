@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.gamelogic
+package pt.isec.multiplayerreversi.game.logic
 
 enum class Piece(private val char: Char) {
     Empty(' '),

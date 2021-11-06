@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -19,11 +20,14 @@ class LauncherActivity : AppCompatActivity() {
         val notYetImplementedToast = View.OnClickListener {
             Toast.makeText(this, R.string.notYetImplemented, Toast.LENGTH_SHORT).show()
         }
-        binding.btnLocal1v1.setOnClickListener(notYetImplementedToast)
         binding.btnRemote1v1.setOnClickListener(notYetImplementedToast)
         binding.btnRemote1v1v1.setOnClickListener(notYetImplementedToast)
         binding.avatarIcon.setOnClickListener(notYetImplementedToast)
 
+        binding.btnLocal1v1.setOnClickListener {
+            val intent = Intent(this, GameActivity::class.java)
+            startActivity(intent)
+        }
         //TODO mudar drawable para icon do utilizador
         //TODO fazer logo da pixa
     }

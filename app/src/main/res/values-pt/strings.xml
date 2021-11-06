@@ -4,5 +4,8 @@
     <string name="remote_1v1">Remoto 1v1</string>
     <string name="remote_1v1v1">Remoto 1v1v1</string>
     <string name="notYetImplemented">Ainda não se encontra implementado</string>
+    <string name="now_playing">Jogador atual:</string>
+    <string name="use_bomb_piece">Usar peça bomba</string>
+    <string name="use_trade_piece">Usar troca peças</string>
 
 </resources>

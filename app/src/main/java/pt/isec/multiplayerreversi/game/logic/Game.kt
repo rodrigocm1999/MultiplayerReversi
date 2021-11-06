@@ -1,10 +1,14 @@
-package pt.isec.multiplayerreversi.gamelogic
+package pt.isec.multiplayerreversi.game.logic
 
-class Game(players: List<Player>, startingPlayer: Player, width: Int, height: Int) {
+import pt.isec.multiplayerreversi.game.gamelogic.Piece
+import pt.isec.multiplayerreversi.game.gamelogic.Player
+import pt.isec.multiplayerreversi.game.gamelogic.Vector
 
-    private val gameArea = Array(height) { Array(width) { Piece.Empty } }
-    private val width = width
-    private val height = height
+class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
+
+    private val sideLength = sideLength
+    private val gameArea =
+        Array(sideLength) { Array(sideLength) { Piece.Empty } } // gameArea[line][column]
     private val players: List<Player> = players
     private val currentPlayer: Player = startingPlayer
     private lateinit var possibleMoves: ArrayList<Vector>
@@ -29,11 +33,11 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
                 currPos.add(offset)
                 distance++
 
-                if (currPos.x < 0 || currPos.x >= width
-                    || currPos.y < 0 || currPos.y >= height
+                if (currPos.x < 0 || currPos.x >= sideLength
+                    || currPos.y < 0 || currPos.y >= sideLength
                 ) break
 
-                if(gameArea[currPos.y][currPos.x] == Piece.Empty)
+                if (gameArea[currPos.y][currPos.x] == Piece.Empty)
                     break
 
                 if (gameArea[currPos.y][currPos.x] == currPlayerPiece)
@@ -52,11 +56,9 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
 
     private fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
         val possibleMoves = ArrayList<Vector>(20)
-
-        for (column in 0 until width) {
-            for (line in 0 until height) {
+        for (column in 0 until sideLength) {
+            for (line in 0 until sideLength) {
                 val pos = Vector(column, line)
-
                 if (checkCanPlayAt(player, pos))
                     possibleMoves.add(pos)
             }
@@ -75,8 +77,8 @@ class Game(players: List<Player>, startingPlayer: Player, width: Int, height: In
                 currPos.add(offset)
                 distance++
                 //Não sair do mapa
-                if (currPos.x < 0 || currPos.x >= width
-                    || currPos.y < 0 || currPos.y >= height
+                if (currPos.x < 0 || currPos.x >= sideLength
+                    || currPos.y < 0 || currPos.y >= sideLength
                 ) break
                 //No caso de deixar de haver uma peça, esta direção já não interessa
                 if (gameArea[currPos.y][currPos.x] == Piece.Empty)

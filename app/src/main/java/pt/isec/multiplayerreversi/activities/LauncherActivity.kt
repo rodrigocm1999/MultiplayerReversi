@@ -26,7 +26,10 @@ class LauncherActivity : AppCompatActivity() {
         }
         binding.btnRemote1v1.setOnClickListener(notYetImplementedToast)
         binding.btnRemote1v1v1.setOnClickListener(notYetImplementedToast)
-        binding.avatarIcon.setOnClickListener(notYetImplementedToast)
+        binding.avatarIcon.setOnClickListener {
+            val intent = Intent(this,EditProfileActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.btnLocal1v1.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)

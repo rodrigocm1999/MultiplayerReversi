@@ -6,7 +6,7 @@ import android.widget.GridLayout
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.GameGrid
-import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.senders.InteractionSenderProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Player
 
@@ -25,7 +25,8 @@ class GameActivity : AppCompatActivity() {
         if (boardSideLength == -1)
             throw IllegalStateException("Board side length must come in the intent extras")
 
-        val proxy = intent.getSerializableExtra("interactionProxy") as InteractionProxy
+        val proxy =
+            intent.getSerializableExtra("interactionSenderProxy") as InteractionSenderProxy
         val players = intent.getSerializableExtra("players") as ArrayList<Player>
 
         val gameLayout =

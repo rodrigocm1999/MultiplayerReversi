@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
-import pt.isec.multiplayerreversi.game.interactors.Local1V1InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.senders.Local1V1InteractionSender
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -41,7 +41,7 @@ class LauncherActivity : AppCompatActivity() {
             players.add(Player(Piece.Light, Profile(resources.getString(R.string.light_piece))))
             intent.putExtra("players", players)
 
-            intent.putExtra("interactionProxy", Local1V1InteractionProxy()) // TODO 1 fix this
+            intent.putExtra("interactionProxy", Local1V1InteractionSender()) // TODO 1 fix this
 
             startActivity(intent)
         }

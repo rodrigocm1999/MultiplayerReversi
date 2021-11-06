@@ -1,6 +1,6 @@
-package pt.isec.multiplayerreversi.game.interactors
+package pt.isec.multiplayerreversi.game.interactors.senders
 
-class Local1V1InteractionProxy : InteractionProxy {
+class Local1V1InteractionSender : InteractionSenderProxy {
 
     override fun playAt(line: Int, column: Int) {
         //TODO,need a way to get the game reference here

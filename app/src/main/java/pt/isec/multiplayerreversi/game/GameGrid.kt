@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.senders.InteractionSenderProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
@@ -23,7 +23,7 @@ class GameGrid(
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
     private val boardSideLength: Int,
-    private val interactionProxy: InteractionProxy
+    private val interactionProxy: InteractionSenderProxy
 ) {
 
     private val grid: Array<Array<BoardSlotView>>

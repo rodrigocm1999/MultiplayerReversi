@@ -37,5 +37,8 @@ Outros:
 Permitir rodar o ecrã (fazer layouts para cada direção)
 Suportar pelo menos PT, EN
 Página de "About"
-Não crashar
-//TODO perguntar acerca da gestão do histório de resultados
+
+//TODO 0 perguntar acerca da gestão do histório de resultados
+
+
+//TODO verificar o exit do jogo, não deixar sair sem comfirmar

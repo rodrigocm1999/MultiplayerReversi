@@ -1,9 +1,11 @@
 package pt.isec.multiplayerreversi.game.logic
 
+import java.io.Serializable
+
 class Player(
     private val piece: Piece,
     private val profile: Profile
-) {
+) : Serializable {
 
     constructor(piece: Piece, profile: Profile, hasUsedBomb: Boolean, hasUsedTrade: Boolean)
             : this(piece, profile) {

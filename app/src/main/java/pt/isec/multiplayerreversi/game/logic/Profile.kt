@@ -1,6 +1,9 @@
 package pt.isec.multiplayerreversi.game.logic
 
-class Profile {
-    private val name = ""
+import java.io.Serializable
+
+class Profile(
+    private val name: String = ""
+) : Serializable {
     // TODO add the photo somehow
 }

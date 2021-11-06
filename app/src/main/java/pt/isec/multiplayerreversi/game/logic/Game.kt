@@ -1,13 +1,46 @@
 package pt.isec.multiplayerreversi.game.logic
 
-class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
+class Game(
+    private val sideLength: Int,
+    private val players: List<Player>,
+    startingPlayer: Player,
+) {
 
-    private val sideLength = sideLength
-    private val gameArea =
+    private val board =
         Array(sideLength) { Array(sideLength) { Piece.Empty } } // gameArea[line][column]
-    private val players: List<Player> = players
     private val currentPlayer: Player = startingPlayer
     private lateinit var possibleMoves: ArrayList<Vector>
+
+    init {
+        when (players.size) {
+            2 -> {
+                val p1 = players[0].getPiece()
+                board[3][3] = p1
+                board[4][4] = p1
+                val p2 = players[1].getPiece()
+                board[4][3] = p2
+                board[3][4] = p2
+            }
+            3 -> {
+                val p1 = players[0].getPiece()
+                board[2][4] = p1
+                board[3][5] = p1
+                board[6][3] = p1
+                board[7][2] = p1
+                val p2 = players[1].getPiece()
+                board[3][4] = p2
+                board[2][5] = p2
+                board[6][6] = p2
+                board[7][7] = p2
+                val p3 = players[2].getPiece()
+                board[6][2] = p3
+                board[7][3] = p3
+                board[7][6] = p3
+                board[6][7] = p3
+            }
+            else -> throw IllegalStateException("Games are only allowed with 2 or 3 players")
+        }
+    }
 
     private val directions = arrayOf(
         Vector(-1, -1), Vector(0, -1), Vector(1, -1),
@@ -15,13 +48,14 @@ class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
         Vector(-1, 1), Vector(0, 1), Vector(1, 1)
     )
 
-    private fun playAt(position: Vector) {
-        if (gameArea[position.y][position.x] != Piece.Empty) return
+    fun playAt(line: Int, column: Int) {
+
+        if (board[line][column] != Piece.Empty) return
 
         val currPlayerPiece = currentPlayer.getPiece()
 
         for (offset in directions) {
-            val currPos = Vector(position.x, position.y)
+            val currPos = Vector(column, line)
             var distance = 0
             var foundPieceToConnect = false
 
@@ -33,10 +67,10 @@ class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
                     || currPos.y < 0 || currPos.y >= sideLength
                 ) break
 
-                if (gameArea[currPos.y][currPos.x] == Piece.Empty)
+                val pieceHere = board[currPos.y][currPos.x]
+                if (pieceHere == Piece.Empty)
                     break
-
-                if (gameArea[currPos.y][currPos.x] == currPlayerPiece)
+                if (pieceHere == currPlayerPiece)
                     foundPieceToConnect = true
             }
             if (foundPieceToConnect) {
@@ -44,13 +78,13 @@ class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
                 while (distance > 1) { // > 1 To not go over the starting piece again
                     currPos.sub(offset)
                     distance--
-                    gameArea[currPos.y][currPos.x] = currPlayerPiece
+                    board[currPos.y][currPos.x] = currPlayerPiece
                 }
             }
         }
     }
 
-    private fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
+    fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
         val possibleMoves = ArrayList<Vector>(20)
         for (column in 0 until sideLength) {
             for (line in 0 until sideLength) {
@@ -63,7 +97,7 @@ class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
     }
 
     private fun checkCanPlayAt(player: Piece, position: Vector): Boolean {
-        if (gameArea[position.y][position.x] != Piece.Empty) return false
+        if (board[position.y][position.x] != Piece.Empty) return false
         //from position go in every direction
         for (offset in directions) {
             val currPos = Vector(position.x, position.y)
@@ -77,14 +111,15 @@ class Game(players: List<Player>, startingPlayer: Player, sideLength: Int) {
                     || currPos.y < 0 || currPos.y >= sideLength
                 ) break
                 //No caso de deixar de haver uma peça, esta direção já não interessa
-                if (gameArea[currPos.y][currPos.x] == Piece.Empty)
+                if (board[currPos.y][currPos.x] == Piece.Empty)
                     break
                 // se encontrar uma peça do outro lado das peças inimigas
-                if (distance > 1 && gameArea[currPos.y][currPos.x] == player)
+                if (distance > 1 && board[currPos.y][currPos.x] == player)
                     return true
             }
         }
         return false
     }
 
+    fun getBoard() = board
 }

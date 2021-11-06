@@ -9,8 +9,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="1dp"
-        android:padding="5dp"
-        android:src="@drawable/round_corner_pieces" />
+        android:layout_margin="2dp"
+        android:padding="5dp" />
 
 </FrameLayout>

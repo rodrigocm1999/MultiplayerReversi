@@ -7,4 +7,6 @@
     <string name="now_playing">Now playing:</string>
     <string name="use_bomb_piece">Use bomb piece</string>
     <string name="use_trade_piece">Use pieces trade</string>
+    <string name="light_piece">Light</string>
+    <string name="dark_piece">Dark</string>
 </resources>

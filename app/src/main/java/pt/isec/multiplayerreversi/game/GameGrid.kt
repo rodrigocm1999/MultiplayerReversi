@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
+import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
@@ -19,7 +22,8 @@ class GameGrid(
     private val gridLayout: GridLayout,
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
-    private val boardSideLength: Int
+    private val boardSideLength: Int,
+    private val interactionProxy: InteractionProxy
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
@@ -27,6 +31,10 @@ class GameGrid(
     private val normalSlotBackground =
         ContextCompat.getColor(context, R.color.light_yellow_board_background)
     private val possiblePlayBackground = Color.YELLOW
+
+    private val darkPiece = AppCompatResources.getDrawable(context, R.drawable.piece_dark)
+    private val lightPiece = AppCompatResources.getDrawable(context, R.drawable.piece_light)
+    private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
 
     init {
         gridLayout.columnCount = boardSideLength
@@ -41,9 +49,7 @@ class GameGrid(
             Array(boardSideLength) { column ->
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
-                view.setOnClickListener {
-                    //TODO
-                }
+                view.setOnClickListener { interactionProxy.playAt(line, column) }
                 val boardView = BoardSlotView(view, view[0])
                 gridLayout.addView(view)
                 boardView
@@ -73,16 +79,14 @@ class GameGrid(
         for (line in 0 until boardSideLength) {
             for (column in 0 until boardSideLength) {
                 val piece = board[line][column]
-                val boardSlot = grid[line][column]
-                val boardSlotView = boardSlot.piece
+                val boardSlotView = grid[line][column].piece
 
-                boardSlotView.background.alpha = 100
                 when (piece) {
-                    Piece.Dark -> boardSlotView.setBackgroundColor(Color.DKGRAY)
-                    Piece.Light -> boardSlotView.setBackgroundColor(Color.LTGRAY)
-                    Piece.Blue -> boardSlotView.setBackgroundColor(Color.BLUE)
-                    Piece.Empty -> boardSlotView.background.alpha = 0
+                    Piece.Dark -> boardSlotView.background = darkPiece
+                    Piece.Light -> boardSlotView.background = lightPiece
+                    Piece.Blue -> boardSlotView.background = bluePiece
                 }
+                boardSlotView.isVisible = piece != Piece.Empty
             }
         }
     }

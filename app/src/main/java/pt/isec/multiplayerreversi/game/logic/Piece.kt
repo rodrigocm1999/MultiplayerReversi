@@ -1,6 +1,8 @@
 package pt.isec.multiplayerreversi.game.logic
 
-enum class Piece(private val char: Char) {
+import java.io.Serializable
+
+enum class Piece(private val char: Char) : Serializable {
     Empty(' '),
     Dark('y'),
     Light('x'),

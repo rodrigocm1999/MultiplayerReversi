@@ -62,7 +62,7 @@ class Game(
         }
     }
 
-    fun start(){
+    fun start() {
         possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
         sendEventsAfterPlay()
     }
@@ -82,8 +82,8 @@ class Game(
         return true
     }
 
-    private fun sendEventsAfterPlay(){
-        propertyChange.firePropertyChange(updateBoardEvent, null, getBoard())
+    private fun sendEventsAfterPlay() {
+        propertyChange.firePropertyChange(updateBoardEvent, null, board)
         propertyChange
             .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.getPlayerId())
         if (shouldShowPossibleMoves)
@@ -125,6 +125,7 @@ class Game(
                 }
             }
         }
+        board[line][column] = currPlayerPiece
         return true
     }
 
@@ -154,18 +155,22 @@ class Game(
                 if (currPos.x < 0 || currPos.x >= sideLength
                     || currPos.y < 0 || currPos.y >= sideLength
                 ) break
+
+                val pieceHere = board[currPos.y][currPos.x]
                 //No caso de deixar de haver uma peça, esta direção já não interessa
-                if (board[currPos.y][currPos.x] == Piece.Empty)
+                if (pieceHere == Piece.Empty)
+                    break
+                //No caso da primeira peça ser do player quer dizer que não vai saltar por cima de nenhuma
+                if (distance <= 1 && pieceHere == player)
                     break
                 // se encontrar uma peça do outro lado das peças inimigas
-                if (distance > 1 && board[currPos.y][currPos.x] == player)
+                if (distance > 1 && pieceHere == player)
                     return true
             }
         }
         return false
     }
 
-    fun getBoard() = board
     fun getSideLength() = sideLength
     fun getCurrentPlayer() = currentPlayer
 

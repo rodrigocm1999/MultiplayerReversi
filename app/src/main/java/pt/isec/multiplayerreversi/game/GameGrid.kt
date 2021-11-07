@@ -30,13 +30,10 @@ class GameGrid(
 
     private val grid: Array<Array<BoardSlotView>>
 
-    private val normalSlotBackground =
-        ContextCompat.getColor(context, R.color.light_yellow_board_background)
-    private val possiblePlayBackground = Color.YELLOW
-
     private val darkPiece = AppCompatResources.getDrawable(context, R.drawable.piece_dark)
     private val lightPiece = AppCompatResources.getDrawable(context, R.drawable.piece_light)
     private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
+    private val possiblePiece = AppCompatResources.getDrawable(context, R.drawable.piece_possible)
 
     private var possibleMoves: List<Vector>? = null
 
@@ -76,20 +73,20 @@ class GameGrid(
     fun clearPossibleMoves() {
         possibleMoves?.forEach {
             val boardSlot = grid[it.y][it.x]
-            boardSlot.piece.setBackgroundColor(normalSlotBackground)
             boardSlot.piece.isVisible = false
         }
     }
 
     fun showPossibleMoves(list: List<Vector>) {
-        clearPossibleMoves()
+        //clearPossibleMoves() // there is no need because this happens after the board gets updated
+        // and it overrides the background all views
         for (it in list){
             val boardSlot = grid[it.y][it.x]
-            boardSlot.piece.setBackgroundColor(possiblePlayBackground)
+            boardSlot.piece.background = possiblePiece
             boardSlot.piece.isVisible = true
             Log.i(TAG,"$it")
         }
-        possibleMoves = list
+//        possibleMoves = list
     }
 
     fun updatePieces(board: Array<Array<Piece>>) {

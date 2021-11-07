@@ -16,5 +16,12 @@ class Vector(var x: Int, var y: Int) {
         return "Vector(x=$x, y=$y)"
     }
 
-
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Vector
+        if (x != other.x) return false
+        if (y != other.y) return false
+        return true
+    }
 }

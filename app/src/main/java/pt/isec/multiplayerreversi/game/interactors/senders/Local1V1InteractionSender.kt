@@ -1,6 +1,5 @@
 package pt.isec.multiplayerreversi.game.interactors.senders
 
-import pt.isec.multiplayerreversi.game.interactors.Consum
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector

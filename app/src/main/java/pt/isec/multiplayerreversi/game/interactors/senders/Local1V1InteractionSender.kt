@@ -7,15 +7,9 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 class Local1V1InteractionSender(private val game: Game) : InteractionSenderProxy {
 
     init {
-        game.registerListener(Game.showMovesEvent) {
-            possibleMovesCallback(it.newValue as ArrayList<Vector>)
-        }
-        game.registerListener(Game.updateBoardEvent) {
-            updateBoardCallback(it.newValue as Array<Array<Piece>>)
-        }
-        game.registerListener(Game.updateCurrentPlayerEvent) {
-            changePlayerCallback(it.newValue as Int)
-        }
+        game.registerListener(Game.showMovesEvent) { possibleMovesCallback(it.newValue as ArrayList<Vector>) }
+        game.registerListener(Game.updateBoardEvent) { updateBoardCallback(it.newValue as Array<Array<Piece>>) }
+        game.registerListener(Game.updateCurrentPlayerEvent) { changePlayerCallback(it.newValue as Int) }
     }
 
     private lateinit var possibleMovesCallback: (List<Vector>) -> Unit

@@ -1,22 +1,18 @@
 package pt.isec.multiplayerreversi.game
 
 import android.content.Context
-import android.graphics.Color
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.senders.InteractionSenderProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
-import pt.isec.multiplayerreversi.TAG
 
 
 class GameGrid(
@@ -77,19 +73,18 @@ class GameGrid(
         }
     }
 
-    fun showPossibleMoves(list: List<Vector>) {
+    private fun showPossibleMoves(list: List<Vector>) {
         //clearPossibleMoves() // there is no need because this happens after the board gets updated
         // and it overrides the background all views
         for (it in list){
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.background = possiblePiece
             boardSlot.piece.isVisible = true
-            Log.i(TAG,"$it")
         }
-//        possibleMoves = list
+        //possibleMoves = list
     }
 
-    fun updatePieces(board: Array<Array<Piece>>) {
+    private fun updatePieces(board: Array<Array<Piece>>) {
         if (board.size != boardSideLength || board[0].size != boardSideLength)
             throw IllegalStateException("Board is not the same size, should never happen")
 

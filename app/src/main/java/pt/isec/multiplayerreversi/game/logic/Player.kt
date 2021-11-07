@@ -13,9 +13,16 @@ class Player(
         this.hasUsedTrade = hasUsedTrade
     }
 
+    companion object {
+        private var playerIdCounter = 0
+    }
+
+    private var playerId = playerIdCounter++
+
     private var hasUsedBomb = false
     private var hasUsedTrade = false
 
+    fun getPlayerId() = playerId
     fun getProfile() = profile
     fun getPiece() = piece
     fun hasUsedBomb() = hasUsedBomb

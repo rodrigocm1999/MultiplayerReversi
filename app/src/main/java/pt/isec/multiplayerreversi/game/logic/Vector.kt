@@ -12,4 +12,9 @@ class Vector(var x: Int, var y: Int) {
         y -= vector.y
     }
 
+    override fun toString(): String {
+        return "Vector(x=$x, y=$y)"
+    }
+
+
 }

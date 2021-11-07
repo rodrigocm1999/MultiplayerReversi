@@ -21,7 +21,5 @@ class EditProfileActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.notYetImplemented, Toast.LENGTH_SHORT).show()
         }
         binding.btnSaveChanges.setOnClickListener(notYetImplementedToast)
-
-
     }
 }

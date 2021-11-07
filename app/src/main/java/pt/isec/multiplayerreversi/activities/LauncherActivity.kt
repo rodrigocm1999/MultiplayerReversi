@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
 import pt.isec.multiplayerreversi.game.interactors.senders.Local1V1InteractionSender
+import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -27,22 +29,21 @@ class LauncherActivity : AppCompatActivity() {
         binding.btnRemote1v1.setOnClickListener(notYetImplementedToast)
         binding.btnRemote1v1v1.setOnClickListener(notYetImplementedToast)
         binding.avatarIcon.setOnClickListener {
-            val intent = Intent(this,EditProfileActivity::class.java)
+            val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
 
         binding.btnLocal1v1.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)
 
-            intent.putExtra("boardSideLength", 8)
-
             val players = ArrayList<Player>(2)
             players.add(Player(Piece.Dark, Profile(resources.getString(R.string.dark_piece))))
             players.add(Player(Piece.Light, Profile(resources.getString(R.string.light_piece))))
-            intent.putExtra("players", players)
 
-            intent.putExtra("interactionProxy", Local1V1InteractionSender()) // TODO 1 fix this
-
+            val app = application as App
+            val game = Game(8, players, players.random())
+            app.game = game
+            app.interactionSender = Local1V1InteractionSender(game)
             startActivity(intent)
         }
         //TODO 100 mudar drawable para icon do utilizador

@@ -3,6 +3,7 @@ package pt.isec.multiplayerreversi.game
 import android.content.Context
 import android.graphics.Color
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.senders.InteractionSenderProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
+import pt.isec.multiplayerreversi.TAG
 
 
 class GameGrid(
@@ -36,6 +38,8 @@ class GameGrid(
     private val lightPiece = AppCompatResources.getDrawable(context, R.drawable.piece_light)
     private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
 
+    private var possibleMoves: List<Vector>? = null
+
     init {
         gridLayout.columnCount = boardSideLength
 
@@ -49,30 +53,46 @@ class GameGrid(
             Array(boardSideLength) { column ->
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
-                view.setOnClickListener { interactionProxy.playAt(line, column) }
+                view.setOnClickListener {
+                    interactionProxy.playAt(line, column)
+                }
                 val boardView = BoardSlotView(view, view[0])
                 gridLayout.addView(view)
                 boardView
             }
         }
+
+        interactionProxy.setUpdateBoardEvent {
+            updatePieces(it)
+        }
+        interactionProxy.setChangePlayerCallback {
+            //TODO 4
+        }
+        interactionProxy.setPossibleMovesCallBack {
+            showPossibleMoves(it)
+        }
     }
 
     fun clearPossibleMoves() {
-        for (line in 0 until boardSideLength) {
-            for (column in 0 until boardSideLength) {
-                val boardSlot = grid[line][column]
-                boardSlot.slot.setBackgroundColor(normalSlotBackground)
-            }
+        possibleMoves?.forEach {
+            val boardSlot = grid[it.y][it.x]
+            boardSlot.piece.setBackgroundColor(normalSlotBackground)
+            boardSlot.piece.isVisible = false
         }
     }
 
     fun showPossibleMoves(list: List<Vector>) {
         clearPossibleMoves()
-        for (pos in list)
-            grid[pos.y][pos.x].slot.setBackgroundColor(possiblePlayBackground)
+        for (it in list){
+            val boardSlot = grid[it.y][it.x]
+            boardSlot.piece.setBackgroundColor(possiblePlayBackground)
+            boardSlot.piece.isVisible = true
+            Log.i(TAG,"$it")
+        }
+        possibleMoves = list
     }
 
-    fun updatePieces(board: Array<Array<Piece>>) { // TODO fazer observavel provavelmente
+    fun updatePieces(board: Array<Array<Piece>>) {
         if (board.size != boardSideLength || board[0].size != boardSideLength)
             throw IllegalStateException("Board is not the same size, should never happen")
 
@@ -91,6 +111,5 @@ class GameGrid(
         }
     }
 
-
-    data class BoardSlotView(val slot: ViewGroup, val piece: View) {}
+    data class BoardSlotView(val slot: ViewGroup, val piece: View)
 }

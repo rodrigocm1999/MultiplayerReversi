@@ -1,5 +1,8 @@
 package pt.isec.multiplayerreversi.game.logic
 
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeSupport
+
 class Game(
     private val sideLength: Int,
     private val players: List<Player>,
@@ -7,9 +10,26 @@ class Game(
 ) {
 
     private val board =
-        Array(sideLength) { Array(sideLength) { Piece.Empty } } // gameArea[line][column]
-    private val currentPlayer: Player = startingPlayer
+        Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]
+    private var currentPlayer = startingPlayer
     private lateinit var possibleMoves: ArrayList<Vector>
+    private var shouldShowPossibleMoves = true
+
+    private val propertyChange = PropertyChangeSupport(this)
+
+    companion object {
+        val updateBoardEvent = "updateBoard"
+        val showMovesEvent = "showMoves"
+        val updateCurrentPlayerEvent = "updatePlayer"
+
+        private val directions = arrayOf(
+            Vector(-1, -1), Vector(0, -1), Vector(1, -1),
+            Vector(-1, 0), /*     Center    */  Vector(1, 0),
+            Vector(-1, 1), Vector(0, 1), Vector(1, 1)
+        )
+    }
+    //TODO 10 add more events
+
 
     init {
         when (players.size) {
@@ -42,15 +62,38 @@ class Game(
         }
     }
 
-    private val directions = arrayOf(
-        Vector(-1, -1), Vector(0, -1), Vector(1, -1),
-        Vector(-1, 0), /*     Center    */  Vector(1, 0),
-        Vector(-1, 1), Vector(0, 1), Vector(1, 1)
-    )
+    fun start(){
+        possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
+        sendEventsAfterPlay()
+    }
 
-    fun playAt(line: Int, column: Int) {
 
-        if (board[line][column] != Piece.Empty) return
+    fun playAt(player: Player, line: Int, column: Int): Boolean {
+        if (player != currentPlayer)
+            return false
+        if (!possibleMoves.contains(Vector(column, line)))
+            return false
+        if (!executePlayAt(line, column))
+            return false
+
+        currentPlayer = getNext(currentPlayer, players)
+        possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
+        sendEventsAfterPlay()
+        return true
+    }
+
+    private fun sendEventsAfterPlay(){
+        propertyChange.firePropertyChange(updateBoardEvent, null, getBoard())
+        propertyChange
+            .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.getPlayerId())
+        if (shouldShowPossibleMoves)
+            propertyChange.firePropertyChange(showMovesEvent, null, possibleMoves)
+    }
+
+    private fun <T> getNext(curr: T, list: List<T>): T = list[(list.indexOf(curr) + 1) % list.size]
+
+    private fun executePlayAt(line: Int, column: Int): Boolean {
+        if (board[line][column] != Piece.Empty) return false
 
         val currPlayerPiece = currentPlayer.getPiece()
 
@@ -82,9 +125,10 @@ class Game(
                 }
             }
         }
+        return true
     }
 
-    fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
+    private fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
         val possibleMoves = ArrayList<Vector>(20)
         for (column in 0 until sideLength) {
             for (line in 0 until sideLength) {
@@ -122,4 +166,12 @@ class Game(
     }
 
     fun getBoard() = board
+    fun getSideLength() = sideLength
+    fun getCurrentPlayer() = currentPlayer
+
+    fun registerListener(event: String, listener: PropertyChangeListener) =
+        propertyChange.addPropertyChangeListener(event, listener)
+
+    fun removeListener(listener: PropertyChangeListener) =
+        propertyChange.removePropertyChangeListener(listener)
 }

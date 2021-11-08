@@ -24,4 +24,10 @@ class Vector(var x: Int, var y: Int) {
         if (y != other.y) return false
         return true
     }
+
+    override fun hashCode(): Int {
+        var result = x
+        result = 31 * result + y
+        return result
+    }
 }

@@ -1,4 +1,4 @@
-Jogador inicial aleatório
+~~Jogador inicial aleatório~~
 Visualização das jogadas possíveis é opcional dependendo do contexto
 Jogo termina quando não há peças possíveis, ou jogadas possíveis
 Ganha jogador com mais peças
@@ -37,8 +37,3 @@ Outros:
 Permitir rodar o ecrã (fazer layouts para cada direção)
 Suportar pelo menos PT, EN
 Página de "About"
-
-//TODO 0 perguntar acerca da gestão do histório de resultados
-
-
-//TODO verificar o exit do jogo, não deixar sair sem comfirmar

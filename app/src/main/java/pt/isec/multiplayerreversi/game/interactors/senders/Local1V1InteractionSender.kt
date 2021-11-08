@@ -4,7 +4,7 @@ import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-class Local1V1InteractionSender(private val game: Game) : InteractionSenderProxy {
+open class Local1V1InteractionSender(protected val game: Game) : InteractionSenderProxy {
 
     init {
         game.registerListener(Game.showMovesEvent) { possibleMovesCallback(it.newValue as ArrayList<Vector>) }

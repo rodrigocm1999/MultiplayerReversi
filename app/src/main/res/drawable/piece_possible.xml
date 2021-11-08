@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:innerRadius="1000dp"
-    android:shape="oval">
-    <solid android:color="#554949" />
-    <gradient
-        android:centerColor="@color/white"
-        android:endColor="@color/black"
-        android:gradientRadius="10dp"
-        android:type="radial" />
+    android:shape="rectangle">
+
+    <!-- view border color and width -->
+    <stroke
+        android:width="5dp"
+        android:color="#1c1b20" />
+
+    <!-- Here is the corner radius -->
+    <corners android:radius="5000dp" />
 </shape>

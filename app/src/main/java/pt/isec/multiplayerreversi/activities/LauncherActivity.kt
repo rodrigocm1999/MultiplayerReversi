@@ -26,7 +26,6 @@ class LauncherActivity : AppCompatActivity() {
         val notYetImplementedToast = View.OnClickListener {
             Toast.makeText(this, R.string.notYetImplemented, Toast.LENGTH_SHORT).show()
         }
-        binding.btnRemote1v1.setOnClickListener(notYetImplementedToast)
         binding.btnRemote1v1v1.setOnClickListener(notYetImplementedToast)
         binding.avatarIcon.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
@@ -46,6 +45,13 @@ class LauncherActivity : AppCompatActivity() {
             app.interactionSender = Local1V1InteractionSender(game)
             startActivity(intent)
         }
+
+        binding.btnRemote1v1.setOnClickListener {
+            val intent = Intent(this, WaitingAreaActivity::class.java)
+            intent.putExtra("playerAmount", 2)
+            startActivity(intent)
+        }
+
         //TODO 100 mudar drawable para icon do utilizador
         //TODO 10000 fazer logo da pixa
     }

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="local_1v1">Local 1v1</string>
-    <string name="remote_1v1">Remoto 1v1</string>
-    <string name="remote_1v1v1">Remoto 1v1v1</string>
+    <string name="local_1v1">Local</string>
+    <string name="remote">Remoto</string>
     <string name="notYetImplemented">Ainda não se encontra implementado</string>
     <string name="now_playing">Jogador atual:</string>
     <string name="use_bomb_piece">Usar peça bomba</string>
@@ -12,5 +11,8 @@
     <string name="name">Nome</string>
     <string name="save_changes">Guardar alterações</string>
     <string name="press_to_change_profile_image">Pressionar para mudar fotografia</string>
+    <string name="join_another_game">Entrar em jogo</string>
+    <string name="start_game">Iniciar jogo</string>
+    <string name="players_waiting">Jogadores em espera:</string>
 
 </resources>

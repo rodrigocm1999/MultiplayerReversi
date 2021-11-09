@@ -22,7 +22,7 @@ class GameActivity : AppCompatActivity() {
         val app = application as App
         val game = app.game
             ?: throw IllegalStateException("Game from App is null when entering the game activity")
-        val localInteractionSender = app.interactionSender
+        val localInteractionSender = app.interaction
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         val gameLayout = GameGrid(

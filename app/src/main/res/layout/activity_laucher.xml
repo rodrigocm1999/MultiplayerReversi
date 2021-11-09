@@ -22,19 +22,14 @@
         android:padding="32dp">
 
         <Button
-            android:id="@+id/btnLocal1v1"
+            android:id="@+id/btnLocal"
             style="@style/MainMenuBtn"
             android:text="@string/local_1v1" />
 
         <Button
-            android:id="@+id/btnRemote1v1"
+            android:id="@+id/btnRemote"
             style="@style/MainMenuBtn"
-            android:text="@string/remote_1v1" />
-
-        <Button
-            android:id="@+id/btnRemote1v1v1"
-            style="@style/MainMenuBtn"
-            android:text="@string/remote_1v1v1" />
+            android:text="@string/remote" />
 
     </LinearLayout>
 </FrameLayout>

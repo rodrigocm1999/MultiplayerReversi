@@ -173,6 +173,7 @@ class Game(
 
     fun getSideLength() = sideLength
     fun getCurrentPlayer() = currentPlayer
+    fun getPlayers() = players
 
     fun registerListener(event: String, listener: PropertyChangeListener) =
         propertyChange.addPropertyChangeListener(event, listener)

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
-import pt.isec.multiplayerreversi.game.interactors.senders.Local1V1InteractionSender
+import pt.isec.multiplayerreversi.game.interactors.senders.Local1V1Interaction
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -23,16 +23,13 @@ class LauncherActivity : AppCompatActivity() {
         binding = ActivityLaucherBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val notYetImplementedToast = View.OnClickListener {
-            Toast.makeText(this, R.string.notYetImplemented, Toast.LENGTH_SHORT).show()
-        }
-        binding.btnRemote1v1v1.setOnClickListener(notYetImplementedToast)
+
         binding.avatarIcon.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
 
-        binding.btnLocal1v1.setOnClickListener {
+        binding.btnLocal.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)
 
             val players = ArrayList<Player>(2)
@@ -42,11 +39,11 @@ class LauncherActivity : AppCompatActivity() {
             val app = application as App
             val game = Game(8, players, players.random())
             app.game = game
-            app.interactionSender = Local1V1InteractionSender(game)
+            app.interaction = Local1V1Interaction(game)
             startActivity(intent)
         }
 
-        binding.btnRemote1v1.setOnClickListener {
+        binding.btnRemote.setOnClickListener {
             val intent = Intent(this, WaitingAreaActivity::class.java)
             intent.putExtra("playerAmount", 2)
             startActivity(intent)

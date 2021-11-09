@@ -2,9 +2,10 @@ package pt.isec.multiplayerreversi.game.interactors.senders
 
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
+import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-open class Local1V1InteractionSender(protected val game: Game) : InteractionSenderProxy {
+open class Local1V1Interaction(protected val game: Game) : InteractionProxy {
 
     init {
         game.registerListener(Game.showMovesEvent) { possibleMovesCallback(it.newValue as ArrayList<Vector>) }
@@ -21,6 +22,10 @@ open class Local1V1InteractionSender(protected val game: Game) : InteractionSend
     override fun playAt(line: Int, column: Int) {
         game.playAt(game.getCurrentPlayer(), line, column)
     }
+
+    override fun getPlayers() = game.getPlayers()
+
+    override fun getOwnPlayer() = game.getCurrentPlayer()
 
     override fun setPossibleMovesCallBack(consumer: (List<Vector>) -> Unit) {
         possibleMovesCallback = consumer

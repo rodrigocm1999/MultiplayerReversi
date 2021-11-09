@@ -2,9 +2,10 @@ package pt.isec.multiplayerreversi.game.interactors.local
 
 import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.listeningPort
+import java.io.Closeable
 import java.net.ServerSocket
 
-class ConnectionsWelcomer(private val callback: (InteractionProxy) -> Unit) : Thread() {
+class ConnectionsWelcomer(private val callback: (InteractionProxy) -> Unit) : Thread(), Closeable {
 
     private val serverSocket = ServerSocket(listeningPort)
 
@@ -19,5 +20,9 @@ class ConnectionsWelcomer(private val callback: (InteractionProxy) -> Unit) : Th
             callback(p)//Se calhar devolver a interactionproxy ou whatever
         }
         t.start()
+    }
+
+    override fun close() {
+        serverSocket.close()
     }
 }

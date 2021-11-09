@@ -8,14 +8,20 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 open class Local1V1Interaction(protected val game: Game) : InteractionProxy {
 
     init {
-        game.registerListener(Game.showMovesEvent) { possibleMovesCallback(it.newValue as ArrayList<Vector>) }
-        game.registerListener(Game.updateBoardEvent) { updateBoardCallback(it.newValue as Array<Array<Piece>>) }
-        game.registerListener(Game.updateCurrentPlayerEvent) { changePlayerCallback(it.newValue as Int) }
+        game.registerListener(Game.showMovesEvent) {
+            possibleMovesCallback?.let { it1 -> it1(it.newValue as ArrayList<Vector>) }
+        }
+        game.registerListener(Game.updateBoardEvent) {
+            updateBoardCallback?.let { it1 -> it1(it.newValue as Array<Array<Piece>>) }
+        }
+        game.registerListener(Game.updateCurrentPlayerEvent) {
+            changePlayerCallback?.let { it1 -> it1(it.newValue as Int) }
+        }
     }
 
-    private lateinit var possibleMovesCallback: (List<Vector>) -> Unit
-    private lateinit var updateBoardCallback: (Array<Array<Piece>>) -> Unit
-    private lateinit var changePlayerCallback: (Int) -> Unit
+    private var possibleMovesCallback: ((List<Vector>) -> Unit)? = null
+    private var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = null
+    private var changePlayerCallback: ((Int) -> Unit)? = null
 
     //TODO 20 detach from game all the callbacks
 

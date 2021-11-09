@@ -3,10 +3,8 @@ package pt.isec.multiplayerreversi.activities
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.App
@@ -22,7 +20,6 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 class WaitingAreaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWaitingAreaBinding
-    private lateinit var playersListView: ListView
     private lateinit var players: ArrayList<Player>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +31,11 @@ class WaitingAreaActivity : AppCompatActivity() {
 
         players = ArrayList(3)
         players.add(Player(Piece.Light, Profile("Futuro nome do player")))
-        //TODO 20 por o nome do player
+        //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
 
 
         //TODO 5 mostrar os players lista
-        binding.playersListView.adapter =
+        val adapter =
             object : ArrayAdapter<Player>(this, R.layout.row_waiting_player) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view: View = convertView
@@ -66,17 +63,28 @@ class WaitingAreaActivity : AppCompatActivity() {
 
                 override fun getCount() = players.size
             }
+        binding.playersListView.adapter = adapter
 
-
-        val welcomer = ConnectionsWelcomer{
-            players.add(it.getOwnPlayer())
-            binding.playersListView.deferNotifyDataSetChanged()
-        }
-        welcomer.start()
+        val app = application as App
+        if (app.connectionsWelcomer == null)
+            app.connectionsWelcomer = ConnectionsWelcomer {
+                players.add(it.getOwnPlayer())
+                adapter.notifyDataSetChanged()
+            }
+        //TODO 15 isto tem de parar de pegar ligações durante a execução de um jogo
 
         binding.btnJoinGame.setOnClickListener {
-            //TODO 4 abrir o popup
             //TODO 5 juntar a um jogo
+            val editText = EditText(this)
+            val dialog = AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle(R.string.enter_address)
+                .setNegativeButton(R.string.cancel) { d, _ -> d.dismiss() }
+                .setPositiveButton(R.string.join) { _, _ ->
+                    Toast.makeText(this, "TODO", Toast.LENGTH_SHORT).show()
+                }.setView(editText)
+                .create()
+            dialog.show()
         }
 
         //TODO 0 perguntar acerca da gestão do histório de resultados

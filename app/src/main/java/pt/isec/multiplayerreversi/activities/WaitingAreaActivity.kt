@@ -34,9 +34,10 @@ class WaitingAreaActivity : AppCompatActivity() {
         //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
 
 
+        val context = this
         //TODO 5 mostrar os players lista
         val adapter =
-            object : ArrayAdapter<Player>(this, R.layout.row_waiting_player) {
+            object : BaseAdapter() {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view: View = convertView
                         ?: layoutInflater.inflate(R.layout.row_waiting_player, parent, false)
@@ -56,12 +57,14 @@ class WaitingAreaActivity : AppCompatActivity() {
                         Piece.Blue -> AppCompatResources.getDrawable(context, R.drawable.piece_blue)
                         else -> null
                     }
-                    //TODO 15 meter o icone do utilizador
+                    //TODO 16 meter o icone do utilizador
 
                     return view
                 }
 
                 override fun getCount() = players.size
+                override fun getItem(id: Int) = id
+                override fun getItemId(index: Int): Long = index.toLong()
             }
         binding.playersListView.adapter = adapter
 
@@ -72,6 +75,7 @@ class WaitingAreaActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             }
         //TODO 15 isto tem de parar de pegar ligações durante a execução de um jogo
+        //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
 
         binding.btnJoinGame.setOnClickListener {
             //TODO 5 juntar a um jogo

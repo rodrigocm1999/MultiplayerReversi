@@ -14,5 +14,8 @@
     <string name="join_another_game">Entrar em jogo</string>
     <string name="start_game">Iniciar jogo</string>
     <string name="players_waiting">Jogadores em espera:</string>
+    <string name="enter_address">Introduzir endereço</string>
+    <string name="cancel">Cancelar</string>
+    <string name="join">Entrar</string>
 
 </resources>

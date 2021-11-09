@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
@@ -34,37 +33,33 @@ class WaitingAreaActivity : AppCompatActivity() {
         //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
 
 
-        val context = this
         //TODO 5 mostrar os players lista
         val adapter =
             object : BaseAdapter() {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view: View = convertView
                         ?: layoutInflater.inflate(R.layout.row_waiting_player, parent, false)
+                    val player = getItem(position)
 
-                    val player = players[position]
-
-                    val playerNameView =
-                        view.findViewById<TextView>(R.id.textViewPlayerName)
-                    playerNameView.text = player.getProfile().name
-
-                    val playerPiece = player.getPiece()
-                    val playerPieceView = view.findViewById<ImageView>(R.id.imgViewPlayerPiece)
-                    playerPieceView.background = when (playerPiece) {
-                        Piece.Dark -> AppCompatResources.getDrawable(context, R.drawable.piece_dark)
-                        Piece.Light ->
-                            AppCompatResources.getDrawable(context, R.drawable.piece_light)
-                        Piece.Blue -> AppCompatResources.getDrawable(context, R.drawable.piece_blue)
-                        else -> null
+                    view.findViewById<TextView>(R.id.textViewPlayerName).apply {
+                        this.text = player.getProfile().name
+                    }
+                    view.findViewById<ImageView>(R.id.imgViewPlayerPiece).apply {
+                        val resource = when (player.getPiece()) {
+                            Piece.Dark -> R.drawable.piece_dark
+                            Piece.Light -> R.drawable.piece_light
+                            Piece.Blue -> R.drawable.piece_blue
+                            else -> R.drawable.piece_dark
+                        }
+                        this.setImageResource(resource)
                     }
                     //TODO 16 meter o icone do utilizador
-
                     return view
                 }
 
                 override fun getCount() = players.size
-                override fun getItem(id: Int) = id
-                override fun getItemId(index: Int): Long = index.toLong()
+                override fun getItem(pos: Int) = players[pos]
+                override fun getItemId(pos: Int): Long = pos.toLong()
             }
         binding.playersListView.adapter = adapter
 

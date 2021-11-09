@@ -2,13 +2,11 @@ package pt.isec.multiplayerreversi.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
-import pt.isec.multiplayerreversi.game.interactors.senders.Local1V1Interaction
+import pt.isec.multiplayerreversi.game.interactors.local.Local1V1Interaction
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player

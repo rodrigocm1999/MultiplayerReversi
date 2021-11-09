@@ -1,8 +1,8 @@
-package pt.isec.multiplayerreversi.game.interactors.senders
+package pt.isec.multiplayerreversi.game.interactors.local
 
+import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
-import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Vector
 
 open class Local1V1Interaction(protected val game: Game) : InteractionProxy {

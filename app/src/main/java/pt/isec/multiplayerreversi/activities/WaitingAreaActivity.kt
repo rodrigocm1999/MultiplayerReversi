@@ -12,7 +12,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.senders.LocalOnline
+import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.local.LocalOnline
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -67,6 +68,11 @@ class WaitingAreaActivity : AppCompatActivity() {
             }
 
 
+        val welcomer = ConnectionsWelcomer{
+            players.add(it.getOwnPlayer())
+            binding.playersListView.deferNotifyDataSetChanged()
+        }
+        welcomer.start()
 
         binding.btnJoinGame.setOnClickListener {
             //TODO 4 abrir o popup

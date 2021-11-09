@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.senders
+package pt.isec.multiplayerreversi.game.interactors
 
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player

@@ -10,7 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.game.interactors.senders.InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 

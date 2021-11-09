@@ -1,10 +1,10 @@
-package pt.isec.multiplayerreversi.game.interactors.receivers
+package pt.isec.multiplayerreversi.game.interactors.local
 
+import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.listeningPort
 import java.net.ServerSocket
-import java.net.Socket
 
-class ConnectionsWelcomer(private val callback: (Socket) -> Unit) : Thread() {
+class ConnectionsWelcomer(private val callback: (InteractionProxy) -> Unit) : Thread() {
 
     private val serverSocket = ServerSocket(listeningPort)
 
@@ -15,7 +15,8 @@ class ConnectionsWelcomer(private val callback: (Socket) -> Unit) : Thread() {
 
         val t = Thread {
             //TODO 3  passar informções acerca do jogo a cada remote player
-            callback(socket)//Se calhar devolver a interactionproxy ou whatever
+            val p = InteractionLocalProxy()
+            callback(p)//Se calhar devolver a interactionproxy ou whatever
         }
         t.start()
     }

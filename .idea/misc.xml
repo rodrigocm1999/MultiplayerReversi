@@ -21,6 +21,8 @@
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.18" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_waiting_area.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.19635416666666666" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/row_waiting_player.xml" value="0.67" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/waiting_player.xml" value="0.26145833333333335" />
       </map>
     </option>
   </component>

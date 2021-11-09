@@ -4,7 +4,7 @@ import android.app.Application
 import pt.isec.multiplayerreversi.game.interactors.senders.InteractionProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 
-val TAG = "reversi"
+val TAG = "reversiTag"
 val listeningPort = 43578
 
 

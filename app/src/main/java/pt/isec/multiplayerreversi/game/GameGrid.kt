@@ -31,7 +31,7 @@ class GameGrid(
     private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
     private val possiblePiece = AppCompatResources.getDrawable(context, R.drawable.piece_possible)
 
-    private var possibleMoves: List<Vector>? = null
+//    private var possibleMoves: List<Vector>? = null
 
     init {
         gridLayout.columnCount = boardSideLength
@@ -58,20 +58,17 @@ class GameGrid(
         interactionProxy.setUpdateBoardEvent {
             updatePieces(it)
         }
-        interactionProxy.setChangePlayerCallback {
-            //TODO 4
-        }
         interactionProxy.setPossibleMovesCallBack {
             showPossibleMoves(it)
         }
     }
 
-    fun clearPossibleMoves() {
-        possibleMoves?.forEach {
+/*    fun clearPossibleMoves() {
+        possibleMoves?.forEach {99
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.isVisible = false
         }
-    }
+    }*/
 
     private fun showPossibleMoves(list: List<Vector>) {
         //clearPossibleMoves() // there is no need because this happens after the board gets updated

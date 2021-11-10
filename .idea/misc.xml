@@ -6,7 +6,6 @@
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20520833333333333" />
-        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.27445652173913043" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.25407608695652173" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="6.0" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1962962962962963" />
@@ -20,9 +19,9 @@
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20260416666666667" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.18" />
-        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_waiting_area.xml" value="0.20260416666666667" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_waiting_area.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.19635416666666666" />
-        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/row_waiting_player.xml" value="0.67" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/row_waiting_player.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/waiting_player.xml" value="0.26145833333333335" />
       </map>
     </option>

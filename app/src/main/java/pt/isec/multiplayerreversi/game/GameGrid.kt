@@ -21,18 +21,19 @@ class GameGrid(
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
     private val boardSideLength: Int,
-    private val interactionProxy: InteractionProxy
+    private val interactionProxy: InteractionProxy,
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
-
     private val darkPiece = AppCompatResources.getDrawable(context, R.drawable.piece_dark)
+
     private val lightPiece = AppCompatResources.getDrawable(context, R.drawable.piece_light)
     private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
     private val possiblePiece = AppCompatResources.getDrawable(context, R.drawable.piece_possible)
-
     private var possibleMoves: List<Vector>? = null
-    public var isPlayingBombPiece = false;
+
+    var isUsingBombPiece = false
+    var isUsingTrade = false
 
 
     init {
@@ -49,11 +50,11 @@ class GameGrid(
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
                 view.setOnClickListener {
-                    if(isPlayingBombPiece){
-                        interactionProxy.playBomb(line,column)
-                    }else{
-                        interactionProxy.playAt(line, column)
-
+                    when {
+                        isUsingBombPiece -> interactionProxy.playBomb(line, column)
+                        isUsingTrade -> {
+                        }                            // TODO 2 do the trade thing
+                        else -> interactionProxy.playAt(line, column)
                     }
                 }
 
@@ -66,30 +67,27 @@ class GameGrid(
         interactionProxy.setUpdateBoardEvent {
             updatePieces(it)
         }
-        interactionProxy.setChangePlayerCallback {
-            //TODO 4
-        }
         interactionProxy.setPossibleMovesCallBack {
             showPossibleMoves(it)
         }
     }
 
-    fun clearPossibleMoves() {
+    fun clearPossibleMoves(): List<Vector>? {
         possibleMoves?.forEach {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.isVisible = false
         }
+        return possibleMoves
     }
 
-    private fun showPossibleMoves(list: List<Vector>) {
-        //clearPossibleMoves() // there is no need because this happens after the board gets updated
-        // and it overrides the background all views
+    fun showPossibleMoves(list: List<Vector>?) {
+        if (list == null) return
         for (it in list) {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.background = possiblePiece
             boardSlot.piece.isVisible = true
         }
-        //possibleMoves = list
+        possibleMoves = list
     }
 
     private fun updatePieces(board: Array<Array<Piece>>) {

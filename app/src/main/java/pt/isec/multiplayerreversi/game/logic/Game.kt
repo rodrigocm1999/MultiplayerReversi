@@ -79,7 +79,7 @@ class Game(
         return true
     }
 
-    fun updateState() {
+    private fun updateState() {
         currentPlayer = getNext(currentPlayer, players)
         possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
         sendEventsAfterPlay()
@@ -175,12 +175,12 @@ class Game(
     }
 
     fun playBombPiece(player: Player, line: Int, column: Int): Boolean {
-        if (board[line][column] != player.getPiece() && player.hasUsedBomb) {
+        if (board[line][column] != player.getPiece() || player.hasUsedBomb) {
             return false
         }
         board[line][column] = Piece.Empty
         for (offset in directions) {
-            val currPos = Vector(line, column)
+            val currPos = Vector(column, line)
 
             currPos.add(offset)
             if (currPos.x < 0 || currPos.x >= sideLength

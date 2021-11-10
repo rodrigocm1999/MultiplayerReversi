@@ -6,71 +6,85 @@
     android:orientation="vertical"
     tools:context=".activities.GameActivity">
 
-    <LinearLayout
-        android:layout_gravity="top"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:orientation="horizontal"
         android:padding="20dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="68dp"
-            android:minHeight="68dp" />
-
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <TextView
+            <ImageView
+                android:id="@+id/imgViewCurrentPlayer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/now_playing"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+                android:minWidth="68dp"
+                android:minHeight="68dp" />
 
-            <TextView
-                android:id="@+id/tvPlayerName"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/now_playing"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPlayerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imgViewCurrentPlayerPiece"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical|end" />
+
+    </FrameLayout>
 
 
     <GridLayout
-        android:layout_gravity="center"
         android:id="@+id/gridContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:background="@color/light_yellow_board_background">
 
     </GridLayout>
 
     <FrameLayout
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btnBombPiece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="@string/use_bomb_piece"
-            android:id="@+id/btnBombPiece"/>
+            android:text="@string/use_bomb_piece" />
 
         <Button
+            android:id="@+id/btnTradePiece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/use_trade_piece"
-            android:id="@+id/btnTradePiece"/>
+            android:text="@string/use_trade_piece" />
 
     </FrameLayout>
 

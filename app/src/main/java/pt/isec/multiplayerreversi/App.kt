@@ -5,7 +5,7 @@ import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Game
 
-const val TAG = "reversiTag"
+const val OURTAG = "reversiTag"
 const val listeningPort = 43578
 
 

@@ -75,11 +75,14 @@ class Game(
             return false
         if (!executePlayAt(line, column))
             return false
+        updateState()
+        return true
+    }
 
+    fun updateState() {
         currentPlayer = getNext(currentPlayer, players)
         possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
         sendEventsAfterPlay()
-        return true
     }
 
     private fun sendEventsAfterPlay() {
@@ -169,6 +172,26 @@ class Game(
             }
         }
         return false
+    }
+
+    fun playBombPiece(player: Player, line: Int, column: Int): Boolean {
+        if (board[line][column] != player.getPiece() && player.hasUsedBomb) {
+            return false
+        }
+        board[line][column] = Piece.Empty
+        for (offset in directions) {
+            val currPos = Vector(line, column)
+
+            currPos.add(offset)
+            if (currPos.x < 0 || currPos.x >= sideLength
+                || currPos.y < 0 || currPos.y >= sideLength
+            ) continue
+            board[currPos.y][currPos.x] = Piece.Empty
+
+        }
+        player.hasUsedBomb = true
+        updateState()
+        return true
     }
 
     fun getSideLength() = sideLength

@@ -17,9 +17,12 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         val notYetImplementedToast = View.OnClickListener {
             Toast.makeText(this, R.string.notYetImplemented, Toast.LENGTH_SHORT).show()
         }
         binding.btnSaveChanges.setOnClickListener(notYetImplementedToast)
     }
+
 }

@@ -29,6 +29,10 @@ open class Local1V1Interaction(protected val game: Game) : InteractionProxy {
         game.playAt(game.getCurrentPlayer(), line, column)
     }
 
+    override fun playBomb(line: Int, column: Int) {
+        game.playBombPiece(game.getCurrentPlayer(),line,column)
+    }
+
     override fun getPlayers() = game.getPlayers()
 
     override fun getOwnPlayer() = game.getCurrentPlayer()

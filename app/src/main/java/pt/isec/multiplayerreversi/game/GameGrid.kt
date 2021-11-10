@@ -31,7 +31,9 @@ class GameGrid(
     private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
     private val possiblePiece = AppCompatResources.getDrawable(context, R.drawable.piece_possible)
 
-//    private var possibleMoves: List<Vector>? = null
+    private var possibleMoves: List<Vector>? = null
+    public var isPlayingBombPiece = false;
+
 
     init {
         gridLayout.columnCount = boardSideLength
@@ -47,8 +49,14 @@ class GameGrid(
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
                 view.setOnClickListener {
-                    interactionProxy.playAt(line, column)
+                    if(isPlayingBombPiece){
+                        interactionProxy.playBomb(line,column)
+                    }else{
+                        interactionProxy.playAt(line, column)
+
+                    }
                 }
+
                 val boardView = BoardSlotView(view, view[0])
                 gridLayout.addView(view)
                 boardView
@@ -58,22 +66,25 @@ class GameGrid(
         interactionProxy.setUpdateBoardEvent {
             updatePieces(it)
         }
+        interactionProxy.setChangePlayerCallback {
+            //TODO 4
+        }
         interactionProxy.setPossibleMovesCallBack {
             showPossibleMoves(it)
         }
     }
 
-/*    fun clearPossibleMoves() {
-        possibleMoves?.forEach {99
+    fun clearPossibleMoves() {
+        possibleMoves?.forEach {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.isVisible = false
         }
-    }*/
+    }
 
     private fun showPossibleMoves(list: List<Vector>) {
         //clearPossibleMoves() // there is no need because this happens after the board gets updated
         // and it overrides the background all views
-        for (it in list){
+        for (it in list) {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.background = possiblePiece
             boardSlot.piece.isVisible = true
@@ -90,15 +101,27 @@ class GameGrid(
                 val piece = board[line][column]
                 val boardSlotView = grid[line][column].piece
 
-                when (piece) {
-                    Piece.Dark -> boardSlotView.background = darkPiece
-                    Piece.Light -> boardSlotView.background = lightPiece
-                    Piece.Blue -> boardSlotView.background = bluePiece
+                boardSlotView.background = when (piece) {
+                    Piece.Dark -> darkPiece
+                    Piece.Light -> lightPiece
+                    Piece.Blue -> bluePiece
+                    else -> darkPiece
                 }
                 boardSlotView.isVisible = piece != Piece.Empty
             }
         }
     }
+
+    /*public fun playBombPiece(playerPiece: Piece) {
+        for (line in 0 until boardSideLength){
+            for (column in 0 until boardSideLength){
+                val piece = grid[line][column].piece
+                if (piece == playerPiece){
+
+                }
+            }
+        }
+    }*/
 
     data class BoardSlotView(val slot: ViewGroup, val piece: View)
 }

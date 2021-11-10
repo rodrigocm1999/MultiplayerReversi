@@ -25,6 +25,10 @@ class InteractionLocalProxy : InteractionProxy {
         //TODO 5 send through the socket
     }
 
+    override fun playBomb(line: Int, column: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun getPlayers() = players
 
     override fun getOwnPlayer() = player

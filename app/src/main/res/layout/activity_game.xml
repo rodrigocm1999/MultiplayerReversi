@@ -62,13 +62,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="@string/use_bomb_piece" />
+            android:text="@string/use_bomb_piece"
+            android:id="@+id/btnBombPiece"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/use_trade_piece" />
+            android:text="@string/use_trade_piece"
+            android:id="@+id/btnTradePiece"/>
 
     </FrameLayout>
 

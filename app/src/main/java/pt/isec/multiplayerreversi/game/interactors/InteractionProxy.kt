@@ -8,6 +8,7 @@ import java.io.Serializable
 interface InteractionProxy : Serializable {
 
     fun playAt(line: Int, column: Int)
+    fun playBomb(line: Int,column: Int)
 
     //TODO 1 adicionar as funções para as jogadas especiais
 

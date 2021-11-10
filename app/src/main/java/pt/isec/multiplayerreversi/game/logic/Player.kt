@@ -19,8 +19,8 @@ class Player(
 
     private var playerId = playerIdCounter++
 
-    private var hasUsedBomb = false
-    private var hasUsedTrade = false
+    var hasUsedBomb = false
+    var hasUsedTrade = false
 
     fun getPlayerId() = playerId
     fun getProfile() = profile

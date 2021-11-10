@@ -6,8 +6,11 @@ import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Game
 
 const val OURTAG = "reversiTag"
-const val listeningPort = 43578
+const val listeningPort = 43338
 
+//To connect to emulator, from remote phone
+//telnet localhost 5554
+//redir add tcp:43338:43338
 
 class App : Application() {
     var game: Game? = null

@@ -14,7 +14,7 @@ import java.io.OutputStreamWriter
 import java.net.Socket
 
 
-class InteractionRemoteProxy(private val socket: Socket, private val player: Profile) : Closeable {
+class InteractionRemotePlayerProxy(private val socket: Socket, private val player: Profile) : Closeable {
 
     private val jsonWriter: JsonWriter = JsonWriter(OutputStreamWriter(socket.getOutputStream()))
     private val jsonReader: JsonReader = JsonReader(InputStreamReader(socket.getInputStream()))

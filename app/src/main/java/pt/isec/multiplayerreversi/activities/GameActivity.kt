@@ -30,33 +30,31 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(layoutInflater);
         setContentView(binding.root)
 
-        val gridLayout = findViewById<GridLayout>(R.id.gridContainer)
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val app = application as App
-        val game = app.game
-            ?: throw IllegalStateException("Game from App is null when entering the game activity")
-        val localInteractionSender = app.interaction
+        val proxy = app.interaction
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         val gameLayout = GameGrid(
-            this, gridLayout, displayMetrics,
-            layoutInflater, game.getSideLength(), localInteractionSender
+            this, binding.gridContainer, displayMetrics,
+            layoutInflater, proxy.getGameSideLength(), proxy
         )
 
         darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)
         lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)
         bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)
 
-        localInteractionSender.setChangePlayerCallback {
-            val player = localInteractionSender.getPlayerById(it)
+        proxy.setChangePlayerCallback { id ->
+            val player = proxy.getPlayerById(id)
             if (player == null) {
-                Log.i(OURTAG, "Player is null from id : $it")
+                Log.i(OURTAG, "Player is null from id : $id")
+                Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@setChangePlayerCallback
             }
             binding.tvPlayerName.text = player.getProfile().name
-//            binding.imgViewCurrentPlayer.background =
+            binding.imgViewCurrentPlayer.background = player.getProfile().icon
             binding.imgViewCurrentPlayerPiece.background = when (player.getPiece()) {
                 Piece.Dark -> darkPiece
                 Piece.Light -> lightPiece
@@ -64,16 +62,26 @@ class GameActivity : AppCompatActivity() {
                 else -> darkPiece
             }
             clearPossibleMoves = null
-
-            // 6 TODO botão fazer toggle
-
+            // TODO 6 botão fazer toggle
             gameLayout.isUsingBombPiece = false
             gameLayout.isUsingTrade = false
         }
 
+        proxy.setGameFinishedCallback {
+            Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
+            val playerStats =
+                it.playerStats.find { p -> p.player.getPlayerId() == it.winningPlayerId }
+            if (playerStats != null) {
+                Toast.makeText(this, "${playerStats.player.getProfile().name} " +
+                        "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         binding.btnBombPiece.setOnClickListener {
             when {
-                game.getCurrentPlayer().hasUsedBomb() -> {
+                proxy.getOwnPlayer().hasUsedBomb -> {
                     Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT).show()
                 }
                 gameLayout.isUsingBombPiece -> {
@@ -87,6 +95,7 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        game.start()
+        //only tell the game to start if this is the game host
+        app.game?.start()
     }
 }

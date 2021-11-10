@@ -11,7 +11,7 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.local.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.remote.InteractionRemoteProxy
+import pt.isec.multiplayerreversi.game.interactors.remote.InteractionRemotePlayerProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -56,7 +56,9 @@ class WaitingAreaActivity : AppCompatActivity() {
                         }
                         this.setImageResource(resource)
                     }
-                    //TODO 16 meter o icone do utilizador
+                    view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
+                        this.setImageResource(R.drawable.avatar_icon)
+                    }//TODO 16 meter o icone do utilizador
                     return view
                 }
 
@@ -92,7 +94,7 @@ class WaitingAreaActivity : AppCompatActivity() {
 
                     //TODO 13 put the right player object
                     val profile = Profile("asd")
-                    InteractionRemoteProxy(socket, profile)
+                    InteractionRemotePlayerProxy(socket, profile)
                 }.setView(editText)
                 .create()
             dialog.show()

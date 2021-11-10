@@ -1,11 +1,10 @@
 package pt.isec.multiplayerreversi.game.logic
 
-import java.io.Serializable
+import android.graphics.drawable.Drawable
 
 class Profile(
-   val name: String
-) : Serializable {
+   val name: String,
+   val icon: Drawable? = null,
+) {
     // TODO add the photo somehow
-
-
 }

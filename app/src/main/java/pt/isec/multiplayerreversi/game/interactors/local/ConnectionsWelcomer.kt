@@ -16,7 +16,7 @@ class ConnectionsWelcomer(private val callback: (InteractionProxy) -> Unit) : Th
 
         val t = Thread {
             //TODO 3  passar informções acerca do jogo a cada remote player
-            val p = InteractionLocalProxy()
+            val p = InteractionLocalRemoteGameProxy()
             callback(p)//Se calhar devolver a interactionproxy ou whatever
         }
         t.start()

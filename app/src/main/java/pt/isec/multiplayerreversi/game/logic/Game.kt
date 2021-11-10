@@ -12,15 +12,16 @@ class Game(
     private val board =
         Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]
     private var currentPlayer = startingPlayer
-    private lateinit var possibleMoves: ArrayList<Vector>
+    private lateinit var currentPlayerMoves: ArrayList<Vector>
     private var shouldShowPossibleMoves = true
 
     private val propertyChange = PropertyChangeSupport(this)
 
     companion object {
-        val updateBoardEvent = "updateBoard"
-        val showMovesEvent = "showMoves"
-        val updateCurrentPlayerEvent = "updatePlayer"
+        const val gameFinishedEvent = "gameFinished"
+        const val updateBoardEvent = "updateBoard"
+        const val showMovesEvent = "showMoves"
+        const val updateCurrentPlayerEvent = "updatePlayer"
 
         private val directions = arrayOf(
             Vector(-1, -1), Vector(0, -1), Vector(1, -1),
@@ -63,7 +64,7 @@ class Game(
     }
 
     fun start() {
-        possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
+        updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
     }
 
@@ -71,7 +72,7 @@ class Game(
     fun playAt(player: Player, line: Int, column: Int): Boolean {
         if (player != currentPlayer)
             return false
-        if (!possibleMoves.contains(Vector(column, line)))
+        if (!currentPlayerMoves.contains(Vector(column, line)))
             return false
         if (!executePlayAt(line, column))
             return false
@@ -81,8 +82,62 @@ class Game(
 
     private fun updateState() {
         currentPlayer = getNext(currentPlayer, players)
-        possibleMoves = getPossibleMovesForPlayer(currentPlayer.getPiece())
+        updatePossibleMovesForPlayer()
+        //TODO 2 need to be able to ask to pass to the next player when there is no possible move for this player
+        if (checkIfFinished()) {
+            val playersStats = ArrayList<PlayerEndStats>(players.size)
+            var highestScoreId = -1
+            var highestScore = -1
+            players.forEach {
+                val score = countPieces(it.getPiece())
+                playersStats.add(PlayerEndStats(it, score))
+
+                if (score > highestScore) {
+                    highestScoreId = it.getPlayerId()
+                    highestScore = score
+                } else if (score == highestScore) {
+                    highestScoreId = -1
+                }
+            }
+            val endStats = GameEndStats(highestScoreId, playersStats)
+            propertyChange.firePropertyChange(gameFinishedEvent, null, endStats)
+        }
         sendEventsAfterPlay()
+    }
+
+    private fun countPieces(piece: Piece): Int {
+        var count = 0
+        for (column in 0 until sideLength) {
+            for (line in 0 until sideLength) {
+                if (board[line][column] == piece)
+                    count++
+            }
+        }
+        return count
+    }
+
+    private fun checkIfFinished(): Boolean {
+        //Se tiver jogadas o jogo não acabou
+        if (currentPlayerMoves.size > 0) return false
+        var nextPlayer = getCurrentPlayer()
+        while (true) {
+            // depois vamos ver a todos os outros jogadores se teem uma jogada possível
+            nextPlayer = getNext(nextPlayer, players)
+            if (nextPlayer == currentPlayer)
+                break
+            val piece = nextPlayer.getPiece()
+
+            for (column in 0 until sideLength) {
+                for (line in 0 until sideLength) {
+                    val pos = Vector(column, line)
+                    // Se conseguir jogar pelo menos em 1 sitio quer dizer que o jogo ainda não acabou
+                    if (checkCanPlayAt(piece, pos))
+                        return false
+                }
+            }
+        }
+        // se não encontrar jogadas possíveis, o jogo tem de terminar
+        return true
     }
 
     private fun sendEventsAfterPlay() {
@@ -90,7 +145,7 @@ class Game(
         propertyChange
             .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.getPlayerId())
         if (shouldShowPossibleMoves)
-            propertyChange.firePropertyChange(showMovesEvent, null, possibleMoves)
+            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
     }
 
     private fun <T> getNext(curr: T, list: List<T>): T = list[(list.indexOf(curr) + 1) % list.size]
@@ -132,16 +187,16 @@ class Game(
         return true
     }
 
-    private fun getPossibleMovesForPlayer(player: Piece): ArrayList<Vector> {
-        val possibleMoves = ArrayList<Vector>(20)
+    private fun updatePossibleMovesForPlayer() {
+        val piece = currentPlayer.getPiece()
+        currentPlayerMoves = ArrayList(20)
         for (column in 0 until sideLength) {
             for (line in 0 until sideLength) {
                 val pos = Vector(column, line)
-                if (checkCanPlayAt(player, pos))
-                    possibleMoves.add(pos)
+                if (checkCanPlayAt(piece, pos))
+                    currentPlayerMoves.add(pos)
             }
         }
-        return possibleMoves
     }
 
     private fun checkCanPlayAt(player: Piece, position: Vector): Boolean {

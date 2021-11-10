@@ -10,8 +10,6 @@ const val listeningPort = 43578
 
 
 class App : Application() {
-
-    var connectionsWelcomer: ConnectionsWelcomer? = null
     var game: Game? = null
     var interaction: InteractionProxy? = null
 }

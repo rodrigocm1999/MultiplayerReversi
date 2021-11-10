@@ -17,5 +17,6 @@
     <string name="enter_address">Introduzir endereço</string>
     <string name="cancel">Cancelar</string>
     <string name="join">Entrar</string>
+    <string name="failed_to_connect">Falha ao conectar ao endereço</string>
 
 </resources>

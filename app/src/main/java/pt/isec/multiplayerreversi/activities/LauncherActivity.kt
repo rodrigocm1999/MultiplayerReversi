@@ -31,8 +31,8 @@ class LauncherActivity : AppCompatActivity() {
             val intent = Intent(this, GameActivity::class.java)
 
             val players = ArrayList<Player>(2)
-            players.add(Player(Piece.Dark, Profile(resources.getString(R.string.dark_piece))))
-            players.add(Player(Piece.Light, Profile(resources.getString(R.string.light_piece))))
+            players.add(Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark))
+            players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
             val app = application as App
             val game = Game(8, players, players.random())

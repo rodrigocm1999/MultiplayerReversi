@@ -48,7 +48,7 @@ class LauncherActivity : AppCompatActivity() {
         }
 
         //TODO 100 mudar drawable para icon do utilizador
-        //TODO 10000 fazer logo da pixa
+        //TODO 10000 fazer logo com a pixa
     }
 
 }

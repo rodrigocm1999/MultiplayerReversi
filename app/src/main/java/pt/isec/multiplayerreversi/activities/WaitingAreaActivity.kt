@@ -37,7 +37,6 @@ class WaitingAreaActivity : AppCompatActivity() {
         players.add(Player(Profile("Futuro nome do player"), Piece.Light))
         //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
 
-        //TODO 5 mostrar os players lista
         val adapter =
             object : BaseAdapter() {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

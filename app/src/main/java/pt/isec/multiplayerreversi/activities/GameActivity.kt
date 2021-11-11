@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -72,8 +71,10 @@ class GameActivity : AppCompatActivity() {
             val playerStats =
                 it.playerStats.find { p -> p.player.getPlayerId() == it.winningPlayerId }
             if (playerStats != null) {
-                Toast.makeText(this, "${playerStats.player.getProfile().name} " +
-                        "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this, "${playerStats.player.getProfile().name} " +
+                            "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT
+                ).show()
             } else {
                 Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
             }
@@ -82,15 +83,37 @@ class GameActivity : AppCompatActivity() {
         binding.btnBombPiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedBomb -> {
-                    Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.already_use_bomb_piece, Toast.LENGTH_SHORT).show()
                 }
                 gameLayout.isUsingBombPiece -> {
-                    gameLayout.showPossibleMoves(clearPossibleMoves)
+                    gameLayout.showPossibleMoves(
+                        clearPossibleMoves,
+                        proxy.getOwnPlayer().getPiece()
+                    )
                     gameLayout.isUsingBombPiece = false
                 }
                 else -> {
                     clearPossibleMoves = gameLayout.clearPossibleMoves()
                     gameLayout.isUsingBombPiece = true
+                }
+            }
+        }
+
+        binding.btnTradePiece.setOnClickListener {
+            when {
+                proxy.getOwnPlayer().hasUsedTrade -> {
+                    Toast.makeText(this, R.string.already_use_trade_move, Toast.LENGTH_SHORT).show()
+                }
+                gameLayout.isUsingTrade -> {
+                    gameLayout.showPossibleMoves(
+                        clearPossibleMoves,
+                        proxy.getOwnPlayer().getPiece()
+                    )
+                    gameLayout.isUsingTrade = false;
+                }
+                else -> {
+                    clearPossibleMoves = gameLayout.clearPossibleMoves()
+                    gameLayout.isUsingTrade = true
                 }
             }
         }

@@ -249,9 +249,19 @@ class Game(
         return true
     }
 
+    fun playTrade(tradePieces: ArrayList<Vector>) {
+        val opponentPiece = board[tradePieces[2].y][tradePieces[2].x]
+        board[tradePieces[0].y][tradePieces[0].x] = opponentPiece
+        board[tradePieces[1].y][tradePieces[1].x] = opponentPiece
+        board[tradePieces[2].y][tradePieces[2].x] = currentPlayer.getPiece()
+        currentPlayer.hasUsedTrade = true
+        updateState()
+    }
+
     fun getSideLength() = sideLength
     fun getCurrentPlayer() = currentPlayer
     fun getPlayers() = players
+    fun getBoard() = board
 
     fun registerListener(event: String, listener: PropertyChangeListener) =
         propertyChange.addPropertyChangeListener(event, listener)

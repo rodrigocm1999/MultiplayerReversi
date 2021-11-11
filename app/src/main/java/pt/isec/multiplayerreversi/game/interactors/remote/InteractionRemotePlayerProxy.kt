@@ -10,11 +10,13 @@ import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.interactors.local.AbstractCallbacksProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
+import pt.isec.multiplayerreversi.game.logic.Vector
 import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.Socket
+import java.util.ArrayList
 
 
 class InteractionRemotePlayerProxy(private val socket: Socket) : AbstractCallbacksProxy(),
@@ -91,9 +93,16 @@ class InteractionRemotePlayerProxy(private val socket: Socket) : AbstractCallbac
         TODO("Not yet implemented")
     }
 
+    override fun playTrade(tradePieces: ArrayList<Vector>) {
+        TODO("Not yet implemented")
+    }
+
     override fun getPlayers() = players
 
     override fun getOwnPlayer() = player
+    override fun getGameBoard(): Array<Array<Piece>> {
+        TODO("Not yet implemented")
+    }
 
     override fun close() {
         jsonReader.close()

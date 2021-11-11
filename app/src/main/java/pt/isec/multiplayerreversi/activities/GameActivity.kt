@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -53,9 +52,9 @@ class GameActivity : AppCompatActivity() {
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@setChangePlayerCallback
             }
-            binding.tvPlayerName.text = player.getProfile().name
-            binding.imgViewCurrentPlayer.background = player.getProfile().icon
-            binding.imgViewCurrentPlayerPiece.background = when (player.getPiece()) {
+            binding.tvPlayerName.text = player.profile.name
+            binding.imgViewCurrentPlayer.background = player.profile.icon
+            binding.imgViewCurrentPlayerPiece.background = when (player.piece) {
                 Piece.Dark -> darkPiece
                 Piece.Light -> lightPiece
                 Piece.Blue -> bluePiece
@@ -70,7 +69,7 @@ class GameActivity : AppCompatActivity() {
         proxy.setGameFinishedCallback {
             Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
             val playerStats =
-                it.playerStats.find { p -> p.player.getPlayerId() == it.winningPlayerId }
+                it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
             if (playerStats != null) {
                 Toast.makeText(this, "${playerStats.player.profile.name} " +
                         "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
@@ -85,7 +84,7 @@ class GameActivity : AppCompatActivity() {
                     Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT).show()
                 }
                 gameLayout.isUsingBombPiece -> {
-                    gameLayout.showPossibleMoves(clearPossibleMoves)
+                    gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
                     gameLayout.isUsingBombPiece = false
                 }
                 else -> {
@@ -101,11 +100,8 @@ class GameActivity : AppCompatActivity() {
                     Toast.makeText(this, R.string.already_use_trade_move, Toast.LENGTH_SHORT).show()
                 }
                 gameLayout.isUsingTrade -> {
-                    gameLayout.showPossibleMoves(
-                        clearPossibleMoves,
-                        proxy.getOwnPlayer().getPiece()
-                    )
-                    gameLayout.isUsingTrade = false;
+                    gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
+                    gameLayout.isUsingTrade = false
                 }
                 else -> {
                     clearPossibleMoves = gameLayout.clearPossibleMoves()

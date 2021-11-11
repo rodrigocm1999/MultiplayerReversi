@@ -82,7 +82,7 @@ class GameGrid(
             updatePieces(it)
         }
         interactionProxy.setPossibleMovesCallBack {
-            showPossibleMoves(it, interactionProxy.getOwnPlayer().getPiece())
+            showPossibleMoves(it, interactionProxy.getOwnPlayer().piece)
         }
     }
 
@@ -95,16 +95,16 @@ class GameGrid(
     }
 
     fun showPossibleMoves(list: List<Vector>?, currentPiece: Piece) {
+        val temp = when (currentPiece) {
+            Piece.Dark -> possiblePieceDark
+            Piece.Light -> possiblePieceLight
+            Piece.Blue -> possiblePieceBlue
+            else -> possiblePieceDark
+        }
         if (list == null) return
         for (it in list) {
             val boardSlot = grid[it.y][it.x]
-            if (currentPiece.char == Piece.Dark.char) {
-                boardSlot.piece.background = possiblePieceDark
-            } else if (currentPiece.char == Piece.Light.char) {
-                boardSlot.piece.background = possiblePieceLight
-            } else if (currentPiece.char == Piece.Blue.char) {
-                boardSlot.piece.background = possiblePieceBlue
-            }
+            boardSlot.piece.background = temp
             boardSlot.piece.isVisible = true
         }
         possibleMoves = list
@@ -135,7 +135,7 @@ class GameGrid(
     }
 
     private fun addPieceToTrade(line: Int, column: Int) {
-        val playerPiece = interactionProxy.getOwnPlayer().getPiece()
+        val playerPiece = interactionProxy.getOwnPlayer().piece
         val boardPiece = interactionProxy.getGameBoard()[line][column]
         println(playerPiece)
         println(boardPiece)

@@ -155,7 +155,6 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
 
     protected fun readProfile(profile: Profile) {
         jsonReader.beginObject()
-        val player = Profile()
         when (jsonReader.nextName()) {
             "name" -> profile.name = jsonReader.nextString()
             "image" -> {
@@ -224,4 +223,5 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     override fun getPlayers() = _players
     override fun getOwnPlayer() = _player
     override fun getGameSideLength() = _gameSideLength
+
 }

@@ -2,9 +2,12 @@ package pt.isec.multiplayerreversi.game.interactors.remote
 
 import pt.isec.multiplayerreversi.AbstractNetworkingProxy
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
+import pt.isec.multiplayerreversi.game.logic.Vector
 import java.io.Closeable
 import java.net.Socket
+import java.util.ArrayList
 
 
 open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWelcomer) :
@@ -39,6 +42,14 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
     }
 
     override fun playBomb(line: Int, column: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun playTrade(tradePieces: ArrayList<Vector>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getGameBoard(): Array<Array<Piece>> {
         TODO("Not yet implemented")
     }
 

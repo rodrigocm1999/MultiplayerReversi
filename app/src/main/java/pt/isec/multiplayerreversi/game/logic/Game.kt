@@ -255,7 +255,7 @@ class Game(
         val opponentPiece = board[tradePieces[2].y][tradePieces[2].x]
         board[tradePieces[0].y][tradePieces[0].x] = opponentPiece
         board[tradePieces[1].y][tradePieces[1].x] = opponentPiece
-        board[tradePieces[2].y][tradePieces[2].x] = currentPlayer.getPiece()
+        board[tradePieces[2].y][tradePieces[2].x] = currentPlayer.piece
         currentPlayer.hasUsedTrade = true
         updateState()
     }

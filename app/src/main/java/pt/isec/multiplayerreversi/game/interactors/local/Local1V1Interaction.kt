@@ -5,7 +5,7 @@ import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-open class Local1V1Interaction(protected val game: Game) : AbstractLocalProxy() {
+open class Local1V1Interaction(protected val game: Game) : AbstractCallbacksProxy() {
 
     init {
         game.registerListener(Game.showMovesEvent) {

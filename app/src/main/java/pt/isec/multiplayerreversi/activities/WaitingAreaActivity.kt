@@ -10,8 +10,8 @@ import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.local.InteractionLocalRemoteGameProxy
 import pt.isec.multiplayerreversi.game.interactors.local.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.remote.InteractionRemotePlayerProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -94,7 +94,7 @@ class WaitingAreaActivity : AppCompatActivity() {
 
                     //TODO 13 put the right player object
                     val profile = Profile("asd")
-                    InteractionRemotePlayerProxy(socket, profile)
+                    InteractionLocalRemoteGameProxy(socket,profile)
                 }.setView(editText)
                 .create()
             dialog.show()

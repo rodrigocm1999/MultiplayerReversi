@@ -5,7 +5,7 @@ import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-abstract class AbstractLocalProxy : InteractionProxy {
+abstract class AbstractCallbacksProxy : InteractionProxy {
 
     protected var _possibleMovesCallback: ((List<Vector>) -> Unit)? = null
     protected var _updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = null

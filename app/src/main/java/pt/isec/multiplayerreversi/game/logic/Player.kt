@@ -1,8 +1,8 @@
 package pt.isec.multiplayerreversi.game.logic
 
 class Player(
-    private val profile: Profile,
-    private val piece: Piece = Piece.Empty,
+    profile: Profile = Profile(),
+    piece: Piece = Piece.Empty,
 ) {
 
     constructor(profile: Profile, piece: Piece, hasUsedBomb: Boolean, hasUsedTrade: Boolean)
@@ -15,12 +15,15 @@ class Player(
         private var playerIdCounter = 0
     }
 
-    private var playerId = playerIdCounter++
+    var playerId = playerIdCounter++
 
+    var profile = profile
+    var piece = piece
     var hasUsedBomb = false
     var hasUsedTrade = false
+    override fun toString(): String {
+        return "Player(playerId=$playerId, profile=$profile, piece=$piece, hasUsedBomb=$hasUsedBomb, hasUsedTrade=$hasUsedTrade)"
+    }
 
-    fun getPlayerId() = playerId
-    fun getProfile() = profile
-    fun getPiece() = piece
+
 }

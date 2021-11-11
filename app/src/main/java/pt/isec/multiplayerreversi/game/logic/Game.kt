@@ -4,13 +4,15 @@ import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 
 class Game(
-    private val sideLength: Int,
-    private val players: List<Player>,
+    sideLength: Int,
+    players: ArrayList<Player>,
     startingPlayer: Player,
 ) {
 
+    private val sideLength = sideLength
     private val board =
         Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]
+    private val players = players
     private var currentPlayer = startingPlayer
     private lateinit var currentPlayerMoves: ArrayList<Vector>
     private var shouldShowPossibleMoves = true
@@ -35,25 +37,25 @@ class Game(
     init {
         when (players.size) {
             2 -> {
-                val p1 = players[0].getPiece()
+                val p1 = players[0].piece
                 board[3][3] = p1
                 board[4][4] = p1
-                val p2 = players[1].getPiece()
+                val p2 = players[1].piece
                 board[4][3] = p2
                 board[3][4] = p2
             }
             3 -> {
-                val p1 = players[0].getPiece()
+                val p1 = players[0].piece
                 board[2][4] = p1
                 board[3][5] = p1
                 board[6][3] = p1
                 board[7][2] = p1
-                val p2 = players[1].getPiece()
+                val p2 = players[1].piece
                 board[3][4] = p2
                 board[2][5] = p2
                 board[6][6] = p2
                 board[7][7] = p2
-                val p3 = players[2].getPiece()
+                val p3 = players[2].piece
                 board[6][2] = p3
                 board[7][3] = p3
                 board[7][6] = p3
@@ -89,11 +91,11 @@ class Game(
             var highestScoreId = -1
             var highestScore = -1
             players.forEach {
-                val score = countPieces(it.getPiece())
+                val score = countPieces(it.piece)
                 playersStats.add(PlayerEndStats(it, score))
 
                 if (score > highestScore) {
-                    highestScoreId = it.getPlayerId()
+                    highestScoreId = it.playerId
                     highestScore = score
                 } else if (score == highestScore) {
                     highestScoreId = -1
@@ -125,7 +127,7 @@ class Game(
             nextPlayer = getNext(nextPlayer, players)
             if (nextPlayer == currentPlayer)
                 break
-            val piece = nextPlayer.getPiece()
+            val piece = nextPlayer.piece
 
             for (column in 0 until sideLength) {
                 for (line in 0 until sideLength) {
@@ -143,7 +145,7 @@ class Game(
     private fun sendEventsAfterPlay() {
         propertyChange.firePropertyChange(updateBoardEvent, null, board)
         propertyChange
-            .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.getPlayerId())
+            .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.playerId)
         if (shouldShowPossibleMoves)
             propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
     }
@@ -153,7 +155,7 @@ class Game(
     private fun executePlayAt(line: Int, column: Int): Boolean {
         if (board[line][column] != Piece.Empty) return false
 
-        val currPlayerPiece = currentPlayer.getPiece()
+        val currPlayerPiece = currentPlayer.piece
 
         for (offset in directions) {
             val currPos = Vector(column, line)
@@ -188,7 +190,7 @@ class Game(
     }
 
     private fun updatePossibleMovesForPlayer() {
-        val piece = currentPlayer.getPiece()
+        val piece = currentPlayer.piece
         currentPlayerMoves = ArrayList(20)
         for (column in 0 until sideLength) {
             for (line in 0 until sideLength) {
@@ -230,7 +232,7 @@ class Game(
     }
 
     fun playBombPiece(player: Player, line: Int, column: Int): Boolean {
-        if (board[line][column] != player.getPiece() || player.hasUsedBomb) {
+        if (board[line][column] != player.piece || player.hasUsedBomb) {
             return false
         }
         board[line][column] = Piece.Empty
@@ -258,4 +260,5 @@ class Game(
 
     fun removeListener(listener: PropertyChangeListener) =
         propertyChange.removePropertyChangeListener(listener)
+
 }

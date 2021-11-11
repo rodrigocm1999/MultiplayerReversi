@@ -53,9 +53,9 @@ class GameActivity : AppCompatActivity() {
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@setChangePlayerCallback
             }
-            binding.tvPlayerName.text = player.getProfile().name
-            binding.imgViewCurrentPlayer.background = player.getProfile().icon
-            binding.imgViewCurrentPlayerPiece.background = when (player.getPiece()) {
+            binding.tvPlayerName.text = player.profile.name
+            binding.imgViewCurrentPlayer.background = player.profile.icon
+            binding.imgViewCurrentPlayerPiece.background = when (player.piece) {
                 Piece.Dark -> darkPiece
                 Piece.Light -> lightPiece
                 Piece.Blue -> bluePiece
@@ -70,9 +70,9 @@ class GameActivity : AppCompatActivity() {
         proxy.setGameFinishedCallback {
             Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
             val playerStats =
-                it.playerStats.find { p -> p.player.getPlayerId() == it.winningPlayerId }
+                it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
             if (playerStats != null) {
-                Toast.makeText(this, "${playerStats.player.getProfile().name} " +
+                Toast.makeText(this, "${playerStats.player.profile.name} " +
                         "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()

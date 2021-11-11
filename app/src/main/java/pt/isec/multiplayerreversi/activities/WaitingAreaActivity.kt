@@ -10,8 +10,8 @@ import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
-import pt.isec.multiplayerreversi.game.interactors.local.InteractionLocalRemoteGameProxy
 import pt.isec.multiplayerreversi.game.interactors.local.LocalOnline
+import pt.isec.multiplayerreversi.game.interactors.local.LocalRemoteGameProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -20,6 +20,7 @@ import pt.isec.multiplayerreversi.listeningPort
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
+import kotlin.coroutines.*
 
 class WaitingAreaActivity : AppCompatActivity() {
 
@@ -33,6 +34,8 @@ class WaitingAreaActivity : AppCompatActivity() {
         binding = ActivityWaitingAreaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val app = application as App
+
         players = ArrayList(3)
         players.add(Player(Profile("Futuro nome do player"), Piece.Light))
         //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
@@ -45,10 +48,10 @@ class WaitingAreaActivity : AppCompatActivity() {
                     val player = getItem(position)
 
                     view.findViewById<TextView>(R.id.textViewPlayerName).apply {
-                        this.text = player.getProfile().name
+                        this.text = player.profile.name
                     }
                     view.findViewById<ImageView>(R.id.imgViewPlayerPiece).apply {
-                        val resource = when (player.getPiece()) {
+                        val resource = when (player.piece) {
                             Piece.Dark -> R.drawable.piece_dark
                             Piece.Light -> R.drawable.piece_light
                             Piece.Blue -> R.drawable.piece_blue
@@ -68,7 +71,7 @@ class WaitingAreaActivity : AppCompatActivity() {
             }
         binding.playersListView.adapter = adapter
 
-        connectionsWelcomer = ConnectionsWelcomer {
+        connectionsWelcomer = ConnectionsWelcomer(players) {
             players.add(it.getOwnPlayer())
             adapter.notifyDataSetChanged()
         }
@@ -77,24 +80,36 @@ class WaitingAreaActivity : AppCompatActivity() {
 
         binding.btnJoinGame.setOnClickListener {
             //TODO 5 juntar a um jogo
-            val editText = EditText(this)
+            val editText = EditText(this).apply {
+                this.isSingleLine = true
+            }
             val dialog = AlertDialog.Builder(this)
                 .setCancelable(true)
                 .setTitle(R.string.enter_address)
                 .setNegativeButton(R.string.cancel) { d, _ -> d.dismiss() }
                 .setPositiveButton(R.string.join) { _, _ ->
-                    val address = InetSocketAddress(editText.text.toString(), listeningPort)
-                    val socket = Socket()
-                    try {
-                        socket.connect(address, 2000)
-                    } catch (e: SocketTimeoutException) {
-                        Toast.makeText(this, R.string.failed_to_connect, Toast.LENGTH_LONG).show()
-                        return@setPositiveButton
-                    }
+                    val t = Thread {
+                        val address = InetSocketAddress(editText.text.toString(), listeningPort)
+                        val socket = Socket()
+                        try {
+                            socket.connect(address, 2000)
 
-                    //TODO 13 put the right player object
-                    val profile = Profile("asd")
-                    InteractionLocalRemoteGameProxy(socket,profile)
+                            //TODO 13 put the right player object
+                            val profile = Profile("asd")
+                            val proxy = LocalRemoteGameProxy(socket, profile)
+                            app.interaction = proxy
+                            runOnUiThread {
+                                players = proxy.getPlayers()
+                                adapter.notifyDataSetChanged()
+                            }
+                        } catch (e: SocketTimeoutException) {
+                            Toast.makeText(this, R.string.failed_to_connect, Toast.LENGTH_LONG)
+                                .show()
+                            return@Thread
+                        }
+                    }
+                    t.isDaemon = false
+                    t.start()
                 }.setView(editText)
                 .create()
             dialog.show()

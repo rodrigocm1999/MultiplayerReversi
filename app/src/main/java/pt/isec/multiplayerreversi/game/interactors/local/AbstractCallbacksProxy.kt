@@ -15,7 +15,7 @@ abstract class AbstractCallbacksProxy : InteractionProxy {
 
     //TODO 20 detach from game all the callbacks
 
-    override fun getPlayerById(id: Int) = getPlayers().find { p -> p.getPlayerId() == id }
+    override fun getPlayerById(id: Int) = getPlayers().find { p -> p.playerId == id }
 
     override fun setPossibleMovesCallBack(consumer: (List<Vector>) -> Unit) {
         _possibleMovesCallback = consumer

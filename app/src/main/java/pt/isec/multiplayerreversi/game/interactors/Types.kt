@@ -2,12 +2,16 @@ package pt.isec.multiplayerreversi.game.interactors
 
 class JsonTypes {
     companion object {
-        val ASK_CAN_ENTER = 0
-        val END_PROFILE = 1
-        val GAME_STARTED = 2
-        val NORMAL_PLAY = 3
-        val BOMB_PLAY = 4
-        val TRADE_PLAY = 5
-        val GAME_FINISHED = 5
+        val DATA = "data"
+        val CAN_ENTER = "enter"
+        val PLAYERS = "players"
+        val PLAYER_IDS = "ids"
+        val SEND_PROFILE = "profile"
+        val GAME_STARTED = "started"
+        val BOARD = "board"
+        val NORMAL_PLAY = "normal_play"
+        val BOMB_PLAY = "bomb_play"
+        val TRADE_PLAY = "trade_play"
+        val GAME_FINISHED = "finished"
     }
 }

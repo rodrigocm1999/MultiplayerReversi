@@ -2,7 +2,6 @@ package pt.isec.multiplayerreversi
 
 import android.app.Application
 import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
-import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Game
 
 const val OURTAG = "reversiTag"

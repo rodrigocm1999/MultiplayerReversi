@@ -3,10 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_blue.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_dark.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_light.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_possible.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_possible_blue.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/piece_possible_white.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces_with.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20520833333333333" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.271286231884058" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.25407608695652173" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.36666666666666664" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3828125" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="6.0" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1962962962962963" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/piece_blue.xml" value="0.2942708333333333" />

@@ -32,9 +32,14 @@ open class Local1V1Interaction(protected val game: Game) : AbstractCallbacksProx
         game.playBombPiece(getOwnPlayer(), line, column)
     }
 
+    override fun playTrade(tradePieces: java.util.ArrayList<Vector>) {
+        game.playTrade(tradePieces)
+    }
+
     override fun getPlayers() = game.getPlayers()
 
     override fun getOwnPlayer() = game.getCurrentPlayer()
+    override fun getGameBoard()= game.getBoard()
 
     override fun getGameSideLength() = game.getSideLength()
 }

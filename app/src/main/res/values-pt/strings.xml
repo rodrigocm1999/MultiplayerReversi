@@ -20,5 +20,6 @@
     <string name="failed_to_connect">Falha ao conectar ao endereço</string>
     <string name="already_use_trade_move">Ja utilizou a jogada de troca</string>
     <string name="already_use_bomb_piece">Ja utilizou a peça bomba</string>
+    <string name="save">Guardar</string>
 
 </resources>

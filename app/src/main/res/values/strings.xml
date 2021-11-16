@@ -20,4 +20,5 @@
     <string name="failed_to_connect">Failed to connect to address</string>
     <string name="already_use_trade_move">You have already use the trade move</string>
     <string name="already_use_bomb_piece">You have already use the bomb</string>
+    <string name="save">Save</string>
 </resources>

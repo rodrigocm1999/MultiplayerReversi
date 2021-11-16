@@ -20,6 +20,8 @@
             android:layout_gravity="center"
             android:minWidth="200dp"
             android:minHeight="200dp"
+            android:maxHeight="200dp"
+            android:maxWidth="200dp"
             android:src="@drawable/avatar_icon" />
 
         <TextView

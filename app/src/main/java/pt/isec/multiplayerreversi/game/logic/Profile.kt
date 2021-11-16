@@ -6,6 +6,8 @@ class Profile(
     var name: String = "",
     var icon: Drawable? = null,
 ) {
+    var imagePath: String? = null
+
     // TODO add the photo somehow
     override fun toString(): String {
         return "Profile(name='$name', icon=$icon)"

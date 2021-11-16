@@ -21,6 +21,8 @@ class LauncherActivity : AppCompatActivity() {
         binding = ActivityLaucherBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
         binding.avatarIcon.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)

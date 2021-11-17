@@ -122,7 +122,7 @@ class EditProfileActivity : AppCompatActivity() {
                 bitmap = ImageUtils.loadImage(it)
                 removeTempImgFile()
                 bitmap = bitmap.scale(600, 800)
-                binding.imgBtnProfileChange.setImageBitmap(bitmap)
+                runOnUiThread { binding.imgBtnProfileChange.setImageBitmap(bitmap) }
             }
         }
     }

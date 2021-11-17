@@ -22,19 +22,16 @@ class LauncherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLaucherBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         app = application as App
+        setListeners()
+    }
 
-        val profile = app.getProfile()
-
-        profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
+    private fun setListeners() {
         binding.avatarIcon.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
-
         binding.btnLocal.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)
 
@@ -47,7 +44,6 @@ class LauncherActivity : AppCompatActivity() {
             app.interaction = Local1V1Interaction(game)
             startActivity(intent)
         }
-
         binding.btnRemote.setOnClickListener {
             val profile = app.getProfile()
             if (profile.name.isBlank()) {
@@ -57,7 +53,11 @@ class LauncherActivity : AppCompatActivity() {
             val intent = Intent(this, WaitingAreaActivity::class.java)
             startActivity(intent)
         }
-
     }
 
+    override fun onStart() {
+        super.onStart()
+        val profile = app.getProfile()
+        profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
+    }
 }

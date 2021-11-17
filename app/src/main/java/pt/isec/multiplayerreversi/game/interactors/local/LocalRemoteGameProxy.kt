@@ -15,7 +15,6 @@ import java.util.*
 class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     AbstractNetworkingProxy(socket), Closeable {
 
-
     private lateinit var board: Array<Array<Piece>>
 
     init {
@@ -40,6 +39,7 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
 
         } catch (e: SocketException) {
             Log.i(OURTAG, "Socket was close while creating LocalRemoteGameProxy")
+            throw e
         }
     }
 
@@ -55,9 +55,7 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
         TODO("Not yet implemented")
     }
 
-    override fun getGameBoard(): Array<Array<Piece>> {
-        TODO("Not yet implemented")
-    }
+    override fun getGameBoard() = board
 
 
 }

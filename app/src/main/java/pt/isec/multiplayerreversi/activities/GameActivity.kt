@@ -28,7 +28,7 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityGameBinding.inflate(layoutInflater);
+        binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val displayMetrics = DisplayMetrics()
@@ -115,6 +115,5 @@ class GameActivity : AppCompatActivity() {
 
         //only tell the game to start if this is the game host
         app.game?.start()
-
     }
 }

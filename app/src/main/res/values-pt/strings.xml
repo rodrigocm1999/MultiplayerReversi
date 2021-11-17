@@ -21,5 +21,6 @@
     <string name="already_use_trade_move">Ja utilizou a jogada de troca</string>
     <string name="already_use_bomb_piece">Ja utilizou a peça bomba</string>
     <string name="save">Guardar</string>
+    <string name="need_to_setup_user">Falta preparar a sua conta para jogar online</string>
 
 </resources>

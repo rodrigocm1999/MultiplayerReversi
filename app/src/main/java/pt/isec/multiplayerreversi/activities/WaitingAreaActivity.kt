@@ -1,12 +1,14 @@
 package pt.isec.multiplayerreversi.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
@@ -19,7 +21,7 @@ import pt.isec.multiplayerreversi.game.logic.Player
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
-import kotlin.coroutines.*
+import kotlin.concurrent.thread
 
 class WaitingAreaActivity : AppCompatActivity() {
 
@@ -73,11 +75,12 @@ class WaitingAreaActivity : AppCompatActivity() {
             players.add(it.getOwnPlayer())
             adapter.notifyDataSetChanged()
         }
+        connectionsWelcomer.start()
+
         //TODO 15 isto tem de parar de pegar ligações durante a execução de um jogo
         //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
 
         binding.btnJoinGame.setOnClickListener {
-            //TODO 5 juntar a um jogo
             val editText = EditText(this).apply {
                 this.isSingleLine = true
             }
@@ -86,13 +89,12 @@ class WaitingAreaActivity : AppCompatActivity() {
                 .setTitle(R.string.enter_address)
                 .setNegativeButton(R.string.cancel) { d, _ -> d.dismiss() }
                 .setPositiveButton(R.string.join) { _, _ ->
-                    val t = Thread {
+                    thread {
                         val address = InetSocketAddress(editText.text.toString(), listeningPort)
                         val socket = Socket()
                         try {
                             socket.connect(address, 2000)
-
-                            //TODO 13 put the right player object
+                            Log.i(OURTAG, "connected socket")
                             val proxy = LocalRemoteGameProxy(socket, app.getProfile())
                             app.interaction = proxy
                             runOnUiThread {
@@ -100,13 +102,12 @@ class WaitingAreaActivity : AppCompatActivity() {
                                 adapter.notifyDataSetChanged()
                             }
                         } catch (e: SocketTimeoutException) {
-                            Toast.makeText(this, R.string.failed_to_connect, Toast.LENGTH_LONG)
-                                .show()
-                            return@Thread
+                            runOnUiThread {
+                                Toast.makeText(this, R.string.failed_to_connect,
+                                    Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
-                    t.isDaemon = false
-                    t.start()
                 }.setView(editText)
                 .create()
             dialog.show()

@@ -14,13 +14,13 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
     AbstractNetworkingProxy(socket), Closeable {
 
     //Sequence:
-    //Host sends current players, and new player ids
+    //Host sends current players
     //Remote send profile
+    //Host send new player Ids
+    //Remote .......
     //TODO host sends update to other players that new player has entered
 
     init {
-        //TODO 10 do the initial handshake, send player name and profile
-
         sendPlayers(connectionsWelcomer.getPlayers())
 
         jsonReader.beginObject()

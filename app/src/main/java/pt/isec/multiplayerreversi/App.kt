@@ -1,13 +1,12 @@
 package pt.isec.multiplayerreversi
 
 import android.app.Application
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Profile
-import java.io.FileNotFoundException
+import java.io.File
 
 
 //To connect to emulator, from remote phone
@@ -15,6 +14,8 @@ import java.io.FileNotFoundException
 //redir add tcp:43338:43338
 
 class App : Application() {
+
+    @Synchronized
     fun getProfile(): Profile {
         if (profile != null)
             return this.profile!!
@@ -22,17 +23,17 @@ class App : Application() {
         val pref = getSharedPreferences("user", MODE_PRIVATE)
         val name = pref.getString("name", "")
         var icon: Drawable? = null
-        try {
+        if (File(avatarPath).exists()) {
             openFileInput(avatarFileName).use {
                 icon = BitmapDrawable(resources, it)
             }
-        } catch (e: FileNotFoundException) {
         }
         val p = Profile(name!!, icon)
         profile = p
         return p
     }
 
+    @Synchronized
     fun saveProfile(p: Profile) {
         val pref = getSharedPreferences("user", MODE_PRIVATE)
         val editor = pref.edit()
@@ -50,9 +51,8 @@ class App : Application() {
         const val listeningPort = 43338
         val avatarFileName: String
             get() = "avatar.jpg"
-
-        fun getAvatarPath(context: Context): String {
-            return context.filesDir.absolutePath + "/" + avatarFileName
-        }
     }
+
+    private val avatarPath: String
+        get() = filesDir.absolutePath + "/" + avatarFileName
 }

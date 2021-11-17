@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.App
-import pt.isec.multiplayerreversi.OURTAG
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
@@ -20,9 +20,11 @@ class GameActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGameBinding
     private var clearPossibleMoves: List<Vector>? = null
 
-    private var darkPiece: Drawable? = null
-    private var lightPiece: Drawable? = null
-    private var bluePiece: Drawable? = null
+    private lateinit var darkPiece: Drawable
+    private lateinit var lightPiece: Drawable
+    private lateinit var bluePiece: Drawable
+
+    private lateinit var gameLayout: GameGrid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +38,13 @@ class GameActivity : AppCompatActivity() {
         val proxy = app.interaction
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
-        val gameLayout = GameGrid(
+        gameLayout = GameGrid(
             this, binding.gridContainer, displayMetrics,
-            layoutInflater, proxy.getGameSideLength(), proxy
-        )
+            layoutInflater, proxy.getGameSideLength(), proxy)
 
-        darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)
-        lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)
-        bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)
+        darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)!!
+        lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)!!
+        bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)!!
 
         proxy.setChangePlayerCallback { id ->
             val player = proxy.getPlayerById(id)
@@ -81,7 +82,8 @@ class GameActivity : AppCompatActivity() {
         binding.btnBombPiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedBomb -> {
-                    Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT)
+                        .show()
                 }
                 gameLayout.isUsingBombPiece -> {
                     gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
@@ -97,7 +99,8 @@ class GameActivity : AppCompatActivity() {
         binding.btnTradePiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedTrade -> {
-                    Toast.makeText(this, R.string.already_use_trade_move, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.already_use_trade_move, Toast.LENGTH_SHORT)
+                        .show()
                 }
                 gameLayout.isUsingTrade -> {
                     gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
@@ -112,5 +115,6 @@ class GameActivity : AppCompatActivity() {
 
         //only tell the game to start if this is the game host
         app.game?.start()
+
     }
 }

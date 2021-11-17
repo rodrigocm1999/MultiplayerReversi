@@ -27,17 +27,21 @@ class GameGrid(
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
-    private val darkPiece = AppCompatResources.getDrawable(context, R.drawable.piece_dark)
+    private var possibleMoves: List<Vector>? = null
 
-    private val lightPiece = AppCompatResources.getDrawable(context, R.drawable.piece_light)
-    private val bluePiece = AppCompatResources.getDrawable(context, R.drawable.piece_blue)
+
+    private val darkPiece =
+        AppCompatResources.getDrawable(context, R.drawable.piece_dark)
+    private val lightPiece =
+        AppCompatResources.getDrawable(context, R.drawable.piece_light)
+    private val bluePiece =
+        AppCompatResources.getDrawable(context, R.drawable.piece_blue)
     private val possiblePieceDark =
         AppCompatResources.getDrawable(context, R.drawable.piece_possible_black)
     private val possiblePieceLight =
         AppCompatResources.getDrawable(context, R.drawable.piece_possible_white)
     private val possiblePieceBlue =
         AppCompatResources.getDrawable(context, R.drawable.piece_possible_blue)
-    private var possibleMoves: List<Vector>? = null
 
     var isUsingBombPiece = false
     var isUsingTrade = false

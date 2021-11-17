@@ -7,6 +7,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
+import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
@@ -15,8 +16,6 @@ import pt.isec.multiplayerreversi.game.interactors.local.LocalRemoteGameProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
-import pt.isec.multiplayerreversi.game.logic.Profile
-import pt.isec.multiplayerreversi.listeningPort
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
@@ -37,8 +36,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val app = application as App
 
         players = ArrayList(3)
-        players.add(Player(Profile("Futuro nome do player"), Piece.Light))
-        //TODO 20 por o nome do player, ainda temos de ver onde guardar o player
+        players.add(Player(app.getProfile(), Piece.Light))
 
         val adapter =
             object : BaseAdapter() {
@@ -60,8 +58,8 @@ class WaitingAreaActivity : AppCompatActivity() {
                         this.setImageResource(resource)
                     }
                     view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
-                        this.setImageResource(R.drawable.avatar_icon)
-                    }//TODO 16 meter o icone do utilizador
+                        this.setImageDrawable(player.profile.icon)
+                    }
                     return view
                 }
 
@@ -95,8 +93,7 @@ class WaitingAreaActivity : AppCompatActivity() {
                             socket.connect(address, 2000)
 
                             //TODO 13 put the right player object
-                            val profile = Profile("asd")
-                            val proxy = LocalRemoteGameProxy(socket, profile)
+                            val proxy = LocalRemoteGameProxy(socket, app.getProfile())
                             app.interaction = proxy
                             runOnUiThread {
                                 players = proxy.getPlayers()
@@ -115,7 +112,6 @@ class WaitingAreaActivity : AppCompatActivity() {
             dialog.show()
         }
 
-        //TODO 0 perguntar acerca da gestão do histório de resultados
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
         //TODO 100 alterar a fonte
         //TODO 80 alterar o icon

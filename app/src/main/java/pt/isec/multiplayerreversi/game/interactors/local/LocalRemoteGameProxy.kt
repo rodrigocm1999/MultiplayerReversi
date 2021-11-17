@@ -2,7 +2,7 @@ package pt.isec.multiplayerreversi.game.interactors.local
 
 import android.util.Log
 import pt.isec.multiplayerreversi.AbstractNetworkingProxy
-import pt.isec.multiplayerreversi.OURTAG
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile

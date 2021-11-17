@@ -3,7 +3,7 @@ package pt.isec.multiplayerreversi.game.interactors.local
 import pt.isec.multiplayerreversi.game.interactors.remote.RemotePlayerProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
-import pt.isec.multiplayerreversi.listeningPort
+import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import java.io.Closeable
 import java.net.ServerSocket
 

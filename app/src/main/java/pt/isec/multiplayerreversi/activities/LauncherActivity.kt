@@ -2,6 +2,7 @@ package pt.isec.multiplayerreversi.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
@@ -15,6 +16,7 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 class LauncherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLaucherBinding
+    private lateinit var app: App
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +25,11 @@ class LauncherActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        app = application as App
 
+        val profile = app.getProfile()
+
+        profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
         binding.avatarIcon.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
@@ -36,7 +42,6 @@ class LauncherActivity : AppCompatActivity() {
             players.add(Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark))
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
-            val app = application as App
             val game = Game(8, players, players.random())
             app.game = game
             app.interaction = Local1V1Interaction(game)
@@ -44,13 +49,15 @@ class LauncherActivity : AppCompatActivity() {
         }
 
         binding.btnRemote.setOnClickListener {
+            val profile = app.getProfile()
+            if (profile.name.isBlank()) {
+                Toast.makeText(this, R.string.need_to_setup_user, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             val intent = Intent(this, WaitingAreaActivity::class.java)
-            intent.putExtra("playerAmount", 2)
             startActivity(intent)
         }
 
-        //TODO 100 mudar drawable para icon do utilizador
-        //TODO 10000 fazer logo com a pixa
     }
 
 }

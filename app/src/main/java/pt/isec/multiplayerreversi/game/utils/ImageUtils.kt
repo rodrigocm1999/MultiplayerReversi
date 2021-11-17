@@ -1,7 +1,9 @@
 package pt.isec.multiplayerreversi.game.utils
 
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import android.widget.ImageView
 import androidx.core.graphics.drawable.toDrawable
@@ -21,15 +23,18 @@ object ImageUtils {
         val photoW = bmpOptions.outWidth
         val photoH = bmpOptions.outHeight
         val scale = max(1, min(photoW / targetW, photoH / targetH))
-
         bmpOptions.inSampleSize = scale
         bmpOptions.inJustDecodeBounds = false
         val bitmap = BitmapFactory.decodeFile(path, bmpOptions)
 
-        when {
-            view is ImageView -> (view as ImageView).setImageBitmap(bitmap)
+        when (view) {
+            is ImageView -> view.setImageBitmap(bitmap)
             else -> view.background = bitmap.toDrawable(view.resources)
-            //else -> view.background = BitmapDrawable(view.resources,bitmap)
         }
     }
+
+    fun loadImage(path: String): Bitmap {
+        return BitmapFactory.decodeFile(path)
+    }
+
 }

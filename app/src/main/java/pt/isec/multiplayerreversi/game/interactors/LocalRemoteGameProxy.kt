@@ -19,10 +19,11 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     init {
         //TODO 10 do the initial handshake, receive profile
         _player = Player(profile)
+        _players.add(_player)
 
         try {
             beginRead()
-            _players = readPlayers()
+            _players.addAll(readPlayers())
             println(_players)
             endRead()
 

@@ -21,7 +21,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     protected lateinit var jsonReader: JsonReader  // JsonReader(osr)
 
     protected lateinit var _player: Player
-    protected lateinit var _players: ArrayList<Player>
+    protected val _players = ArrayList<Player>(3)
     protected var _gameSideLength = -1
 
 
@@ -208,12 +208,14 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     }
 
     protected fun readPlayerIds(player: Player) {
-        do {
+        jsonReader.beginObject()
+        while (jsonReader.hasNext()) {
             when (jsonReader.nextName()) {
                 "id" -> player.playerId = jsonReader.nextInt()
                 "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
             }
-        } while (jsonReader.hasNext())
+        }
+        jsonReader.endObject()
     }
 
     private fun encodeDrawableToString(drawable: Drawable): String {

@@ -23,17 +23,16 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
         writePlayers(connectionsWelcomer.getPlayers())
         endSend()
 
-        jsonReader.beginObject()
+        beginRead()
         val newPlayer = Player()
         readPlayer(newPlayer)
         //Player object gets its fields filled up
         connectionsWelcomer.joinPlayer(newPlayer)
-        jsonReader.endObject()
+        endRead()
 
         beginSend()
         writePlayerIds(newPlayer.playerId, newPlayer.piece)
         endSend()
-//        sendPlayerIds(newPlayer.playerId, newPlayer.piece)
 
         println(newPlayer)
 

@@ -178,6 +178,15 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
         jsonWriter.flush()
     }
 
+    protected fun beginRead(){
+        jsonReader.beginObject()
+        jsonReader.nextName()
+    }
+
+    protected fun endRead(){
+        jsonReader.endObject()
+    }
+
 
     protected fun sendPlayerIds(id: Int, piece: Piece) {
         jsonWriter.beginObject()

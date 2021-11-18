@@ -45,9 +45,10 @@ class WaitingAreaActivity : AppCompatActivity() {
         binding.playersListView.adapter = adapter
 
         connectionsWelcomer = ConnectionsWelcomer(players) {
-            players.add(it.getOwnPlayer())
-            adapter.notifyDataSetChanged()
-            binding.btnStartGame.isEnabled = true
+            runOnUiThread {
+                adapter.notifyDataSetChanged()
+                binding.btnStartGame.isEnabled = true
+            }
         }
 
         //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
@@ -69,9 +70,6 @@ class WaitingAreaActivity : AppCompatActivity() {
                             Log.i(OURTAG, "connected socket")
                             val proxy = LocalRemoteGameProxy(socket, app.getProfile())
                             app.proxy = proxy
-//                            runOnUiThread {
-//                                players = proxy.getPlayers()
-//                                adapter.notifyDataSetChanged()}
                             finish()
                             val intent = Intent(this, WaitingAreaRemoteActivity::class.java)
                             startActivity(intent)

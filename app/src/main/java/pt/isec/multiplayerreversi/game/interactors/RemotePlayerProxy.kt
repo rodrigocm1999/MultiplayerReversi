@@ -24,18 +24,18 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
         endSend()
 
         beginRead()
-        val newPlayer = Player()
-        readPlayer(newPlayer)
-        println(newPlayer)
+        _player = Player()
+        readPlayer(_player)
+        println(_player)
         //Player object gets its fields filled up
-        connectionsWelcomer.joinPlayer(newPlayer)
+        connectionsWelcomer.joinPlayer(_player)
         endRead()
 
         beginSend()
-        writePlayerIds(newPlayer.playerId, newPlayer.piece)
+        writePlayerIds(_player.playerId, _player.piece)
         endSend()
 
-        println(newPlayer)
+        println(_player)
 
         //TODO 20 update other clients with the new remote on their list
     }

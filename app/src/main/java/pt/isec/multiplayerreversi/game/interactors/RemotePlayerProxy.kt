@@ -5,7 +5,7 @@ import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Vector
 import java.io.Closeable
 import java.net.Socket
-import java.util.ArrayList
+import java.util.*
 
 
 open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWelcomer) :
@@ -26,6 +26,7 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
         beginRead()
         val newPlayer = Player()
         readPlayer(newPlayer)
+        println(newPlayer)
         //Player object gets its fields filled up
         connectionsWelcomer.joinPlayer(newPlayer)
         endRead()

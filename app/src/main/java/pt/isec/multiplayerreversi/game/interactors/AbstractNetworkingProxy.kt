@@ -15,9 +15,10 @@ import java.net.Socket
 abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCallbacksProxy(),
     GamePlayer, Closeable {
 
-
-    protected val jsonWriter: JsonWriter = JsonWriter(OutputStreamWriter(socket.getOutputStream()))
-    protected val jsonReader: JsonReader = JsonReader(InputStreamReader(socket.getInputStream()))
+    protected val osw = OutputStreamWriter(socket.getOutputStream())
+    protected val osr = InputStreamReader(socket.getInputStream())
+    protected lateinit var jsonWriter: JsonWriter // JsonWriter(osw)
+    protected lateinit var jsonReader: JsonReader  // JsonReader(osr)
 
     protected lateinit var _player: Player
     protected lateinit var _players: ArrayList<Player>
@@ -168,22 +169,24 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
         jsonReader.endObject()
     }
 
-    protected fun beginSend(){
+    protected fun beginSend() {
+        jsonWriter = JsonWriter(osw)
         jsonWriter.beginObject()
         jsonWriter.name(JsonTypes.DATA)
     }
 
-    protected fun endSend(){
+    protected fun endSend() {
         jsonWriter.endObject()
         jsonWriter.flush()
     }
 
-    protected fun beginRead(){
+    protected fun beginRead() {
+        jsonReader = JsonReader(osr)
         jsonReader.beginObject()
         jsonReader.nextName()
     }
 
-    protected fun endRead(){
+    protected fun endRead() {
         jsonReader.endObject()
     }
 

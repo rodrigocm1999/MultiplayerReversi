@@ -22,5 +22,8 @@
     <string name="already_use_bomb_piece">Ja utilizou a peça bomba</string>
     <string name="save">Guardar</string>
     <string name="need_to_setup_user">Falta preparar a sua conta para jogar online</string>
+    <string name="waiting_area">Sala de espera</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="waiting_for_host">Em espera</string>
 
 </resources>

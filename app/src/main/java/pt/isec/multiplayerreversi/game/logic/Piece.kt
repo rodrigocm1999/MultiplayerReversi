@@ -2,8 +2,8 @@ package pt.isec.multiplayerreversi.game.logic
 
 enum class Piece(val char: Char) {
     Empty(' '),
-    Dark('y'),
     Light('x'),
+    Dark('y'),
     Blue('z');
     //TODO 40 mostrar o caracter na peça
 

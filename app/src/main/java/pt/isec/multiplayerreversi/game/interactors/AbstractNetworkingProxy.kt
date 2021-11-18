@@ -116,16 +116,18 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
 
     protected fun readPlayer(player: Player) {
         jsonReader.beginObject()
-        when (jsonReader.nextName()) {
-            "id" -> player.playerId = jsonReader.nextInt()
-            "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
-            "name" -> player.profile.name = jsonReader.nextString()
-            "image" -> {
-                val encodedImg = jsonReader.nextString()
-                var image: Drawable? = null
-                if (encodedImg != null)
-                    image = decodeDrawableFromString(encodedImg)
-                player.profile.icon = image
+        while (jsonReader.hasNext()) {
+            when (jsonReader.nextName()) {
+                "id" -> player.playerId = jsonReader.nextInt()
+                "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
+                "name" -> player.profile.name = jsonReader.nextString()
+                "image" -> {
+                    val encodedImg = jsonReader.nextString()
+                    var image: Drawable? = null
+                    if (encodedImg != null)
+                        image = decodeDrawableFromString(encodedImg)
+                    player.profile.icon = image
+                }
             }
         }
         jsonReader.endObject()
@@ -164,6 +166,16 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
             }
         }
         jsonReader.endObject()
+    }
+
+    protected fun beginSend(){
+        jsonWriter.beginObject()
+        jsonWriter.name(JsonTypes.DATA)
+    }
+
+    protected fun endSend(){
+        jsonWriter.endObject()
+        jsonWriter.flush()
     }
 
 

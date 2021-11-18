@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
@@ -20,7 +21,6 @@ import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityEditProfileBinding
 import pt.isec.multiplayerreversi.game.logic.Profile
-import pt.isec.multiplayerreversi.game.utils.ImageUtils
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -119,7 +119,7 @@ class EditProfileActivity : AppCompatActivity() {
         thread {
             changedImage = true
             newImageFile?.absolutePath?.let {
-                bitmap = ImageUtils.loadImage(it)
+                bitmap = BitmapFactory.decodeFile(it)
                 removeTempImgFile()
                 bitmap = bitmap.scale(600, 800)
                 runOnUiThread { binding.imgBtnProfileChange.setImageBitmap(bitmap) }

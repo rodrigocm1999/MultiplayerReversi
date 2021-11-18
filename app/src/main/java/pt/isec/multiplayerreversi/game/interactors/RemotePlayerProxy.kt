@@ -19,7 +19,9 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
     //TODO host sends update to other players that new player has entered
 
     init {
-        sendPlayers(connectionsWelcomer.getPlayers())
+        beginSend()
+        writePlayers(connectionsWelcomer.getPlayers())
+        endSend()
 
         jsonReader.beginObject()
         val newPlayer = Player()
@@ -28,7 +30,10 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
         connectionsWelcomer.joinPlayer(newPlayer)
         jsonReader.endObject()
 
-        sendPlayerIds(newPlayer.playerId, newPlayer.piece)
+        beginSend()
+        writePlayerIds(newPlayer.playerId, newPlayer.piece)
+        endSend()
+//        sendPlayerIds(newPlayer.playerId, newPlayer.piece)
 
         println(newPlayer)
 

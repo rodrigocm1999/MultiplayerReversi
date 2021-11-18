@@ -22,11 +22,14 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
 
         try {
             jsonReader.beginObject()
+            jsonReader.nextName()
             _players = readPlayers()
             println(_players)
             jsonReader.endObject()
 
-            sendProfile(profile)
+            beginSend()
+            writeProfile(profile)
+            endSend()
 
             //Player object gets its fields filled up
             jsonReader.beginObject()

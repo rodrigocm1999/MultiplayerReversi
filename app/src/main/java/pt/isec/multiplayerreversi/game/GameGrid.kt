@@ -12,7 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
@@ -23,7 +23,7 @@ class GameGrid(
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
     private val boardSideLength: Int,
-    private val interactionProxy: InteractionProxy,
+    private val gamePlayer: GamePlayer,
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
@@ -64,15 +64,15 @@ class GameGrid(
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
                 view.setOnClickListener {
                     when {
-                        isUsingBombPiece -> interactionProxy.playBomb(line, column)
+                        isUsingBombPiece -> gamePlayer.playBomb(line, column)
                         isUsingTrade -> {
                             addPieceToTrade(line, column)
                             if (tradePieces.size == 3) {
-                                interactionProxy.playTrade(tradePieces)
+                                gamePlayer.playTrade(tradePieces)
                                 tradePieces.clear()
                             }
                         }
-                        else -> interactionProxy.playAt(line, column)
+                        else -> gamePlayer.playAt(line, column)
                     }
                 }
 
@@ -82,11 +82,11 @@ class GameGrid(
             }
         }
 
-        interactionProxy.setUpdateBoardEvent {
+        gamePlayer.setBoardUpdatedCallback {
             updatePieces(it)
         }
-        interactionProxy.setPossibleMovesCallBack {
-            showPossibleMoves(it, interactionProxy.getOwnPlayer().piece)
+        gamePlayer.setPossibleMovesCallback {
+            showPossibleMoves(it, gamePlayer.getOwnPlayer().piece)
         }
     }
 
@@ -139,8 +139,8 @@ class GameGrid(
     }
 
     private fun addPieceToTrade(line: Int, column: Int) {
-        val playerPiece = interactionProxy.getOwnPlayer().piece
-        val boardPiece = interactionProxy.getGameBoard()[line][column]
+        val playerPiece = gamePlayer.getOwnPlayer().piece
+        val boardPiece = gamePlayer.getGameBoard()[line][column]
         println(playerPiece)
         println(boardPiece)
 

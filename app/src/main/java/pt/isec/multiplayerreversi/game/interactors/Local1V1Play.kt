@@ -1,11 +1,11 @@
-package pt.isec.multiplayerreversi.game.interactors.local
+package pt.isec.multiplayerreversi.game.interactors
 
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-open class Local1V1Interaction(protected val game: Game) : AbstractCallbacksProxy() {
+open class Local1V1Play(protected val game: Game) : AbstractCallbacksProxy(), GamePlayer {
 
     init {
         game.registerListener(Game.showMovesEvent) {
@@ -32,14 +32,12 @@ open class Local1V1Interaction(protected val game: Game) : AbstractCallbacksProx
         game.playBombPiece(getOwnPlayer(), line, column)
     }
 
-    override fun playTrade(tradePieces: java.util.ArrayList<Vector>) {
+    override fun playTrade(tradePieces: ArrayList<Vector>) {
         game.playTrade(tradePieces)
     }
 
     override fun getPlayers() = game.getPlayers()
-
     override fun getOwnPlayer() = game.getCurrentPlayer()
-    override fun getGameBoard()= game.getBoard()
-
+    override fun getGameBoard() = game.getBoard()
     override fun getGameSideLength() = game.getSideLength()
 }

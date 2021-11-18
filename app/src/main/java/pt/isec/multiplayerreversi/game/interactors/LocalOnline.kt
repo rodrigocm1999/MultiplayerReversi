@@ -1,9 +1,9 @@
-package pt.isec.multiplayerreversi.game.interactors.local
+package pt.isec.multiplayerreversi.game.interactors
 
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Player
 
-class LocalOnline(game: Game, private val player: Player) : Local1V1Interaction(game) {
+class LocalOnline(game: Game, private val player: Player) : Local1V1Play(game) {
 
     override fun getOwnPlayer() = player
 }

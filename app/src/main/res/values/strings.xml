@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">MultiplayerReversi</string>
+    <string name="app_name" translatable="false">Multiplayer Reversi</string>
     <string name="local_1v1">Local</string>
     <string name="remote">Remote</string>
     <string name="notYetImplemented">Not yet implemented</string>
@@ -22,4 +22,7 @@
     <string name="already_use_bomb_piece">You have already use the bomb</string>
     <string name="save">Save</string>
     <string name="need_to_setup_user">Need to setup user to play online</string>
+    <string name="waiting_area">Waiting Room</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="waiting_for_host">Waiting for host</string>
 </resources>

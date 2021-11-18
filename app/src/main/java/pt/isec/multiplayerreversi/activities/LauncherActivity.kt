@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
-import pt.isec.multiplayerreversi.game.interactors.local.Local1V1Interaction
+import pt.isec.multiplayerreversi.game.interactors.Local1V1Play
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -22,7 +22,7 @@ class LauncherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLaucherBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
         app = application as App
         setListeners()
     }
@@ -41,7 +41,7 @@ class LauncherActivity : AppCompatActivity() {
 
             val game = Game(8, players, players.random())
             app.game = game
-            app.interaction = Local1V1Interaction(game)
+            app.proxy = Local1V1Play(game)
             startActivity(intent)
         }
         binding.btnRemote.setOnClickListener {

@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi
+package pt.isec.multiplayerreversi.game.interactors
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -6,8 +6,6 @@ import android.graphics.drawable.Drawable
 import android.util.Base64
 import android.util.JsonReader
 import android.util.JsonWriter
-import pt.isec.multiplayerreversi.game.interactors.JsonTypes
-import pt.isec.multiplayerreversi.game.interactors.local.AbstractCallbacksProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -15,7 +13,7 @@ import java.io.*
 import java.net.Socket
 
 abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCallbacksProxy(),
-    Closeable {
+    GamePlayer, Closeable {
 
 
     protected val jsonWriter: JsonWriter = JsonWriter(OutputStreamWriter(socket.getOutputStream()))

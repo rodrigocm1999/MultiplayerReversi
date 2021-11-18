@@ -1,20 +1,21 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
+import pt.isec.multiplayerreversi.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
-import pt.isec.multiplayerreversi.game.interactors.local.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.local.LocalRemoteGameProxy
+import pt.isec.multiplayerreversi.game.interactors.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.LocalOnline
+import pt.isec.multiplayerreversi.game.interactors.LocalRemoteGameProxy
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -31,53 +32,24 @@ class WaitingAreaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityWaitingAreaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = getString(R.string.waiting_area)
 
         val app = application as App
 
         players = ArrayList(3)
         players.add(Player(app.getProfile(), Piece.Light))
 
-        val adapter =
-            object : BaseAdapter() {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view: View = convertView
-                        ?: layoutInflater.inflate(R.layout.row_waiting_player, parent, false)
-                    val player = getItem(position)
-
-                    view.findViewById<TextView>(R.id.textViewPlayerName).apply {
-                        this.text = player.profile.name
-                    }
-                    view.findViewById<ImageView>(R.id.imgViewPlayerPiece).apply {
-                        val resource = when (player.piece) {
-                            Piece.Dark -> R.drawable.piece_dark
-                            Piece.Light -> R.drawable.piece_light
-                            Piece.Blue -> R.drawable.piece_blue
-                            else -> R.drawable.piece_dark
-                        }
-                        this.setImageResource(resource)
-                    }
-                    view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
-                        this.setImageDrawable(player.profile.icon)
-                    }
-                    return view
-                }
-
-                override fun getCount() = players.size
-                override fun getItem(pos: Int) = players[pos]
-                override fun getItemId(pos: Int): Long = pos.toLong()
-            }
+        val adapter = PlayerListAdapter(this, players)
         binding.playersListView.adapter = adapter
 
         connectionsWelcomer = ConnectionsWelcomer(players) {
             players.add(it.getOwnPlayer())
             adapter.notifyDataSetChanged()
+            binding.btnStartGame.isEnabled = true
         }
-        connectionsWelcomer.start()
 
-        //TODO 15 isto tem de parar de pegar ligações durante a execução de um jogo
         //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
 
         binding.btnJoinGame.setOnClickListener {
@@ -96,11 +68,13 @@ class WaitingAreaActivity : AppCompatActivity() {
                             socket.connect(address, 2000)
                             Log.i(OURTAG, "connected socket")
                             val proxy = LocalRemoteGameProxy(socket, app.getProfile())
-                            app.interaction = proxy
-                            runOnUiThread {
-                                players = proxy.getPlayers()
-                                adapter.notifyDataSetChanged()
-                            }
+                            app.proxy = proxy
+//                            runOnUiThread {
+//                                players = proxy.getPlayers()
+//                                adapter.notifyDataSetChanged()}
+                            finish()
+                            val intent = Intent(this, WaitingAreaRemoteActivity::class.java)
+                            startActivity(intent)
                         } catch (e: SocketTimeoutException) {
                             runOnUiThread {
                                 Toast.makeText(this, R.string.failed_to_connect,
@@ -122,7 +96,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val app = application as App
         val game = Game(8, players, players.random())
         app.game = game
-        app.interaction = LocalOnline(game, players[0])
+        app.proxy = LocalOnline(game, players[0])
     }
 
     override fun onDestroy() {

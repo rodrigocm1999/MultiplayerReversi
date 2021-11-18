@@ -1,33 +1,38 @@
-package pt.isec.multiplayerreversi.game.interactors.local
+package pt.isec.multiplayerreversi.game.interactors
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
-import pt.isec.multiplayerreversi.game.interactors.remote.RemotePlayerProxy
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.io.Closeable
 import java.net.ServerSocket
+import java.net.SocketException
 import kotlin.concurrent.thread
 
 class ConnectionsWelcomer(
     private val players: ArrayList<Player>,
     private val callback: (RemotePlayerProxy) -> Unit,
-) : Thread(), Closeable {
+) : Closeable {
 
     private val serverSocket = ServerSocket(listeningPort)
-    private val shouldClose = false
+    private var shouldClose = false
 
-    override fun run() {
-        super.run()
-        println("Listening for connections")
-        while (!shouldClose) {
-            val socket = serverSocket.accept()
-            Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
+    init {
+        thread {
+            println("Listening for connections")
+            while (!shouldClose) {
+                try {
+                    val socket = serverSocket.accept()
+                    Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
 
-            thread {
-                val p = RemotePlayerProxy(socket, this)
-                callback(p)
+                    thread {
+                        val p = RemotePlayerProxy(socket, this)
+                        callback(p)
+                    }
+                } catch (e: SocketException) {
+                    shouldClose = true
+                }
             }
         }
     }

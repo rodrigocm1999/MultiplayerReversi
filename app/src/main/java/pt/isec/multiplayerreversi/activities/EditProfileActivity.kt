@@ -39,6 +39,7 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = getString(R.string.edit_profile)
 
         app = application as App
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -71,7 +72,6 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun setOnClicks() {
-        binding.btnSaveChanges.setOnClickListener { saveProfile() }
         binding.imgBtnProfileChange.setOnClickListener {
             val imageFile = File.createTempFile("avatar_", ".img",
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES))
@@ -90,10 +90,11 @@ class EditProfileActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+/*
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu?.findItem(R.id.mnSave)?.isVisible = permissionsGranted
         return true
-    }
+    }*/
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
@@ -107,7 +108,6 @@ class EditProfileActivity : AppCompatActivity() {
                         && ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED)
-            binding.imgBtnProfileChange.isEnabled = permissionsGranted
         }
     }
 
@@ -135,18 +135,21 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun saveProfile() {
         finish()
-        thread {
-            val writtenName = binding.etNameChange.text.toString()
-            if (writtenName.isNotBlank() && profile.name != writtenName)
-                profile.name = writtenName
+        val writtenName = binding.etNameChange.text.toString()
+        if (writtenName.isNotBlank() && profile.name != writtenName)
+            profile.name = writtenName
 
-            if (changedImage) {
-                profile.icon = BitmapDrawable(resources, bitmap)
+        if (changedImage)
+            profile.icon = BitmapDrawable(resources, bitmap)
+
+        app.saveProfile(profile)
+
+        if (changedImage) {
+            thread {
                 openFileOutput(App.avatarFileName, MODE_PRIVATE).use {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
                 }
             }
-            app.saveProfile(profile)
         }
     }
 
@@ -156,7 +159,7 @@ class EditProfileActivity : AppCompatActivity() {
         asd.listFiles()?.forEach {
             it.delete()
         }
-//        newImageFile!!.delete()
+        //newImageFile!!.delete()
     }
 
     companion object {

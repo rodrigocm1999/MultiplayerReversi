@@ -3,7 +3,7 @@ package pt.isec.multiplayerreversi
 import android.app.Application
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import pt.isec.multiplayerreversi.game.interactors.InteractionProxy
+import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.File
@@ -43,7 +43,7 @@ class App : Application() {
     }
 
     var game: Game? = null
-    var interaction: InteractionProxy? = null
+    var proxy: GamePlayer? = null
     private var profile: Profile? = null
 
     companion object {

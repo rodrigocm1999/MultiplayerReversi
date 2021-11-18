@@ -30,12 +30,13 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar?.hide()
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val app = application as App
-        val proxy = app.interaction
+        val proxy = app.proxy
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         gameLayout = GameGrid(

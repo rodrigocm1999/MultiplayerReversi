@@ -70,7 +70,6 @@ class Game(
         sendEventsAfterPlay()
     }
 
-
     fun playAt(player: Player, line: Int, column: Int): Boolean {
         if (player != currentPlayer)
             return false
@@ -109,12 +108,10 @@ class Game(
 
     private fun countPieces(piece: Piece): Int {
         var count = 0
-        for (column in 0 until sideLength) {
-            for (line in 0 until sideLength) {
+        for (column in 0 until sideLength)
+            for (line in 0 until sideLength)
                 if (board[line][column] == piece)
                     count++
-            }
-        }
         return count
     }
 
@@ -153,7 +150,7 @@ class Game(
     private fun <T> getNext(curr: T, list: List<T>): T = list[(list.indexOf(curr) + 1) % list.size]
 
     private fun executePlayAt(line: Int, column: Int): Boolean {
-        if (board[line][column] != Piece.Empty) return false
+        if (board[line][column] !== Piece.Empty) return false
 
         val currPlayerPiece = currentPlayer.piece
 
@@ -221,10 +218,10 @@ class Game(
                 if (pieceHere == Piece.Empty)
                     break
                 //No caso da primeira peça ser do player quer dizer que não vai saltar por cima de nenhuma
-                if (distance <= 1 && pieceHere == player)
+                if (distance <= 1 && pieceHere === player)
                     break
                 // se encontrar uma peça do outro lado das peças inimigas
-                if (distance > 1 && pieceHere == player)
+                if (distance > 1 && pieceHere === player)
                     return true
             }
         }
@@ -251,11 +248,23 @@ class Game(
         return true
     }
 
-    fun playTrade(tradePieces: ArrayList<Vector>) {
-        val opponentPiece = board[tradePieces[2].y][tradePieces[2].x]
-        board[tradePieces[0].y][tradePieces[0].x] = opponentPiece
-        board[tradePieces[1].y][tradePieces[1].x] = opponentPiece
-        board[tradePieces[2].y][tradePieces[2].x] = currentPlayer.piece
+    fun playTrade(piece: ArrayList<Vector>) {
+        val piece1 = piece[0]
+        val piece2 = piece[1]
+        val opponent = piece[2]
+        if (board[piece1.y][piece1.x] != currentPlayer.piece ||
+            board[piece2.y][piece2.x] != currentPlayer.piece ||
+            board[opponent.y][opponent.x] == currentPlayer.piece
+        ) return
+
+        val opponentPiece = board[opponent.y][opponent.x]
+        board[piece1.y][piece1.x] = opponentPiece
+        board[piece2.y][piece2.x] = opponentPiece
+        //board[tradePieces[2].y][tradePieces[2].x] = currentPlayer.piece
+
+        board[opponent.y][opponent.x] = Piece.Empty
+        executePlayAt(opponent.y, opponent.x)
+
         currentPlayer.hasUsedTrade = true
         updateState()
     }

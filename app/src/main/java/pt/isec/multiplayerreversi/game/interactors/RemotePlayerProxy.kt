@@ -1,7 +1,5 @@
-package pt.isec.multiplayerreversi.game.interactors.remote
+package pt.isec.multiplayerreversi.game.interactors
 
-import pt.isec.multiplayerreversi.AbstractNetworkingProxy
-import pt.isec.multiplayerreversi.game.interactors.local.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Vector

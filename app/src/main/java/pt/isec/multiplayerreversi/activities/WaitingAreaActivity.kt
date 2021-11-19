@@ -35,6 +35,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         binding = ActivityWaitingAreaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         title = getString(R.string.waiting_area)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val app = application as App
 

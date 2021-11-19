@@ -22,10 +22,18 @@ interface GameDataGetter {
 }
 
 interface GameCallbacks {
-    fun setPossibleMovesCallback(consumer: (List<Vector>) -> Unit)
-    fun setBoardUpdatedCallback(consumer: (Array<Array<Piece>>) -> Unit)
-    fun setChangePlayerCallback(consumer: (Int) -> Unit)
-    fun setGameFinishedCallback(consumer: (GameEndStats) -> Unit)
+    var possibleMovesCallback: ((List<Vector>) -> Unit)?
+    var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)?
+    var changePlayerCallback: ((Int) -> Unit)?
+    var gameFinishedCallback: ((GameEndStats) -> Unit)?
+//    fun setPossibleMovesCallback(consumer: (List<Vector>) -> Unit)
+//    fun setBoardUpdatedCallback(consumer: (Array<Array<Piece>>) -> Unit)
+//    fun setChangePlayerCallback(consumer: (Int) -> Unit)
+//    fun setGameFinishedCallback(consumer: (GameEndStats) -> Unit)
     //fun setPlayerUsedBombCallback(consumer: (Int) -> Unit)
     //fun setPlayerUsedTradeCallback(consumer: (Int) -> Unit)
+}
+
+interface GameSetup {
+
 }

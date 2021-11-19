@@ -15,6 +15,7 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_waiting_area_remote)
 
         title = getString(R.string.waiting_for_host)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val app = application as App
 

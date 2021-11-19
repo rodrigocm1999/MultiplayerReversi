@@ -1,26 +1,24 @@
 package pt.isec.multiplayerreversi.game.interactors
 
 import pt.isec.multiplayerreversi.game.logic.Game
-import pt.isec.multiplayerreversi.game.logic.GameEndStats
-import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
-open class Local1V1Play(protected val game: Game) : AbstractCallbacksProxy(), GamePlayer {
+open class Local1V1Play(protected val game: Game) : CallBacksProxy(), GamePlayer {
 
-    init {
-        game.registerListener(Game.showMovesEvent) {
-            _possibleMovesCallback?.let { it1 -> it1(it.newValue as ArrayList<Vector>) }
-        }
-        game.registerListener(Game.updateBoardEvent) {
-            _updateBoardCallback?.let { it1 -> it1(it.newValue as Array<Array<Piece>>) }
-        }
-        game.registerListener(Game.updateCurrentPlayerEvent) {
-            _changePlayerCallback?.let { it1 -> it1(it.newValue as Int) }
-        }
-        game.registerListener(Game.gameFinishedEvent) {
-            _gameFinishedCallback?.let { it1 -> it1(it.newValue as GameEndStats) }
-        }
-    }
+//    init {
+//        game.registerListener(Game.showMovesEvent) {
+//            _possibleMovesCallback?.let { it1 -> it1(it.newValue as ArrayList<Vector>) }
+//        }
+//        game.registerListener(Game.updateBoardEvent) {
+//            _updateBoardCallback?.let { it1 -> it1(it.newValue as Array<Array<Piece>>) }
+//        }
+//        game.registerListener(Game.updateCurrentPlayerEvent) {
+//            _changePlayerCallback?.let { it1 -> it1(it.newValue as Int) }
+//        }
+//        game.registerListener(Game.gameFinishedEvent) {
+//            _gameFinishedCallback?.let { it1 -> it1(it.newValue as GameEndStats) }
+//        }
+//    }
 
     //TODO 20 detach from game all the callbacks
 

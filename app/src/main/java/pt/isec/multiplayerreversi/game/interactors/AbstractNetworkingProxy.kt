@@ -12,11 +12,11 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.*
 import java.net.Socket
 
-abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCallbacksProxy(),
+abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksProxy(),
     GamePlayer, Closeable {
 
-    protected val osw = OutputStreamWriter(socket.getOutputStream())
-    protected val osr = InputStreamReader(socket.getInputStream())
+    private val osw = OutputStreamWriter(socket.getOutputStream())
+    private val osr = InputStreamReader(socket.getInputStream())
     protected lateinit var jsonWriter: JsonWriter // JsonWriter(osw)
     protected lateinit var jsonReader: JsonReader  // JsonReader(osr)
 

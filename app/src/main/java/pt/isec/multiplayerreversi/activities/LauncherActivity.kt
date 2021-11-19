@@ -37,12 +37,15 @@ class LauncherActivity : AppCompatActivity() {
             val intent = Intent(this, GameActivity::class.java)
 
             val players = ArrayList<Player>(2)
-            players.add(Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark))
+            val p1 = Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark)
+            players.add(p1)
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
             val game = Game(8, players, players.random())
             app.game = game
-            app.proxy = Local1V1Play(game)
+            val proxy = Local1V1Play(game)
+            p1.callbacks = proxy // needed to spread the callbacks
+            app.proxy = proxy
             startActivity(intent)
         }
         binding.btnRemote.setOnClickListener {

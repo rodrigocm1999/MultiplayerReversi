@@ -47,12 +47,12 @@ class GameActivity : AppCompatActivity() {
         lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)!!
         bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)!!
 
-        proxy.setChangePlayerCallback { id ->
+        proxy.changePlayerCallback = l@{ id ->
             val player = proxy.getPlayerById(id)
             if (player == null) {
                 Log.i(OURTAG, "Player is null from id : $id")
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
-                return@setChangePlayerCallback
+                return@l
             }
             binding.tvPlayerName.text = player.profile.name
             binding.imgViewCurrentPlayer.background = player.profile.icon
@@ -68,7 +68,7 @@ class GameActivity : AppCompatActivity() {
             gameLayout.isUsingTrade = false
         }
 
-        proxy.setGameFinishedCallback {
+        proxy.gameFinishedCallback = {
             Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
             val playerStats =
                 it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }

@@ -82,10 +82,10 @@ class GameGrid(
             }
         }
 
-        gamePlayer.setBoardUpdatedCallback {
+        gamePlayer.updateBoardCallback = {
             updatePieces(it)
         }
-        gamePlayer.setPossibleMovesCallback {
+        gamePlayer.possibleMovesCallback = {
             showPossibleMoves(it, gamePlayer.getOwnPlayer().piece)
         }
     }

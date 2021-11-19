@@ -17,8 +17,7 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     private lateinit var board: Array<Array<Piece>>
 
     init {
-        //TODO 10 do the initial handshake, receive profile
-        _player = Player(profile)
+        _player = Player(profile, callbacks = this)
 
         try {
             beginRead()
@@ -53,6 +52,4 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     }
 
     override fun getGameBoard() = board
-
-
 }

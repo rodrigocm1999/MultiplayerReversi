@@ -1,29 +1,26 @@
 package pt.isec.multiplayerreversi.game.logic
 
 import java.beans.PropertyChangeListener
-import java.beans.PropertyChangeSupport
 
 class Game(
-    sideLength: Int,
-    players: ArrayList<Player>,
+    private val sideLength: Int,
+    private val players: ArrayList<Player>,
     startingPlayer: Player,
 ) {
 
-    private val sideLength = sideLength
     private val board =
         Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]
-    private val players = players
     private var currentPlayer = startingPlayer
     private lateinit var currentPlayerMoves: ArrayList<Vector>
     private var shouldShowPossibleMoves = true
 
-    private val propertyChange = PropertyChangeSupport(this)
+//    private val propertyChange = PropertyChangeSupport(this)
 
     companion object {
-        const val gameFinishedEvent = "gameFinished"
-        const val updateBoardEvent = "updateBoard"
-        const val showMovesEvent = "showMoves"
-        const val updateCurrentPlayerEvent = "updatePlayer"
+//        const val gameFinishedEvent = "gameFinished"
+//        const val updateBoardEvent = "updateBoard"
+//        const val showMovesEvent = "showMoves"
+//        const val updateCurrentPlayerEvent = "updatePlayer"
 
         private val directions = arrayOf(
             Vector(-1, -1), Vector(0, -1), Vector(1, -1),
@@ -31,8 +28,6 @@ class Game(
             Vector(-1, 1), Vector(0, 1), Vector(1, 1)
         )
     }
-    //TODO 10 add more events
-
 
     init {
         when (players.size) {
@@ -101,7 +96,10 @@ class Game(
                 }
             }
             val endStats = GameEndStats(highestScoreId, playersStats)
-            propertyChange.firePropertyChange(gameFinishedEvent, null, endStats)
+//            propertyChange.firePropertyChange(gameFinishedEvent, null, endStats)
+            players.forEach {
+                it.callbacks?.gameFinishedCallback?.let { it(endStats) }
+            }
         }
         sendEventsAfterPlay()
     }
@@ -140,11 +138,20 @@ class Game(
     }
 
     private fun sendEventsAfterPlay() {
-        propertyChange.firePropertyChange(updateBoardEvent, null, board)
-        propertyChange
-            .firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.playerId)
-        if (shouldShowPossibleMoves)
-            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
+//        propertyChange.firePropertyChange(updateBoardEvent, null, board)
+        players.forEach {
+            it.callbacks?.updateBoardCallback?.let { it(board) }
+        }
+//        propertyChange.firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.playerId)
+        players.forEach {
+            it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
+        }
+        if (shouldShowPossibleMoves) {
+//            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
+            players.forEach {
+                it.callbacks?.possibleMovesCallback?.let { it(currentPlayerMoves) }
+            }
+        }
     }
 
     private fun <T> getNext(curr: T, list: List<T>): T = list[(list.indexOf(curr) + 1) % list.size]
@@ -274,10 +281,10 @@ class Game(
     fun getPlayers() = players
     fun getBoard() = board
 
-    fun registerListener(event: String, listener: PropertyChangeListener) =
-        propertyChange.addPropertyChangeListener(event, listener)
-
-    fun removeListener(listener: PropertyChangeListener) =
-        propertyChange.removePropertyChangeListener(listener)
+//    fun registerListener(event: String, listener: PropertyChangeListener) =
+//        propertyChange.addPropertyChangeListener(event, listener)
+//
+//    fun removeListener(listener: PropertyChangeListener) =
+//        propertyChange.removePropertyChangeListener(listener)
 
 }

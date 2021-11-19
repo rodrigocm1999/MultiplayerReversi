@@ -9,10 +9,6 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.File
 
 
-//To connect to emulator, from remote phone
-//telnet localhost 5554
-//redir add tcp:43338:43338
-
 class App : Application() {
 
     @Synchronized

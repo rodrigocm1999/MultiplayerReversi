@@ -29,3 +29,7 @@ interface GameCallbacks {
     //fun setPlayerUsedBombCallback(consumer: (Int) -> Unit)
     //fun setPlayerUsedTradeCallback(consumer: (Int) -> Unit)
 }
+
+interface GameSetup {
+
+}

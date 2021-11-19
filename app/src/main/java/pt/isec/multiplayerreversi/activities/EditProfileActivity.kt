@@ -40,9 +40,9 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         title = getString(R.string.edit_profile)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         app = application as App
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         profile = app.getProfile()
         binding.etNameChange.setText(profile.name)

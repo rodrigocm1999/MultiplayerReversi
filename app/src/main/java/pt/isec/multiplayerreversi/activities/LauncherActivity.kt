@@ -12,6 +12,7 @@ import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
+import kotlin.concurrent.thread
 
 class LauncherActivity : AppCompatActivity() {
 
@@ -57,7 +58,11 @@ class LauncherActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val profile = app.getProfile()
-        profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
+        thread {
+            val profile = app.getProfile()
+            runOnUiThread {
+                profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
+            }
+        }
     }
 }

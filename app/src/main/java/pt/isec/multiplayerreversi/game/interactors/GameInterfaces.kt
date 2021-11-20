@@ -26,14 +26,18 @@ interface GameCallbacks {
     var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)?
     var changePlayerCallback: ((Int) -> Unit)?
     var gameFinishedCallback: ((GameEndStats) -> Unit)?
-//    fun setPossibleMovesCallback(consumer: (List<Vector>) -> Unit)
-//    fun setBoardUpdatedCallback(consumer: (Array<Array<Piece>>) -> Unit)
-//    fun setChangePlayerCallback(consumer: (Int) -> Unit)
-//    fun setGameFinishedCallback(consumer: (GameEndStats) -> Unit)
-    //fun setPlayerUsedBombCallback(consumer: (Int) -> Unit)
-    //fun setPlayerUsedTradeCallback(consumer: (Int) -> Unit)
+    var playerUsedBombCallback: ((Int) -> Unit)?
+    var playerUsedTradeCallback: ((Int) -> Unit)?
 }
 
-interface GameSetup {
+interface GameSetupRemoteSide {
+    var arrivedNewPlayerCallback: ((Player) -> Unit)?
 
+    fun ready()
+}
+
+interface GameSetupHostSide {
+    var readyUpCallback: ((Int) -> Unit)? // receives player Id
+
+    fun arrivedNewPlayer(player: Player)
 }

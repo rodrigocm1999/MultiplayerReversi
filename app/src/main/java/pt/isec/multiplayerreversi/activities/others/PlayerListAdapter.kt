@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi
+package pt.isec.multiplayerreversi.activities.others
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 

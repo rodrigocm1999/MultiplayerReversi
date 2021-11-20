@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
 import android.util.JsonReader
+import android.util.JsonToken
 import android.util.JsonWriter
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -12,7 +13,7 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.*
 import java.net.Socket
 
-abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksProxy(),
+abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCallBacks(),
     GamePlayer, Closeable {
 
     private val osw = OutputStreamWriter(socket.getOutputStream())
@@ -40,11 +41,10 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
     }
 
     protected fun sendBoardArray(board: Array<Array<Piece>>) {
-        jsonWriter.beginObject()
+        beginSend()
         writeType(JsonTypes.BOARD)
         writeBoardArray(board)
-        jsonWriter.endObject()
-        jsonWriter.flush()
+        endSend()
     }
 
     protected fun writeBoardArray(board: Array<Array<Piece>>) {
@@ -74,12 +74,11 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
     }
 
     protected fun sendPlayers(players: List<Player>) {
-        jsonWriter.beginObject()
+        beginSend()
         writeType(JsonTypes.PLAYERS)
         jsonWriter.name(JsonTypes.DATA)
         writePlayers(players)
-        jsonWriter.endObject()
-        jsonWriter.flush()
+        endSend()
     }
 
     protected fun writePlayers(players: List<Player>) {
@@ -123,11 +122,15 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
                 "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
                 "name" -> player.profile.name = jsonReader.nextString()
                 "image" -> {
-                    val encodedImg = jsonReader.nextString()
-                    var image: Drawable? = null
-                    if (encodedImg != null)
-                        image = decodeDrawableFromString(encodedImg)
-                    player.profile.icon = image
+                    if(jsonReader.peek() != JsonToken.NULL) {
+                        val encodedImg = jsonReader.nextString()
+                        var image: Drawable? = null
+                        if (encodedImg != null)
+                            image = decodeDrawableFromString(encodedImg)
+                        player.profile.icon = image
+                    }else{
+                        jsonReader.nextNull()
+                    }
                 }
             }
         }
@@ -146,12 +149,11 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
     }
 
     protected fun sendProfile(profile: Profile) {
-        jsonWriter.beginObject()
+        beginSend()
         writeType(JsonTypes.SEND_PROFILE)
         jsonWriter.name(JsonTypes.DATA)
         writeProfile(profile)
-        jsonWriter.endObject()
-        jsonWriter.flush()
+        endSend()
     }
 
     protected fun readProfile(profile: Profile) {
@@ -167,6 +169,30 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
             }
         }
         jsonReader.endObject()
+    }
+
+    protected fun sendPlayerIds(id: Int, piece: Piece) {
+        beginSend()
+        writeType(JsonTypes.PLAYER_IDS)
+        jsonWriter.name(JsonTypes.DATA)
+        writePlayerIds(id, piece)
+        endSend()
+    }
+
+    protected fun writePlayerIds(id: Int, piece: Piece) {
+        jsonWriter.beginObject()
+        jsonWriter.name("id").value(id)
+        jsonWriter.name("piece").value(piece.char.toString())
+        jsonWriter.endObject()
+    }
+
+    protected fun readPlayerIds(player: Player) {
+        do {
+            when (jsonReader.nextName()) {
+                "id" -> player.playerId = jsonReader.nextInt()
+                "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
+            }
+        } while (jsonReader.hasNext())
     }
 
     protected fun beginSend() {
@@ -188,32 +214,6 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : CallBacksPr
 
     protected fun endRead() {
         jsonReader.endObject()
-    }
-
-
-    protected fun sendPlayerIds(id: Int, piece: Piece) {
-        jsonWriter.beginObject()
-        writeType(JsonTypes.PLAYER_IDS)
-        jsonWriter.name(JsonTypes.DATA)
-        writePlayerIds(id, piece)
-        jsonWriter.endObject()
-        jsonWriter.flush()
-    }
-
-    protected fun writePlayerIds(id: Int, piece: Piece) {
-        jsonWriter.beginObject()
-        jsonWriter.name("id").value(id)
-        jsonWriter.name("piece").value(piece.char.toString())
-        jsonWriter.endObject()
-    }
-
-    protected fun readPlayerIds(player: Player) {
-        do {
-            when (jsonReader.nextName()) {
-                "id" -> player.playerId = jsonReader.nextInt()
-                "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
-            }
-        } while (jsonReader.hasNext())
     }
 
     private fun encodeDrawableToString(drawable: Drawable): String {

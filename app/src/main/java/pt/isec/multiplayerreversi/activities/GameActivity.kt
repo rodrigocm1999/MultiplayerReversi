@@ -39,8 +39,7 @@ class GameActivity : AppCompatActivity() {
         val proxy = app.proxy
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
-        gameLayout = GameGrid(
-            this, binding.gridContainer, displayMetrics,
+        gameLayout = GameGrid(this, binding.gridContainer, displayMetrics,
             layoutInflater, proxy.getGameSideLength(), proxy)
 
         darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)!!
@@ -83,7 +82,7 @@ class GameActivity : AppCompatActivity() {
         binding.btnBombPiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedBomb -> {
-                    Toast.makeText(this, "You have already use the bomb", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, R.string.already_used_bomb_piece, Toast.LENGTH_SHORT)
                         .show()
                 }
                 gameLayout.isUsingBombPiece -> {
@@ -100,7 +99,7 @@ class GameActivity : AppCompatActivity() {
         binding.btnTradePiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedTrade -> {
-                    Toast.makeText(this, R.string.already_use_trade_move, Toast.LENGTH_SHORT)
+                    Toast.makeText(this, R.string.already_used_trade_move, Toast.LENGTH_SHORT)
                         .show()
                 }
                 gameLayout.isUsingTrade -> {

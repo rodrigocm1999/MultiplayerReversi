@@ -29,7 +29,6 @@ class GameGrid(
     private val grid: Array<Array<BoardSlotView>>
     private var possibleMoves: List<Vector>? = null
 
-
     private val darkPiece =
         AppCompatResources.getDrawable(context, R.drawable.piece_dark)
     private val lightPiece =
@@ -58,15 +57,41 @@ class GameGrid(
         if (height < width) sideLength = height
         sideLength /= boardSideLength
 
+        val start = System.currentTimeMillis()
+
+        //Threads are not faster in this case and layoutinflater should only be used by 1 thread
+//        val syncList = ConcurrentLinkedQueue<BoardSlotView>()
+//        val worker = Runnable {
+//            val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
+//            view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
+//            val boardView = BoardSlotView(view, view[0], view[1] as TextView)
+//            syncList.add(boardView)
+//        }
+//        val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+//        for (i in 0 until boardSideLength * boardSideLength) executor.execute(worker)
+//        executor.shutdown()
+//        executor.awaitTermination(1, TimeUnit.DAYS)
+
         grid = Array(boardSideLength) { line ->
             Array(boardSideLength) { column ->
+//                val boardView = syncList.remove()
+//                val view = boardView.slot
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
+                val boardView = BoardSlotView(view, view[0], view[1] as TextView)
+
                 view.setOnClickListener {
                     when {
                         isUsingBombPiece -> gamePlayer.playBomb(line, column)
                         isUsingTrade -> {
-                            addPieceToTrade(line, column)
+                            val pieceOnBoard = gamePlayer.getGameBoard()[line][column]
+                            val ownPiece = gamePlayer.getOwnPlayer().piece
+
+                            if (tradePieces.size < 2 && pieceOnBoard == ownPiece)
+                                addPieceToTrade(line, column)
+                            else if (pieceOnBoard != ownPiece)
+                                addPieceToTrade(line, column)
+
                             if (tradePieces.size == 3) {
                                 gamePlayer.playTrade(tradePieces)
                                 tradePieces.clear()
@@ -76,11 +101,13 @@ class GameGrid(
                     }
                 }
 
-                val boardView = BoardSlotView(view, view[0], view[1] as TextView)
                 gridLayout.addView(view)
                 boardView
             }
         }
+
+        val end = System.currentTimeMillis()
+        println("Time taken creating board pieces : ${end - start}ms")
 
         gamePlayer.updateBoardCallback = {
             updatePieces(it)
@@ -145,11 +172,10 @@ class GameGrid(
         println(boardPiece)
 
         if (!tradePieces.contains(Vector(column, line))) {
-            if (playerPiece == boardPiece && tradePieces.size < 2) {
+            if (playerPiece == boardPiece && tradePieces.size < 2)
                 tradePieces.add(Vector(column, line))
-            } else if (playerPiece != boardPiece && tradePieces.size >= 2) {
+            else if (playerPiece != boardPiece && tradePieces.size >= 2)
                 tradePieces.add(Vector(column, line))
-            }
         }
         println(tradePieces)
     }

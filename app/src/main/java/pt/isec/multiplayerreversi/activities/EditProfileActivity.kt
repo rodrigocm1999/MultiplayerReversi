@@ -2,7 +2,6 @@ package pt.isec.multiplayerreversi.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -13,11 +12,10 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
 import pt.isec.multiplayerreversi.App
+import pt.isec.multiplayerreversi.activities.others.PermissionsHelper
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityEditProfileBinding
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -29,11 +27,11 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var bitmap: Bitmap
     private lateinit var binding: ActivityEditProfileBinding
 
-    private var permissionsGranted = false
     private var changedImage = false
     private var newImageFile: File? = null
     private lateinit var app: App
     private lateinit var profile: Profile
+    private lateinit var permissionsHelper: PermissionsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +39,8 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         title = getString(R.string.edit_profile)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        permissionsHelper = PermissionsHelper(this)
 
         app = application as App
 
@@ -51,64 +51,42 @@ class EditProfileActivity : AppCompatActivity() {
         //TODO 10 quando tentar sair confirmar se não quer guardar perguntar se deseja guardar talvez
 
         setOnClicks()
-        handlePermissions()
     }
 
-    private fun handlePermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ), REQ_PERM_CODE)
-        } else
-            permissionsGranted = true
+    override fun onSupportNavigateUp(): Boolean {
+        finish() // TODO  Meter confirmação
+        return true
     }
 
     private fun setOnClicks() {
-        binding.imgBtnProfileChange.setOnClickListener {
-            val imageFile = File.createTempFile("avatar_", ".img",
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-            newImageFile = imageFile
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                val fileUri = FileProvider.getUriForFile(this@EditProfileActivity,
-                    "pt.isec.multiplayerreversi.android.fileprovider", imageFile)
-                putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+        permissionsHelper.withPermissions(arrayOf(
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
+            binding.imgBtnProfileChange.setOnClickListener {
+                val imageFile = File.createTempFile("avatar_", ".img",
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                newImageFile = imageFile
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                    val fileUri = FileProvider.getUriForFile(this@EditProfileActivity,
+                        "pt.isec.multiplayerreversi.android.fileprovider", imageFile)
+                    putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+                }
+                startActivityForResultFoto.launch(intent)
             }
-            startActivityForResultFoto.launch(intent)
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_save, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-/*
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.mnSave)?.isVisible = permissionsGranted
-        return true
-    }*/
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQ_PERM_CODE) {
-            permissionsGranted =
-                (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-                        && ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED)
-        }
+        permissionsHelper.onRequestPermissionsResult(requestCode)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private var startActivityForResultFoto = registerForActivityResult(

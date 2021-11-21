@@ -21,7 +21,8 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
 
         try {
             beginRead()
-            _players = readPlayers()
+            _players.addAll(readPlayers())
+            _players.add(_player)
             endRead()
 
             beginSend()
@@ -32,6 +33,8 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
             beginRead()
             readPlayerIds(_player)
             endRead()
+
+            println(_player)
 
         } catch (e: SocketException) {
             Log.i(OURTAG, "Socket was close while creating LocalRemoteGameProxy")

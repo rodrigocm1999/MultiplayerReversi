@@ -10,8 +10,6 @@ import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 
 class WaitingAreaRemoteActivity : AppCompatActivity() {
 
-    val app = application as App
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting_area_remote)

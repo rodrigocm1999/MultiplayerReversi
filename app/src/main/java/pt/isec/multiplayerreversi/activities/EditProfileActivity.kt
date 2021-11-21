@@ -2,12 +2,14 @@ package pt.isec.multiplayerreversi.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
 import pt.isec.multiplayerreversi.App
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.activities.others.PermissionsHelper
 import pt.isec.multiplayerreversi.databinding.ActivityEditProfileBinding
@@ -62,15 +65,15 @@ class EditProfileActivity : AppCompatActivity() {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             ) {
-
-                val imageFile = File.createTempFile("avatar_", ".img",
+                newImageFile = File.createTempFile("avatar", ".img",
                     getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-                newImageFile = imageFile
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                     val fileUri = FileProvider.getUriForFile(this@EditProfileActivity,
-                        "pt.isec.multiplayerreversi.android.fileprovider", imageFile)
+                        "pt.isec.multiplayerreversi.android.fileprovider", newImageFile!!)
+                    addFlags(FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 }
+                Log.i(OURTAG, "Image path -> $newImageFile -----------------")
                 startActivityForResultFoto.launch(intent)
             }
         }
@@ -91,8 +94,10 @@ class EditProfileActivity : AppCompatActivity() {
     private var startActivityForResultFoto = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode != Activity.RESULT_OK)
+        if (result.resultCode != Activity.RESULT_OK) {
+            removeTempImgFile()
             return@registerForActivityResult
+        }
         thread {
             changedImage = true
             newImageFile?.absolutePath?.let {
@@ -132,11 +137,11 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun removeTempImgFile() {
         //To guarantee that there are no leftovers
-        val asd = newImageFile!!.parentFile!!
-        asd.listFiles()?.forEach {
-            it.delete()
-        }
-        //newImageFile!!.delete()
+//        val asd = newImageFile!!.parentFile!!
+//        asd.listFiles()?.forEach {
+//            it.delete()
+//        }
+        newImageFile!!.delete()
     }
 
     companion object {

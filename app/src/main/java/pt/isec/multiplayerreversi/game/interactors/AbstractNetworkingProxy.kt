@@ -22,13 +22,12 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     protected lateinit var jsonReader: JsonReader  // JsonReader(osr)
 
     protected lateinit var _player: Player
-    protected lateinit var _players: ArrayList<Player>
+    protected val _players = ArrayList<Player>()
     protected var _gameSideLength = -1
 
 
-    protected fun readBoardArray(): Array<Array<Piece>> {
+    protected fun readBoardArray(board: Array<Array<Piece>>) {
         val sideLength = getGameSideLength()
-        val board = Array(sideLength) { Array(sideLength) { Piece.Empty } }
         jsonReader.beginArray()
         for (line in 0 until sideLength) {
             jsonReader.beginArray()
@@ -37,7 +36,6 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
             jsonReader.endArray()
         }
         jsonReader.endArray()
-        return board
     }
 
     protected fun sendBoardArray(board: Array<Array<Piece>>) {
@@ -122,13 +120,13 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
                 "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
                 "name" -> player.profile.name = jsonReader.nextString()
                 "image" -> {
-                    if(jsonReader.peek() != JsonToken.NULL) {
+                    if (jsonReader.peek() != JsonToken.NULL) {
                         val encodedImg = jsonReader.nextString()
                         var image: Drawable? = null
                         if (encodedImg != null)
                             image = decodeDrawableFromString(encodedImg)
                         player.profile.icon = image
-                    }else{
+                    } else {
                         jsonReader.nextNull()
                     }
                 }
@@ -187,12 +185,14 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     }
 
     protected fun readPlayerIds(player: Player) {
-        do {
+        jsonReader.beginObject()
+        while (jsonReader.hasNext()) {
             when (jsonReader.nextName()) {
                 "id" -> player.playerId = jsonReader.nextInt()
                 "piece" -> player.piece = Piece.getByChar(jsonReader.nextString()[0])!!
             }
-        } while (jsonReader.hasNext())
+        }
+        jsonReader.endObject()
     }
 
     protected fun beginSend() {

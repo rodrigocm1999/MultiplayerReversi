@@ -8,7 +8,7 @@ import java.net.Socket
 import java.util.*
 
 
-open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWelcomer) :
+class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWelcomer) :
     AbstractNetworkingProxy(socket), Closeable {
 
     //Sequence:
@@ -28,6 +28,7 @@ open class RemotePlayerProxy(socket: Socket, connectionsWelcomer: ConnectionsWel
         readPlayer(_player)
         println(_player)
         //Player object gets its fields filled up
+        _player.callbacks = this
         connectionsWelcomer.joinPlayer(_player)
         endRead()
 

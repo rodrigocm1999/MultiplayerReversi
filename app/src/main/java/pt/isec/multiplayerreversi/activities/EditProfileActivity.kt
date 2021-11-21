@@ -15,8 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
 import pt.isec.multiplayerreversi.App
-import pt.isec.multiplayerreversi.activities.others.PermissionsHelper
 import pt.isec.multiplayerreversi.R
+import pt.isec.multiplayerreversi.activities.others.PermissionsHelper
 import pt.isec.multiplayerreversi.databinding.ActivityEditProfileBinding
 import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.File
@@ -48,8 +48,6 @@ class EditProfileActivity : AppCompatActivity() {
         binding.etNameChange.setText(profile.name)
         binding.imgBtnProfileChange.setImageDrawable(profile.icon)
 
-        //TODO 10 quando tentar sair confirmar se não quer guardar perguntar se deseja guardar talvez
-
         setOnClicks()
     }
 
@@ -59,11 +57,12 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun setOnClicks() {
-        permissionsHelper.withPermissions(arrayOf(
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        ) {
-            binding.imgBtnProfileChange.setOnClickListener {
+        binding.imgBtnProfileChange.setOnClickListener {
+            permissionsHelper.withPermissions(arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            ) {
+
                 val imageFile = File.createTempFile("avatar_", ".img",
                     getExternalFilesDir(Environment.DIRECTORY_PICTURES))
                 newImageFile = imageFile

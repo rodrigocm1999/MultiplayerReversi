@@ -19,7 +19,7 @@ class App : Application() {
         val pref = getSharedPreferences("user", MODE_PRIVATE)
         val name = pref.getString("name", "")
         var icon: Drawable? = null
-        if (File(avatarPath).exists()) {
+        if (avatarFile.exists()) {
             openFileInput(avatarFileName).use {
                 icon = BitmapDrawable(resources, it)
             }
@@ -49,6 +49,6 @@ class App : Application() {
             get() = "avatar.jpg"
     }
 
-    private val avatarPath: String
-        get() = filesDir.absolutePath + "/" + avatarFileName
+    private val avatarFile: File
+        get() = File(filesDir, avatarFileName)
 }

@@ -65,7 +65,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
         jsonWriter.name("y").value(line)
     }
 
-    private fun writeType(type: String) {
+    protected fun writeType(type: String) {
         jsonWriter.name("type").value(type)
     }
 

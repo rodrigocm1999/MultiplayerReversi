@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -33,7 +34,8 @@ class PlayerListAdapter(
             this.setImageResource(resource)
         }
         view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
-            this.setImageDrawable(player.profile.icon)
+            this.setImageDrawable(player.profile.icon
+                ?: AppCompatResources.getDrawable(context, R.drawable.avatar_icon))
         }
         return view
     }

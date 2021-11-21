@@ -84,14 +84,7 @@ class GameGrid(
                     when {
                         isUsingBombPiece -> gamePlayer.playBomb(line, column)
                         isUsingTrade -> {
-                            val pieceOnBoard = gamePlayer.getGameBoard()[line][column]
-                            val ownPiece = gamePlayer.getOwnPlayer().piece
-
-                            if (tradePieces.size < 2 && pieceOnBoard == ownPiece)
-                                addPieceToTrade(line, column)
-                            else if (pieceOnBoard != ownPiece)
-                                addPieceToTrade(line, column)
-
+                            addPieceToTrade(line, column)
                             if (tradePieces.size == 3) {
                                 gamePlayer.playTrade(tradePieces)
                                 tradePieces.clear()
@@ -150,7 +143,6 @@ class GameGrid(
                 val piece = board[line][column]
                 val boardView = grid[line][column]
 
-
                 boardView.piece.background = when (piece) {
                     Piece.Dark -> darkPiece
                     Piece.Light -> lightPiece
@@ -168,16 +160,14 @@ class GameGrid(
     private fun addPieceToTrade(line: Int, column: Int) {
         val playerPiece = gamePlayer.getOwnPlayer().piece
         val boardPiece = gamePlayer.getGameBoard()[line][column]
-        println(playerPiece)
-        println(boardPiece)
+        val v = Vector(column, line)
 
-        if (!tradePieces.contains(Vector(column, line))) {
-            if (playerPiece == boardPiece && tradePieces.size < 2)
-                tradePieces.add(Vector(column, line))
-            else if (playerPiece != boardPiece && tradePieces.size >= 2)
-                tradePieces.add(Vector(column, line))
+        if (!tradePieces.contains(v)) {
+            if (tradePieces.size < 2 && playerPiece == boardPiece)
+                tradePieces.add(v)
+            else if (playerPiece != boardPiece)
+                tradePieces.add(v)
         }
-        println(tradePieces)
     }
 
     data class BoardSlotView(val slot: ViewGroup, val piece: View, val pieceText: TextView)

@@ -52,8 +52,6 @@ class WaitingAreaActivity : AppCompatActivity() {
             }
         }
 
-        //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
-
         binding.btnJoinGame.setOnClickListener {
             val editText = EditText(this).apply {
                 this.isSingleLine = true
@@ -84,6 +82,10 @@ class WaitingAreaActivity : AppCompatActivity() {
                 }.setView(editText)
                 .create()
             dialog.show()
+        }
+
+        binding.btnStartGame.setOnClickListener {
+            startGame()
         }
 
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar

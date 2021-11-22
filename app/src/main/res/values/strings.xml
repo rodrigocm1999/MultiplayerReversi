@@ -25,4 +25,9 @@
     <string name="waiting_area">Waiting Room</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="waiting_for_host">Waiting for host</string>
+    <string name="question_leave_without_save">Do you want to leave without saving?</string>
+    <string name="save_and_leave">Save and leave</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="history">History</string>
 </resources>

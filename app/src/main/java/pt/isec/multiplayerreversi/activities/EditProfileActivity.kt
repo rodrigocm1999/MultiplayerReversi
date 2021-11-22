@@ -1,6 +1,7 @@
 package pt.isec.multiplayerreversi.activities
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
@@ -54,22 +55,23 @@ class EditProfileActivity : AppCompatActivity() {
         setOnClicks()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish() // TODO  Meter confirmação
-        return true
-    }
-
     private fun setOnClicks() {
         binding.imgBtnProfileChange.setOnClickListener {
-            permissionsHelper.withPermissions(arrayOf(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            permissionsHelper.withPermissions(
+                arrayOf(
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
             ) {
-                newImageFile = File.createTempFile("avatar", ".img",
-                    getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                newImageFile = File.createTempFile(
+                    "avatar", ".img",
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                )
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    val fileUri = FileProvider.getUriForFile(this@EditProfileActivity,
-                        "pt.isec.multiplayerreversi.android.fileprovider", newImageFile!!)
+                    val fileUri = FileProvider.getUriForFile(
+                        this@EditProfileActivity,
+                        "pt.isec.multiplayerreversi.android.fileprovider", newImageFile!!
+                    )
                     addFlags(FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 }
@@ -143,6 +145,35 @@ class EditProfileActivity : AppCompatActivity() {
 //        }
         newImageFile!!.delete()
     }
+
+    override fun onBackPressed() {
+        confirmationToLeave()
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        confirmationToLeave()
+        return true
+    }
+
+    private fun confirmationToLeave() {
+        val writtenName = binding.etNameChange.text.toString()
+        if (profile.name != writtenName || changedImage) {
+            val alertDialog = AlertDialog.Builder(this)
+                .setTitle(supportActionBar?.title)
+                .setMessage(getString(R.string.question_leave_without_save))
+                .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
+                .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
+                .setNeutralButton(getString(R.string.save_and_leave)){ d, w -> saveProfile()}
+                .setCancelable(true)
+                .create()
+            alertDialog.show()
+        }else{
+            finish()
+        }
+    }
+
+
 
     companion object {
         private const val REQ_PERM_CODE = 1234

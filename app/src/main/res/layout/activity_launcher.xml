@@ -37,6 +37,10 @@
             android:id="@+id/btnRemote"
             style="@style/MainMenuBtn"
             android:text="@string/remote" />
+        <Button
+            android:id="@+id/btnHistory"
+            style="@style/MainMenuBtn"
+            android:text="@string/history" />
 
     </LinearLayout>
 </FrameLayout>

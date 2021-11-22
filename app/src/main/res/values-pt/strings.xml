@@ -25,5 +25,9 @@
     <string name="waiting_area">Sala de espera</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="waiting_for_host">Em espera</string>
+    <string name="question_leave_without_save">Pretende sair sem gravar?</string>
+    <string name="save_and_leave">Guardar e sair</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
 
 </resources>

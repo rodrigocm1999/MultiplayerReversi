@@ -1,7 +1,5 @@
 package pt.isec.multiplayerreversi.game.logic
 
-import java.beans.PropertyChangeListener
-
 class Game(
     private val sideLength: Int,
     private val players: ArrayList<Player>,
@@ -251,6 +249,9 @@ class Game(
 
         }
         player.hasUsedBomb = true
+        players.forEach {
+            it.callbacks?.playerUsedBombCallback?.invoke(currentPlayer.playerId)
+        }
         updateState()
         return true
     }
@@ -273,6 +274,9 @@ class Game(
         executePlayAt(opponent.y, opponent.x)
 
         currentPlayer.hasUsedTrade = true
+        players.forEach {
+            it.callbacks?.playerUsedTradeCallback?.invoke(currentPlayer.playerId)
+        }
         updateState()
     }
 

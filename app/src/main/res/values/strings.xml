@@ -18,8 +18,8 @@
     <string name="cancel">Cancel</string>
     <string name="join">Join</string>
     <string name="failed_to_connect">Failed to connect to address</string>
-    <string name="already_use_trade_move">You have already use the trade move</string>
-    <string name="already_use_bomb_piece">You have already use the bomb</string>
+    <string name="already_used_trade_move">You have already used the trade move</string>
+    <string name="already_used_bomb_piece">You have already used the bomb</string>
     <string name="save">Save</string>
     <string name="need_to_setup_user">Need to setup user to play online</string>
     <string name="waiting_area">Waiting Room</string>

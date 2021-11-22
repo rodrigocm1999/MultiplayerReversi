@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
-import pt.isec.multiplayerreversi.PlayerListAdapter
+import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 
@@ -26,6 +26,9 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         lvPlayers.adapter = adapter
     }
 
-    //TODO quando se dá join muda-se para esta janela
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
 
 }

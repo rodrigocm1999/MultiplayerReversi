@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
-import pt.isec.multiplayerreversi.PlayerListAdapter
+import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.ConnectionsWelcomer
@@ -52,8 +52,6 @@ class WaitingAreaActivity : AppCompatActivity() {
             }
         }
 
-        //TODO 20 eventualmente temos de fechar o socket depois de sair do jogo online
-
         binding.btnJoinGame.setOnClickListener {
             val editText = EditText(this).apply {
                 this.isSingleLine = true
@@ -86,9 +84,18 @@ class WaitingAreaActivity : AppCompatActivity() {
             dialog.show()
         }
 
+        binding.btnStartGame.setOnClickListener {
+            startGame()
+        }
+
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
         //TODO 100 alterar a fonte
         //TODO 80 alterar o icon
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     fun startGame() {

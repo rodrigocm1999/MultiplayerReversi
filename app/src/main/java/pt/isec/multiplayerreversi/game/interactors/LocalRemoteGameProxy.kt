@@ -17,14 +17,12 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     private lateinit var board: Array<Array<Piece>>
 
     init {
-        //TODO 10 do the initial handshake, receive profile
-        _player = Player(profile)
-        _players.add(_player)
+        _player = Player(profile, callbacks = this)
 
         try {
             beginRead()
             _players.addAll(readPlayers())
-            println(_players)
+            _players.add(_player)
             endRead()
 
             beginSend()
@@ -36,8 +34,7 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
             readPlayerIds(_player)
             endRead()
 
-
-            println(profile)
+            println(_player)
 
         } catch (e: SocketException) {
             Log.i(OURTAG, "Socket was close while creating LocalRemoteGameProxy")
@@ -58,6 +55,4 @@ class LocalRemoteGameProxy(socket: Socket, profile: Profile) :
     }
 
     override fun getGameBoard() = board
-
-
 }

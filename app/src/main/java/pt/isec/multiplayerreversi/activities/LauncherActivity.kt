@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.databinding.ActivityLaucherBinding
+import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
 import pt.isec.multiplayerreversi.game.interactors.Local1V1Play
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
@@ -16,12 +16,12 @@ import kotlin.concurrent.thread
 
 class LauncherActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLaucherBinding
+    private lateinit var binding: ActivityLauncherBinding
     private lateinit var app: App
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLaucherBinding.inflate(layoutInflater)
+        binding = ActivityLauncherBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.hide()
         app = application as App

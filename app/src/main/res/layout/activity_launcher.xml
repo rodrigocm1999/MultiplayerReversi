@@ -6,6 +6,13 @@
     tools:context=".activities.LauncherActivity">
 
     <ImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/logo" />
+
+    <ImageView
         android:id="@+id/avatarIcon"
         android:layout_width="80dp"
         android:layout_height="80dp"

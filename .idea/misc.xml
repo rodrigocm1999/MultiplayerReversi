@@ -14,9 +14,11 @@
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces_with.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout-land/activity_launcher.xml" value="0.17372134038800705" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20520833333333333" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.271286231884058" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.25407608695652173" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_launcher.xml" value="0.20520833333333333" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.36666666666666664" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/menu/menu_save.xml" value="0.36666666666666664" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
@@ -31,11 +33,9 @@
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/quare_border.xml" value="0.25555555555555554" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces.xml" value="0.3728205128205128" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.2125" />
-        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout-land/activity_launcher.xml" value="0.21" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20260416666666667" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.18" />
-        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_launcher.xml" value="0.12" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_waiting_area.xml" value="0.33" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_waiting_area_remote.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.19635416666666666" />

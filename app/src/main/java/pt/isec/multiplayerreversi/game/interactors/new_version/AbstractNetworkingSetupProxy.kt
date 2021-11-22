@@ -61,16 +61,6 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
         jsonWriter.name("y").value(line)
     }
 
-    protected fun writeType(type: String) {
-        jsonWriter.name("type").value(type)
-    }
-
-    protected fun beginReadAndGetType(): String {
-        jsonReader = JsonReader(osr)
-        jsonReader.beginObject()
-        return jsonReader.nextName()
-    }
-
     protected fun sendPlayers(players: List<Player>) {
         beginSend()
         writeType(JsonTypes.PLAYERS)
@@ -214,6 +204,26 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
 
     protected fun endRead() {
         jsonReader.endObject()
+    }
+
+    protected fun writeType(type: String) {
+        jsonWriter.name("type").value(type)
+    }
+
+    protected fun beginReadAndGetType(): String {
+        jsonReader = JsonReader(osr)
+        jsonReader.beginObject()
+        jsonReader.nextName() // "type" :
+        val type = jsonReader.nextString()
+        jsonReader.nextName() // "data" :
+        return type
+    }
+
+    protected fun beginSendWithType(type: String) {
+        jsonWriter = JsonWriter(osw)
+        jsonWriter.beginObject()
+        writeType(type)
+        jsonWriter.name(JsonTypes.DATA)
     }
 
     private fun encodeDrawableToString(drawable: Drawable): String {

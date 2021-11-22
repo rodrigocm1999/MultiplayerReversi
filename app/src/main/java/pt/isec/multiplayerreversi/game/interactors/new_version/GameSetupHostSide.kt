@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.game.interactors.new_version
 
+import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.interactors.setup.IGameSetupHostSide
 import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -43,8 +44,14 @@ class GameSetupHostSide(
     }
 
     override fun arrivedNewPlayer(player: Player) {
-        beginSend()
+        beginSendWithType(JsonTypes.NEW_PLAYER)
         writePlayer(player)
+        endSend()
+    }
+
+    override fun sendExit() {
+        beginSendWithType(JsonTypes.HOST_EXITING)
+        jsonWriter.nullValue()
         endSend()
     }
 

@@ -28,7 +28,9 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         val adapter = PlayerListAdapter(this)
         thread {
             val proxy = GameSetupRemoteSide(socket, app.getProfile()) {
-                adapter.notifyDataSetChanged()
+                runOnUiThread {
+                    adapter.notifyDataSetChanged()
+                }
             }
             runOnUiThread {
                 adapter.players = proxy.getPlayers()

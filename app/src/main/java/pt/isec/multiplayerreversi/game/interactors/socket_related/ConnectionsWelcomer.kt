@@ -75,6 +75,9 @@ class ConnectionsWelcomer(
     }
 
     override fun close() {
+        setupers.forEach {
+            it.setuper.sendExit()
+        }
         serverSocket.close()
     }
 }

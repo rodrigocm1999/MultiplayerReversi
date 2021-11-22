@@ -13,6 +13,7 @@ interface IGameSetupHostSide {
     val readyUpCallback: ((Int) -> Unit) // receives player Id
 
     fun arrivedNewPlayer(player: Player)
+    fun sendExit()
 
 //    fun sendStart()
 }

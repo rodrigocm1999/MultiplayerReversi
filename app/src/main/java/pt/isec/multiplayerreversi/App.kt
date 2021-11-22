@@ -42,6 +42,8 @@ class App : Application() {
     var proxy: GamePlayer? = null
     private var profile: Profile? = null
 
+    lateinit var temp: Any
+
     companion object {
         const val OURTAG = "reversiTag"
         const val listeningPort = 43338

@@ -29,15 +29,3 @@ interface GameCallbacks {
     var playerUsedBombCallback: ((Int) -> Unit)?
     var playerUsedTradeCallback: ((Int) -> Unit)?
 }
-
-interface GameSetupRemoteSide {
-    var arrivedNewPlayerCallback: ((Player) -> Unit)?
-
-    fun ready()
-}
-
-interface GameSetupHostSide {
-    var readyUpCallback: ((Int) -> Unit)? // receives player Id
-
-    fun arrivedNewPlayer(player: Player)
-}

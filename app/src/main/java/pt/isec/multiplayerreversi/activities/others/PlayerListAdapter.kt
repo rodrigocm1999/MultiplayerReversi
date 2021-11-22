@@ -14,7 +14,7 @@ import pt.isec.multiplayerreversi.game.logic.Player
 
 class PlayerListAdapter(
     private val context: Context,
-    private val players: List<Player>,
+    var players: List<Player> = ArrayList(),
 ) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView

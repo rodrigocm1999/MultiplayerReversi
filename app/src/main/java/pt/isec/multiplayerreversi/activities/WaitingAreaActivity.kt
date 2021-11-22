@@ -13,9 +13,9 @@ import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.LocalRemoteGameProxy
+import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupRemoteSide
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -67,8 +67,7 @@ class WaitingAreaActivity : AppCompatActivity() {
                         try {
                             socket.connect(address, 2000)
                             Log.i(OURTAG, "connected socket")
-                            val proxy = LocalRemoteGameProxy(socket, app.getProfile())
-                            app.proxy = proxy
+                            app.temp = socket
                             finish()
                             val intent = Intent(this, WaitingAreaRemoteActivity::class.java)
                             startActivity(intent)
@@ -100,7 +99,7 @@ class WaitingAreaActivity : AppCompatActivity() {
 
     fun startGame() {
         val app = application as App
-        val game = Game(8, players, players.random())
+        val game = Game(8, players)
         app.game = game
         app.proxy = LocalOnline(game, players[0])
     }

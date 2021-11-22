@@ -1,8 +1,10 @@
-package pt.isec.multiplayerreversi.game.interactors
+package pt.isec.multiplayerreversi.game.interactors.socket_related
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
+import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupHostSide
+import pt.isec.multiplayerreversi.game.interactors.setup.IGameSetupHostSide
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.io.Closeable
@@ -12,8 +14,12 @@ import kotlin.concurrent.thread
 
 class ConnectionsWelcomer(
     private val players: ArrayList<Player>,
-    private val callback: (RemotePlayerProxy) -> Unit,
+    private val callback: (GameSetupHostSide) -> Unit,
 ) : Closeable {
+
+    data class PlayerSetuper(val player: Player, val setuper: IGameSetupHostSide)
+
+    private val setupers = ArrayList<PlayerSetuper>(3)
 
     private val serverSocket = ServerSocket(listeningPort)
     private var shouldClose = false
@@ -29,7 +35,16 @@ class ConnectionsWelcomer(
                     playersAmount++
 
                     thread {
-                        val p = RemotePlayerProxy(socket, this)
+                        val p = GameSetupHostSide(socket, this) { playerId ->
+                            Log.i(OURTAG, "Player got ready ya know")
+                            val player = players.find { it.playerId == playerId }
+                            if (player != null)
+                                Log.i(OURTAG, player.toString())
+                            else
+                                Log.i(OURTAG,
+                                    "player that got ready with id $playerId is null for some reason that is unknow to the writer of this message")
+
+                        }
                         callback(p)
                     }
 
@@ -40,17 +55,23 @@ class ConnectionsWelcomer(
                     shouldClose = true
                 }
             }
-            Log.i(OURTAG,"ServerSocket Closed")
+            Log.i(OURTAG, "ServerSocket Closed")
         }
     }
 
     fun getPlayers() = players
 
-    fun joinPlayer(newPlayer: Player) {
+    fun joinPlayer(newPlayer: Player, setuper: IGameSetupHostSide) {
         val otherPlayer = players[players.lastIndex]
         newPlayer.piece = Piece.getByOrdinal(otherPlayer.piece.ordinal + 1)
             ?: throw IllegalStateException("Player was joining and there were no more free pieces")
+
+        setupers.forEach {
+            it.setuper.arrivedNewPlayer(newPlayer)
+        }
+
         players.add(newPlayer)
+        setupers.add(PlayerSetuper(newPlayer, setuper))
     }
 
     override fun close() {

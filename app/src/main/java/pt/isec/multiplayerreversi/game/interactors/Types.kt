@@ -5,6 +5,8 @@ class JsonTypes {
         val DATA = "data"
         val CAN_ENTER = "enter"
         val PLAYERS = "players"
+        val NEW_PLAYER = "new_player"
+        val STARTING = "starting"
         val PLAYER_IDS = "ids"
         val SEND_PROFILE = "profile"
         val GAME_STARTED = "started"

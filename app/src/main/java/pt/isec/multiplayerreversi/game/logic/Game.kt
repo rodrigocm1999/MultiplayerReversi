@@ -3,8 +3,13 @@ package pt.isec.multiplayerreversi.game.logic
 class Game(
     private val sideLength: Int,
     private val players: ArrayList<Player>,
-    startingPlayer: Player,
+    startingPlayer: Player = players.random(),
 ) {
+
+    constructor(gameData: GameData)
+            : this(gameData.sideLength, gameData.players, gameData.currentPlayer) {
+
+    }
 
     private val board =
         Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]

@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors
+package pt.isec.multiplayerreversi.game.interactors.socket_related
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -7,6 +7,10 @@ import android.util.Base64
 import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
+import androidx.core.graphics.scale
+import pt.isec.multiplayerreversi.game.interactors.AbstractCallBacks
+import pt.isec.multiplayerreversi.game.interactors.GamePlayer
+import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -27,7 +31,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
 
 
     protected fun readBoardArray(board: Array<Array<Piece>>) {
-        val sideLength = getGameSideLength()
+        val sideLength = board.size
         jsonReader.beginArray()
         for (line in 0 until sideLength) {
             jsonReader.beginArray()
@@ -46,7 +50,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     }
 
     protected fun writeBoardArray(board: Array<Array<Piece>>) {
-        val sideLength = getGameSideLength()
+        val sideLength = board.size
         jsonWriter.name("board")
         jsonWriter.beginArray()
         for (line in 0 until sideLength) {
@@ -225,7 +229,8 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : AbstractCal
     }
 
     private fun convertDrawableToByteArray(drawable: Drawable): ByteArray {
-        val bitmap = (drawable as BitmapDrawable).bitmap
+        var bitmap = (drawable as BitmapDrawable).bitmap
+        bitmap = bitmap.scale(200,300)
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 94, stream)
         return stream.toByteArray()

@@ -41,7 +41,7 @@ class LauncherActivity : AppCompatActivity() {
             players.add(p1)
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
-            val game = Game(8, players, players.random())
+            val game = Game(8, players)
             app.game = game
             val proxy = Local1V1Play(game)
             p1.callbacks = proxy // needed to spread the callbacks

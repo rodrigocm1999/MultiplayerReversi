@@ -45,7 +45,7 @@ class LauncherActivity : AppCompatActivity() {
             app.game = game
             val proxy = Local1V1Play(game)
             p1.callbacks = proxy // needed to spread the callbacks
-            app.proxy = proxy
+            app.gamePlayer = proxy
             startActivity(intent)
         }
         binding.btnRemote.setOnClickListener {

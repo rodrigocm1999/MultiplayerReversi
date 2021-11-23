@@ -1,35 +1,20 @@
 package pt.isec.multiplayerreversi.game.logic
 
 class Game(
-    private val sideLength: Int,
-    private val players: ArrayList<Player>,
+    sideLength: Int,
+    players: ArrayList<Player>,
     startingPlayer: Player = players.random(),
 ) {
 
-    constructor(gameData: GameData)
-            : this(gameData.sideLength, gameData.players, gameData.currentPlayer) {
+    private val gameData: GameData
 
-    }
-
-    private val board =
-        Array(sideLength) { Array(sideLength) { Piece.Empty } } // board[line][column]
-    private var currentPlayer = startingPlayer
-    private lateinit var currentPlayerMoves: ArrayList<Vector>
-    private var shouldShowPossibleMoves = true
-
-//    private val propertyChange = PropertyChangeSupport(this)
-
-    companion object {
-//        const val gameFinishedEvent = "gameFinished"
-//        const val updateBoardEvent = "updateBoard"
-//        const val showMovesEvent = "showMoves"
-//        const val updateCurrentPlayerEvent = "updatePlayer"
-
-        private val directions = arrayOf(
-            Vector(-1, -1), Vector(0, -1), Vector(1, -1),
-            Vector(-1, 0), /*     Center    */  Vector(1, 0),
-            Vector(-1, 1), Vector(0, 1), Vector(1, 1)
-        )
+    init {
+        gameData = GameData()
+        gameData.sideLength = sideLength
+        gameData.players = players
+        gameData.currentPlayer = startingPlayer
+        gameData.board = Array(sideLength) { Array(sideLength) { Piece.Empty } }
+        gameData.shouldShowPossibleMoves = true
     }
 
     init {
@@ -99,7 +84,6 @@ class Game(
                 }
             }
             val endStats = GameEndStats(highestScoreId, playersStats)
-//            propertyChange.firePropertyChange(gameFinishedEvent, null, endStats)
             players.forEach {
                 it.callbacks?.gameFinishedCallback?.let { it(endStats) }
             }
@@ -119,7 +103,7 @@ class Game(
     private fun checkIfFinished(): Boolean {
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerMoves.size > 0) return false
-        var nextPlayer = getCurrentPlayer()
+        var nextPlayer = currentPlayer
         while (true) {
             // depois vamos ver a todos os outros jogadores se teem uma jogada possível
             nextPlayer = getNext(nextPlayer, players)
@@ -149,7 +133,7 @@ class Game(
         players.forEach {
             it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
         }
-        if (shouldShowPossibleMoves) {
+        if (gameData.shouldShowPossibleMoves) {
 //            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
             players.forEach {
                 it.callbacks?.possibleMovesCallback?.let { it(currentPlayerMoves) }
@@ -285,15 +269,33 @@ class Game(
         updateState()
     }
 
-    fun getSideLength() = sideLength
-    fun getCurrentPlayer() = currentPlayer
-    fun getPlayers() = players
-    fun getBoard() = board
 
-//    fun registerListener(event: String, listener: PropertyChangeListener) =
-//        propertyChange.addPropertyChangeListener(event, listener)
-//
-//    fun removeListener(listener: PropertyChangeListener) =
-//        propertyChange.removePropertyChangeListener(listener)
+    val board: Array<Array<Piece>>
+        get() = gameData.board
 
+    val players: List<Player>
+        get() = gameData.players
+
+    var currentPlayer: Player
+        get() = gameData.currentPlayer
+        private set(value) {
+            gameData.currentPlayer = value
+        }
+
+    val sideLength: Int
+        get() = gameData.sideLength
+
+    var currentPlayerMoves: ArrayList<Vector>
+        get() = gameData.currentPlayerMoves
+        private set(value) {
+            gameData.currentPlayerMoves = value
+        }
+
+    companion object {
+        private val directions = arrayOf(
+            Vector(-1, -1), Vector(0, -1), Vector(1, -1),
+            Vector(-1, 0), /*     Center    */  Vector(1, 0),
+            Vector(-1, 1), Vector(0, 1), Vector(1, 1)
+        )
+    }
 }

@@ -6,13 +6,11 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
-import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
 
 class GameActivity : AppCompatActivity() {
@@ -36,15 +34,11 @@ class GameActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val app = application as App
-        val proxy = app.proxy
+        val proxy = app.gamePlayer
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         gameLayout = GameGrid(this, binding.gridContainer, displayMetrics,
             layoutInflater, proxy.getGameSideLength(), proxy)
-
-        darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)!!
-        lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)!!
-        bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)!!
 
         proxy.changePlayerCallback = l@{ id ->
             val player = proxy.getPlayerById(id)
@@ -55,12 +49,7 @@ class GameActivity : AppCompatActivity() {
             }
             binding.tvPlayerName.text = player.profile.name
             binding.imgViewCurrentPlayer.background = player.profile.icon
-            binding.imgViewCurrentPlayerPiece.background = when (player.piece) {
-                Piece.Dark -> darkPiece
-                Piece.Light -> lightPiece
-                Piece.Blue -> bluePiece
-                else -> darkPiece
-            }
+            binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
             clearPossibleMoves = null
             // TODO 6 botão fazer toggle
             gameLayout.isUsingBombPiece = false

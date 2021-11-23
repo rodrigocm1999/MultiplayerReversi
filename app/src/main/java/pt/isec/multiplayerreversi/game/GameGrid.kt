@@ -18,7 +18,7 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 
 
 class GameGrid(
-    context: Context,
+    private val context: Context,
     private val gridLayout: GridLayout,
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
@@ -28,19 +28,6 @@ class GameGrid(
 
     private val grid: Array<Array<BoardSlotView>>
     private var possibleMoves: List<Vector>? = null
-
-    private val darkPiece =
-        AppCompatResources.getDrawable(context, R.drawable.piece_dark)
-    private val lightPiece =
-        AppCompatResources.getDrawable(context, R.drawable.piece_light)
-    private val bluePiece =
-        AppCompatResources.getDrawable(context, R.drawable.piece_blue)
-    private val possiblePieceDark =
-        AppCompatResources.getDrawable(context, R.drawable.piece_possible_black)
-    private val possiblePieceLight =
-        AppCompatResources.getDrawable(context, R.drawable.piece_possible_white)
-    private val possiblePieceBlue =
-        AppCompatResources.getDrawable(context, R.drawable.piece_possible_blue)
 
     var isUsingBombPiece = false
     var isUsingTrade = false
@@ -59,23 +46,8 @@ class GameGrid(
 
         val start = System.currentTimeMillis()
 
-        //Threads are not faster in this case and layoutinflater should only be used by 1 thread
-//        val syncList = ConcurrentLinkedQueue<BoardSlotView>()
-//        val worker = Runnable {
-//            val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
-//            view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
-//            val boardView = BoardSlotView(view, view[0], view[1] as TextView)
-//            syncList.add(boardView)
-//        }
-//        val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-//        for (i in 0 until boardSideLength * boardSideLength) executor.execute(worker)
-//        executor.shutdown()
-//        executor.awaitTermination(1, TimeUnit.DAYS)
-
         grid = Array(boardSideLength) { line ->
             Array(boardSideLength) { column ->
-//                val boardView = syncList.remove()
-//                val view = boardView.slot
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
                 val boardView = BoardSlotView(view, view[0], view[1] as TextView)
@@ -119,12 +91,7 @@ class GameGrid(
     }
 
     fun showPossibleMoves(list: List<Vector>?, currentPiece: Piece) {
-        val temp = when (currentPiece) {
-            Piece.Dark -> possiblePieceDark
-            Piece.Light -> possiblePieceLight
-            Piece.Blue -> possiblePieceBlue
-            else -> possiblePieceDark
-        }
+        val temp = currentPiece.getPossibleDrawable(context)
         if (list == null) return
         for (it in list) {
             val boardSlot = grid[it.y][it.x]
@@ -143,12 +110,7 @@ class GameGrid(
                 val piece = board[line][column]
                 val boardView = grid[line][column]
 
-                boardView.piece.background = when (piece) {
-                    Piece.Dark -> darkPiece
-                    Piece.Light -> lightPiece
-                    Piece.Blue -> bluePiece
-                    else -> darkPiece
-                }
+                boardView.piece.background = piece.getDrawable(context)
                 boardView.pieceText.setTextColor(if (piece == Piece.Dark) Color.WHITE else Color.BLACK)
 
                 boardView.pieceText.text = piece.char.toString()

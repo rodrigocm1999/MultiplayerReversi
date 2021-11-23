@@ -2,7 +2,8 @@ package pt.isec.multiplayerreversi.game.interactors
 
 class JsonTypes {
     companion object {
-        val HOST_EXITING = "host_exiting"
+        val READY = "ready"
+        val EXITING = "exiting"
         val DATA = "data"
         val CAN_ENTER = "enter"
         val PLAYERS = "players"

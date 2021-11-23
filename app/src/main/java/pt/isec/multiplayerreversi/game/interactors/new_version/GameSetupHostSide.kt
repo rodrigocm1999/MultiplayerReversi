@@ -12,7 +12,7 @@ class GameSetupHostSide(
     override val readyUpCallback: ((Int) -> Unit),
 ) : AbstractNetworkingSetupProxy(socket), IGameSetupHostSide {
 
-    protected var _player: Player
+    private var _player: Player
 
     init {
         beginSend()
@@ -50,7 +50,13 @@ class GameSetupHostSide(
     }
 
     override fun sendExit() {
-        beginSendWithType(JsonTypes.HOST_EXITING)
+        beginSendWithType(JsonTypes.EXITING)
+        jsonWriter.nullValue()
+        endSend()
+    }
+
+    override fun sendStart() {
+        beginSendWithType(JsonTypes.STARTING)
         jsonWriter.nullValue()
         endSend()
     }

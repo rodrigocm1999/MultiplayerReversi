@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 
 class PlayerListAdapter(
@@ -25,13 +24,7 @@ class PlayerListAdapter(
             this.text = player.profile.name
         }
         view.findViewById<ImageView>(R.id.imgViewPlayerPiece).apply {
-            val resource = when (player.piece) {
-                Piece.Dark -> R.drawable.piece_dark
-                Piece.Light -> R.drawable.piece_light
-                Piece.Blue -> R.drawable.piece_blue
-                else -> R.drawable.piece_dark
-            }
-            this.setImageResource(resource)
+            this.setImageDrawable(player.piece.getDrawable(context))
         }
         view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
             this.setImageDrawable(player.profile.icon

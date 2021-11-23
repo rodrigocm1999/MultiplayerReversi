@@ -15,7 +15,6 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupRemoteSide
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -88,8 +87,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         }
 
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
-        //TODO 100 alterar a fonte
-        //TODO 80 alterar o icon
+        //TODO 10 colocar lista de players no jogo
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -101,7 +99,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val app = application as App
         val game = Game(8, players)
         app.game = game
-        app.proxy = LocalOnline(game, players[0])
+        app.gamePlayer = LocalOnline(game, players[0])
     }
 
     override fun onDestroy() {

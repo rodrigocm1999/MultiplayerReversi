@@ -29,5 +29,7 @@
     <string name="save_and_leave">Guardar e sair</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+    <string name="history">Histórico</string>
+    <string name="host_exited">Servidor saiu</string>
 
 </resources>

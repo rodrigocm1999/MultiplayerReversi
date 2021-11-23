@@ -13,6 +13,8 @@ interface GamePlayer : GameDataGetter, GameCallbacks {
 }
 
 interface GameDataGetter {
+    fun isOnline():Boolean
+
     fun getPlayers(): List<Player>
     fun getOwnPlayer(): Player
     fun getGameBoard(): Array<Array<Piece>>

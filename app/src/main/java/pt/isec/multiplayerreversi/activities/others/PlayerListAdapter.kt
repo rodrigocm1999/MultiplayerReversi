@@ -4,9 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -14,10 +12,12 @@ import pt.isec.multiplayerreversi.game.logic.Player
 class PlayerListAdapter(
     private val context: Context,
     var players: List<Player> = ArrayList(),
-) : BaseAdapter() {
+) : BaseAdapter(){
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView
             ?: LayoutInflater.from(context).inflate(R.layout.row_waiting_player, parent, false)
+
         val player = getItem(position)
 
         view.findViewById<TextView>(R.id.textViewPlayerName).apply {
@@ -32,6 +32,7 @@ class PlayerListAdapter(
         }
         return view
     }
+
 
     override fun getCount() = players.size
     override fun getItem(pos: Int) = players[pos]

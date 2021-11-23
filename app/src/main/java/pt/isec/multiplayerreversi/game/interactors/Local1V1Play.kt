@@ -17,6 +17,7 @@ open class Local1V1Play(protected val game: Game) : AbstractCallBacks(), GamePla
         game.playTrade(tradePieces)
     }
 
+    override fun isOnline() = false
     override fun getPlayers() = game.players
     override fun getOwnPlayer() = game.currentPlayer
     override fun getGameBoard() = game.board

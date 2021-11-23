@@ -42,7 +42,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         players.add(Player(app.getProfile(), Piece.Light))
 
         val adapter = PlayerListAdapter(this, players)
-        binding.playersListView.adapter = adapter
+        binding.lvPlayers.adapter = adapter
 
         connectionsWelcomer = ConnectionsWelcomer(players) {
             runOnUiThread {

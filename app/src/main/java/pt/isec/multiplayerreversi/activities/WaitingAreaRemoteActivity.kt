@@ -23,7 +23,7 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
 
         val app = application as App
         val socket = app.temp as Socket
-        val lvPlayers = findViewById<ListView>(R.id.playersListView)
+        val lvPlayers = findViewById<ListView>(R.id.lvPlayers)
 
         val adapter = PlayerListAdapter(this)
         thread {

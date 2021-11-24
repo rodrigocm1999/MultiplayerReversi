@@ -1,8 +1,7 @@
 package pt.isec.multiplayerreversi.game.interactors.new_version
 
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
-import pt.isec.multiplayerreversi.game.interactors.setup.IGameSetupHostSide
-import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -44,20 +43,20 @@ class GameSetupHostSide(
     }
 
     override fun arrivedNewPlayer(player: Player) {
-        beginSendWithType(JsonTypes.NEW_PLAYER)
+        beginSendWithType(JsonTypes.SetupTypes.NEW_PLAYER)
         writePlayer(player)
         endSend()
     }
 
     override fun sendExit() {
-        beginSendWithType(JsonTypes.EXITING)
+        beginSendWithType(JsonTypes.SetupTypes.EXITING)
         jsonWriter.nullValue()
         endSend()
     }
 
-    override fun sendStart() {
-        beginSendWithType(JsonTypes.STARTING)
-        jsonWriter.nullValue()
+    override fun sendStart(game: Game) {
+        beginSendWithType(JsonTypes.SetupTypes.STARTING)
+        writeStartingInformation(game)
         endSend()
     }
 

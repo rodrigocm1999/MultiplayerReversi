@@ -1,10 +1,9 @@
-package pt.isec.multiplayerreversi.game.interactors.socket_related
+package pt.isec.multiplayerreversi.game.interactors.new_version
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
-import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupHostSide
-import pt.isec.multiplayerreversi.game.interactors.setup.IGameSetupHostSide
+import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.io.Closeable
@@ -74,9 +73,9 @@ class ConnectionsWelcomer(
         setupers.add(PlayerSetuper(newPlayer, setuper))
     }
 
-    fun sendStart() {
+    fun sendStart(game: Game) {
         setupers.forEach {
-            it.setuper.sendStart()
+            it.setuper.sendStart(game)
         }
         started = true
     }

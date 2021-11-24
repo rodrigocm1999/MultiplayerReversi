@@ -13,7 +13,7 @@ import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.new_version.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
@@ -70,9 +70,10 @@ class WaitingAreaActivity : AppCompatActivity() {
                             finish()
                             val intent = Intent(this, WaitingAreaRemoteActivity::class.java)
                             startActivity(intent)
-                        } catch (e: SocketTimeoutException) {
+                        } catch (e: Exception) {
                             runOnUiThread {
-                                Toast.makeText(this, R.string.failed_to_connect,
+                                Toast.makeText(this,
+                                    "${getString(R.string.failed_to_connect)} $address",
                                     Toast.LENGTH_LONG).show()
                             }
                         }
@@ -100,6 +101,10 @@ class WaitingAreaActivity : AppCompatActivity() {
         val game = Game(8, players)
         app.game = game
         app.gamePlayer = LocalOnline(game, players[0])
+        connectionsWelcomer.sendStart(game)
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

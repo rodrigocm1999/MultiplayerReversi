@@ -10,9 +10,7 @@ import android.util.JsonWriter
 import androidx.core.graphics.scale
 import pt.isec.multiplayerreversi.game.interactors.AbstractCallBacks
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
-import pt.isec.multiplayerreversi.game.logic.Piece
-import pt.isec.multiplayerreversi.game.logic.Player
-import pt.isec.multiplayerreversi.game.logic.Profile
+import pt.isec.multiplayerreversi.game.logic.*
 import java.io.*
 import java.net.Socket
 
@@ -36,16 +34,8 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
         jsonReader.endArray()
     }
 
-    protected fun sendBoardArray(board: Array<Array<Piece>>) {
-        beginSend()
-        writeType(JsonTypes.BOARD)
-        writeBoardArray(board)
-        endSend()
-    }
-
     protected fun writeBoardArray(board: Array<Array<Piece>>) {
         val sideLength = board.size
-        jsonWriter.name("board")
         jsonWriter.beginArray()
         for (line in 0 until sideLength) {
             jsonWriter.beginArray()
@@ -59,14 +49,6 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
     private fun writeLineColumn(line: Int, column: Int) {
         jsonWriter.name("x").value(column)
         jsonWriter.name("y").value(line)
-    }
-
-    protected fun sendPlayers(players: List<Player>) {
-        beginSend()
-        writeType(JsonTypes.PLAYERS)
-        jsonWriter.name(JsonTypes.DATA)
-        writePlayers(players)
-        endSend()
     }
 
     protected fun writePlayers(players: List<Player>) {
@@ -136,37 +118,6 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
         jsonWriter.endObject()
     }
 
-    protected fun sendProfile(profile: Profile) {
-        beginSend()
-        writeType(JsonTypes.SEND_PROFILE)
-        jsonWriter.name(JsonTypes.DATA)
-        writeProfile(profile)
-        endSend()
-    }
-
-    protected fun readProfile(profile: Profile) {
-        jsonReader.beginObject()
-        when (jsonReader.nextName()) {
-            "name" -> profile.name = jsonReader.nextString()
-            "image" -> {
-                val encodedImg = jsonReader.nextString()
-                var image: Drawable? = null
-                if (encodedImg != null)
-                    image = decodeDrawableFromString(encodedImg)
-                profile.icon = image
-            }
-        }
-        jsonReader.endObject()
-    }
-
-    protected fun sendPlayerIds(id: Int, piece: Piece) {
-        beginSend()
-        writeType(JsonTypes.PLAYER_IDS)
-        jsonWriter.name(JsonTypes.DATA)
-        writePlayerIds(id, piece)
-        endSend()
-    }
-
     protected fun writePlayerIds(id: Int, piece: Piece) {
         jsonWriter.beginObject()
         jsonWriter.name("id").value(id)
@@ -185,10 +136,39 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
         jsonReader.endObject()
     }
 
+    fun readStartingInformation(gameData: GameData) {
+        jsonReader.beginObject()
+        while (jsonReader.hasNext()) {
+            when (jsonReader.nextName()) {
+                "sideLength" -> {
+                    val side = jsonReader.nextInt()
+                    gameData.sideLength = side
+                    gameData.board = Array(side) { Array(side) { Piece.Empty } }
+                }
+                "board" -> {
+                    readBoardArray(gameData.board)
+                }
+                "startingPlayerId" ->
+                    gameData.currentPlayer =
+                        gameData.players.find { it.playerId == jsonReader.nextInt() }!!
+            }
+        }
+        jsonReader.endObject()
+    }
+
+    fun writeStartingInformation(game: Game) {
+        jsonWriter.beginObject()
+        jsonWriter.name("sideLength").value(game.sideLength)
+        jsonWriter.name("board")
+        writeBoardArray(game.board)
+        jsonWriter.name("startingPlayerId").value(game.currentPlayer.playerId)
+        jsonWriter.endObject()
+    }
+
     protected fun beginSend() {
         jsonWriter = JsonWriter(osw)
         jsonWriter.beginObject()
-        jsonWriter.name(JsonTypes.DATA)
+        jsonWriter.name(JsonTypes.SetupTypes.DATA)
     }
 
     protected fun endSend() {
@@ -223,7 +203,7 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
         jsonWriter = JsonWriter(osw)
         jsonWriter.beginObject()
         writeType(type)
-        jsonWriter.name(JsonTypes.DATA)
+        jsonWriter.name(JsonTypes.SetupTypes.DATA)
     }
 
     private fun encodeDrawableToString(drawable: Drawable): String {
@@ -248,8 +228,6 @@ abstract class AbstractNetworkingSetupProxy(private val socket: Socket) : Abstra
     }
 
     override fun close() {
-        jsonReader.close()
-        jsonWriter.close()
         socket.close()
     }
 }

@@ -15,6 +15,7 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
+import kotlin.system.exitProcess
 
 
 class GameGrid(
@@ -27,7 +28,7 @@ class GameGrid(
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
-    private var possibleMoves: List<Vector>? = null
+//    private var possibleMoves: List<Vector>? = null
 
     var isUsingBombPiece = false
     var isUsingTrade = false
@@ -75,33 +76,32 @@ class GameGrid(
         println("Time taken creating board pieces : ${end - start}ms")
 
         gamePlayer.updateBoardCallback = {
-            updatePieces(it)
+            updatePieces()
         }
         gamePlayer.possibleMovesCallback = {
-            showPossibleMoves(it, gamePlayer.getOwnPlayer().piece)
+            showPossibleMoves()
         }
     }
 
     fun clearPossibleMoves(): List<Vector>? {
-        possibleMoves?.forEach {
+        gamePlayer.getPossibleMoves().forEach {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.isVisible = false
         }
-        return possibleMoves
+        return gamePlayer.getPossibleMoves()
     }
 
-    fun showPossibleMoves(list: List<Vector>?, currentPiece: Piece) {
-        val temp = currentPiece.getPossibleDrawable(context)
-        if (list == null) return
-        for (it in list) {
+    fun showPossibleMoves() {
+        val temp = gamePlayer.getOwnPlayer().piece.getPossibleDrawable(context)
+        for (it in gamePlayer.getPossibleMoves()) {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.background = temp
             boardSlot.piece.isVisible = true
         }
-        possibleMoves = list
     }
 
-    private fun updatePieces(board: Array<Array<Piece>>) {
+    fun updatePieces() {
+        val board = gamePlayer.getGameBoard()
         if (board.size != boardSideLength || board[0].size != boardSideLength)
             throw IllegalStateException("Board is not the same size, should never happen")
 
@@ -130,6 +130,11 @@ class GameGrid(
             else if (playerPiece != boardPiece)
                 tradePieces.add(v)
         }
+    }
+
+    fun refreshBoard() {
+        updatePieces()
+        showPossibleMoves()
     }
 
     data class BoardSlotView(val slot: ViewGroup, val piece: View, val pieceText: TextView)

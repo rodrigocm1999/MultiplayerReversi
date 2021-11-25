@@ -31,4 +31,5 @@
     <string name="no">No</string>
     <string name="history">History</string>
     <string name="host_exited">Host left</string>
+    <string name="need_wifi">Need to be connected to Wifi</string>
 </resources>

@@ -4,7 +4,8 @@ import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Player
 
 interface IGameSetupRemoteSide {
-    val arrivedNewPlayerCallback: ((Player) -> Unit)
+    val arrivedPlayerCallback: ((Player) -> Unit)
+    val leftPlayerCallback: ((Player) -> Unit)
     val hostExitedCallback: (() -> Unit)
     val gameStartingCallback: ((GamePlayer) -> Unit)
 

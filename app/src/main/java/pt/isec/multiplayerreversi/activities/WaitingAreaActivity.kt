@@ -88,7 +88,6 @@ class WaitingAreaActivity : AppCompatActivity() {
         }
 
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
-        //TODO 10 colocar lista de players no jogo
     }
 
     override fun onSupportNavigateUp(): Boolean {

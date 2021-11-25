@@ -31,5 +31,5 @@
     <string name="no">Não</string>
     <string name="history">Histórico</string>
     <string name="host_exited">Servidor saiu</string>
-
+    <string name="need_wifi">Precisa de estar connectado ao Wifi</string>
 </resources>

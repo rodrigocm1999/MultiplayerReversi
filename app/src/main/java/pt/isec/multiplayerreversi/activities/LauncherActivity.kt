@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -13,6 +14,14 @@ import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import pt.isec.multiplayerreversi.game.logic.Profile
 import kotlin.concurrent.thread
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+
+
+
+
+
+
 
 class LauncherActivity : AppCompatActivity() {
 
@@ -49,11 +58,19 @@ class LauncherActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.btnRemote.setOnClickListener {
+            val connManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+            if (!mWifi!!.isConnected) {
+                Toast.makeText(this, R.string.need_wifi, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val profile = app.getProfile()
             if (profile.name.isBlank()) {
                 Toast.makeText(this, R.string.need_to_setup_user, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
+
             val intent = Intent(this, WaitingAreaActivity::class.java)
             startActivity(intent)
         }

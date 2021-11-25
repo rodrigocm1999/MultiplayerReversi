@@ -1,5 +1,8 @@
 package pt.isec.multiplayerreversi.game.logic
 
+import android.util.Log
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
+
 class Game(
     sideLength: Int,
     players: ArrayList<Player>,
@@ -7,6 +10,8 @@ class Game(
 ) {
 
     private val gameData: GameData
+
+    private var readyPlayers: ArrayList<Int>? = ArrayList()
 
     init {
         gameData = GameData()
@@ -48,6 +53,24 @@ class Game(
         }
     }
 
+    fun playerReady(player: Player) {
+        if (readyPlayers != null) {
+            readyPlayers?.let { ready ->
+                if (ready.contains(player.playerId)) {
+                    Log.e(OURTAG,
+                        "Player that is already ready got ready again : ${player.playerId}")
+                    return
+                }
+
+                ready.add(player.playerId)
+                if (ready.size == players.size) {
+                    readyPlayers = null
+                    start()
+                }
+            }
+        }
+    }
+
     fun start() {
         updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
@@ -56,7 +79,7 @@ class Game(
     fun playAt(player: Player, line: Int, column: Int): Boolean {
         if (player != currentPlayer)
             return false
-        if (!currentPlayerMoves.contains(Vector(column, line)))
+        if (!currentPlayerPossibleMoves.contains(Vector(column, line)))
             return false
         if (!executePlayAt(line, column))
             return false
@@ -102,7 +125,7 @@ class Game(
 
     private fun checkIfFinished(): Boolean {
         //Se tiver jogadas o jogo não acabou
-        if (currentPlayerMoves.size > 0) return false
+        if (currentPlayerPossibleMoves.size > 0) return false
         var nextPlayer = currentPlayer
         while (true) {
             // depois vamos ver a todos os outros jogadores se teem uma jogada possível
@@ -136,7 +159,7 @@ class Game(
         if (gameData.shouldShowPossibleMoves) {
 //            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
             players.forEach {
-                it.callbacks?.possibleMovesCallback?.let { it(currentPlayerMoves) }
+                it.callbacks?.possibleMovesCallback?.let { it(currentPlayerPossibleMoves) }
             }
         }
     }
@@ -182,12 +205,12 @@ class Game(
 
     private fun updatePossibleMovesForPlayer() {
         val piece = currentPlayer.piece
-        currentPlayerMoves = ArrayList(20)
+        currentPlayerPossibleMoves = ArrayList(20)
         for (column in 0 until sideLength) {
             for (line in 0 until sideLength) {
                 val pos = Vector(column, line)
                 if (checkCanPlayAt(piece, pos))
-                    currentPlayerMoves.add(pos)
+                    currentPlayerPossibleMoves.add(pos)
             }
         }
     }
@@ -245,7 +268,9 @@ class Game(
         return true
     }
 
-    fun playTrade(piece: ArrayList<Vector>) {
+    fun playTrade(player: Player, piece: ArrayList<Vector>) {
+        if (player != currentPlayer) return
+
         val piece1 = piece[0]
         val piece2 = piece[1]
         val opponent = piece[2]
@@ -285,10 +310,10 @@ class Game(
     val sideLength: Int
         get() = gameData.sideLength
 
-    var currentPlayerMoves: ArrayList<Vector>
-        get() = gameData.currentPlayerMoves
+    var currentPlayerPossibleMoves: ArrayList<Vector>
+        get() = gameData.currentPlayerPossibleMoves
         private set(value) {
-            gameData.currentPlayerMoves = value
+            gameData.currentPlayerPossibleMoves = value
         }
 
     companion object {

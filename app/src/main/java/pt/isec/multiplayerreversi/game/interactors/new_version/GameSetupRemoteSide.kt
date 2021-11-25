@@ -13,12 +13,13 @@ import kotlin.concurrent.thread
 
 class GameSetupRemoteSide(
     socket: Socket, profile: Profile,
-    override val arrivedNewPlayerCallback: ((Player) -> Unit),
+    override val arrivedPlayerCallback: ((Player) -> Unit),
+    override val leftPlayerCallback: (Player) -> Unit,
     override val hostExitedCallback: (() -> Unit),
     override val gameStartingCallback: ((GamePlayer) -> Unit),
 ) : AbstractNetworkingSetupProxy(socket), IGameSetupRemoteSide {
 
-    protected var _player: Player = Player(profile, callbacks = this)
+    protected var _player: Player = Player(profile)
     protected val _players = ArrayList<Player>()
 
     init {
@@ -44,14 +45,26 @@ class GameSetupRemoteSide(
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
-                        JsonTypes.SetupTypes.NEW_PLAYER -> {
+                        JsonTypes.Setup.NEW_PLAYER -> {
                             val p = Player()
                             readPlayer(p)
                             readSomething = true
                             _players.add(p)
-                            arrivedNewPlayerCallback(p)
+                            arrivedPlayerCallback(p)
                         }
-                        JsonTypes.SetupTypes.STARTING -> {
+                        JsonTypes.Setup.LEFT_PLAYER -> {
+                            val p = Player()
+                            val playerId = jsonReader.nextInt()
+                            readSomething = true
+                            for( i in 0 until _players.size){
+                               if(_players[i].playerId == playerId){
+                                   _players.removeAt(i)
+                                   break
+                               }
+                            }
+                            leftPlayerCallback(p)
+                        }
+                        JsonTypes.Setup.STARTING -> {
                             Log.i(OURTAG, "game starting")
                             val gameData = GameData()
                             gameData.players = _players
@@ -59,13 +72,14 @@ class GameSetupRemoteSide(
                             readSomething = true
 
                             val gamePlayer = GamePlayerRemoteSide(socket, gameData, _player)
+                            _player.callbacks = gamePlayer
                             gameStartingCallback(gamePlayer)
                         }
-                        JsonTypes.SetupTypes.EXITING -> {
+                        JsonTypes.Setup.EXITING -> {
                             hostExitedCallback()
                         }
                         else -> {
-                            Log.i(OURTAG,
+                            Log.e(OURTAG,
                                 "Recieved something that shouldn't have on GameSetupRemoteSide: $type")
                         }
                     }
@@ -75,13 +89,13 @@ class GameSetupRemoteSide(
             }
 
         } catch (e: SocketException) {
-            Log.i(OURTAG, "Socket was close while creating LocalRemoteGameProxy")
+            Log.e(OURTAG, "Socket was close while creating LocalRemoteGameProxy")
             throw e
         }
     }
 
     override fun ready() {
-        beginSendWithType(JsonTypes.SetupTypes.READY)
+        beginSendWithType(JsonTypes.Setup.READY)
         jsonWriter.nullValue()
         endSend()
     }

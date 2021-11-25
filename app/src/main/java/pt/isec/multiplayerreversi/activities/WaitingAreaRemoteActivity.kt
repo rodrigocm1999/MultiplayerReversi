@@ -28,11 +28,14 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         val adapter = PlayerListAdapter(this)
         thread {
             val proxy = GameSetupRemoteSide(socket, app.getProfile(),
-                arrivedNewPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter
+                arrivedPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter
+                    runOnUiThread { adapter.notifyDataSetChanged() }
+                },
+                leftPlayerCallback = {
                     runOnUiThread { adapter.notifyDataSetChanged() }
                 },
                 hostExitedCallback = {
-                    runOnUiThread { //TODO 50 maybe make this different, maybe
+                    runOnUiThread {
                         Toast.makeText(this, R.string.host_exited, Toast.LENGTH_LONG).show()
                         finish()
                     }

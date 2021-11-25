@@ -48,8 +48,13 @@ class GameActivity : AppCompatActivity() {
 
         setCallbacks()
         setListeners()
-        //only tell the game to start if this is the game host
-        app.game?.start()
+
+        proxy.ready()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        gameLayout.refreshBoard()
     }
 
     private fun setListeners() {
@@ -60,7 +65,7 @@ class GameActivity : AppCompatActivity() {
                         .show()
                 }
                 gameLayout.isUsingBombPiece -> {
-                    gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
+                    gameLayout.showPossibleMoves()
                     gameLayout.isUsingBombPiece = false
                 }
                 else -> {
@@ -77,7 +82,7 @@ class GameActivity : AppCompatActivity() {
                         .show()
                 }
                 gameLayout.isUsingTrade -> {
-                    gameLayout.showPossibleMoves(clearPossibleMoves, proxy.getOwnPlayer().piece)
+                    gameLayout.showPossibleMoves()
                     gameLayout.isUsingTrade = false
                 }
                 else -> {
@@ -92,7 +97,7 @@ class GameActivity : AppCompatActivity() {
         proxy.changePlayerCallback = l@{ id ->
             val player = proxy.getPlayerById(id)
             if (player == null) {
-                Log.i(OURTAG, "Player is null from id : $id")
+                Log.e(OURTAG, "Player is null from id : $id")
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@l
             }
@@ -132,5 +137,10 @@ class GameActivity : AppCompatActivity() {
                 Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        proxy.detach()
     }
 }

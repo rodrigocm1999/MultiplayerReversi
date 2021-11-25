@@ -1,10 +1,9 @@
-package pt.isec.multiplayerreversi.game.interactors.socket_related
+package pt.isec.multiplayerreversi.game.interactors.new_version
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
-import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupHostSide
-import pt.isec.multiplayerreversi.game.interactors.setup.IGameSetupHostSide
+import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.io.Closeable
@@ -19,6 +18,7 @@ class ConnectionsWelcomer(
 
     data class PlayerSetuper(val player: Player, val setuper: IGameSetupHostSide)
 
+    private var started: Boolean = false
     private val setupers = ArrayList<PlayerSetuper>(3)
 
     private val serverSocket = ServerSocket(listeningPort)
@@ -36,14 +36,13 @@ class ConnectionsWelcomer(
 
                     thread {
                         val p = GameSetupHostSide(socket, this) { playerId ->
-                            Log.i(OURTAG, "Player got ready ya know")
+                            Log.i(OURTAG, "Player got ready")
                             val player = players.find { it.playerId == playerId }
                             if (player != null)
                                 Log.i(OURTAG, player.toString())
                             else
                                 Log.i(OURTAG,
                                     "player that got ready with id $playerId is null for some reason that is unknow to the writer of this message")
-
                         }
                         callback(p)
                     }
@@ -74,9 +73,18 @@ class ConnectionsWelcomer(
         setupers.add(PlayerSetuper(newPlayer, setuper))
     }
 
-    override fun close() {
+    fun sendStart(game: Game) {
         setupers.forEach {
-            it.setuper.sendExit()
+            it.setuper.sendStart(game)
+        }
+        started = true
+    }
+
+    override fun close() {
+        if (!started) {
+            setupers.forEach {
+                it.setuper.sendExit()
+            }
         }
         serverSocket.close()
     }

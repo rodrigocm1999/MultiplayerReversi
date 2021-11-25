@@ -39,10 +39,10 @@ class App : Application() {
     }
 
     var game: Game? = null
-    var proxy: GamePlayer? = null
+    var gamePlayer: GamePlayer? = null
     private var profile: Profile? = null
 
-    lateinit var temp: Any
+    var temp: Any? = null
 
     companion object {
         const val OURTAG = "reversiTag"

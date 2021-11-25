@@ -1,31 +1,33 @@
 package pt.isec.multiplayerreversi.activities
 
-import android.app.AlertDialog
-import android.graphics.drawable.Drawable
+import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.get
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
-import pt.isec.multiplayerreversi.game.logic.Piece
+import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Vector
 
 class GameActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameBinding
+
+    data class PlayerView(val playerId: Int, val view: View)
+
+    private lateinit var playersView: List<PlayerView>
+    private var lastPlayerView: PlayerView? = null
+
     private var clearPossibleMoves: List<Vector>? = null
-
-    private lateinit var darkPiece: Drawable
-    private lateinit var lightPiece: Drawable
-    private lateinit var bluePiece: Drawable
-
+    private lateinit var proxy: GamePlayer
     private lateinit var gameLayout: GameGrid
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,51 +40,19 @@ class GameActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val app = application as App
-        val proxy = app.proxy
+        proxy = app.gamePlayer
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         gameLayout = GameGrid(this, binding.gridContainer, displayMetrics,
             layoutInflater, proxy.getGameSideLength(), proxy)
 
-        darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)!!
-        lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)!!
-        bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)!!
+        setCallbacks()
+        setListeners()
+        //only tell the game to start if this is the game host
+        app.game?.start()
+    }
 
-        binding.btnPass.visibility = View.INVISIBLE
-
-        proxy.changePlayerCallback = l@{ id ->
-            val player = proxy.getPlayerById(id)
-            if (player == null) {
-                Log.i(OURTAG, "Player is null from id : $id")
-                Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
-                return@l
-            }
-            binding.tvPlayerName.text = player.profile.name
-            binding.imgViewCurrentPlayer.background = player.profile.icon
-            binding.imgViewCurrentPlayerPiece.background = when (player.piece) {
-                Piece.Dark -> darkPiece
-                Piece.Light -> lightPiece
-                Piece.Blue -> bluePiece
-                else -> darkPiece
-            }
-            clearPossibleMoves = null
-            // TODO 6 botão fazer toggle
-            gameLayout.isUsingBombPiece = false
-            gameLayout.isUsingTrade = false
-        }
-
-        proxy.gameFinishedCallback = {
-            Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
-            val playerStats =
-                it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
-            if (playerStats != null) {
-                Toast.makeText(this, "${playerStats.player.profile.name} " +
-                        "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
-            }
-        }
-
+    private fun setListeners() {
         binding.btnBombPiece.setOnClickListener {
             when {
                 proxy.getOwnPlayer().hasUsedBomb -> {
@@ -116,25 +86,51 @@ class GameActivity : AppCompatActivity() {
                 }
             }
         }
-        if (clearPossibleMoves == null){
-            binding.btnPass.visibility = View.VISIBLE
-        }
-
-
-        //only tell the game to start if this is the game host
-        app.game?.start()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        super.onSupportNavigateUp()
-        val alertDialog = AlertDialog.Builder(this)
-            .setTitle("Exit Game")
-            .setMessage("Are you sure you want to leave the game?")
-            .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
-            .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
-            .setCancelable(true)
-            .create()
-        alertDialog.show()
-        return true
+    private fun setCallbacks() {
+        proxy.changePlayerCallback = l@{ id ->
+            val player = proxy.getPlayerById(id)
+            if (player == null) {
+                Log.i(OURTAG, "Player is null from id : $id")
+                Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
+                return@l
+            }
+            binding.tvPlayerName.text = player.profile.name
+            binding.imgViewCurrentPlayer.background = player.profile.icon
+            binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
+            clearPossibleMoves = null
+            // TODO 6 botão fazer toggle
+            gameLayout.isUsingBombPiece = false
+            gameLayout.isUsingTrade = false
+
+            if (proxy.isOnline()) {
+                lastPlayerView?.view?.setBackgroundResource(R.drawable.piece_possible_black)
+                val currentPlayerView = playersView.find { it.playerId == id }!!
+                currentPlayerView.view.setBackgroundResource(R.drawable.piece_possible_white)
+                lastPlayerView = currentPlayerView
+            }
+        }
+        if (proxy.isOnline()) {
+            val list = ArrayList<PlayerView>(3)
+            proxy.getPlayers().forEach {
+                val view = layoutInflater.inflate( // returns binding.layoutPlayers
+                    R.layout.row_waiting_player, binding.layoutPlayers) as ViewGroup
+                list.add(PlayerView(it.playerId, view[view.childCount - 1]))
+            }
+            playersView = list
+        }
+
+        proxy.gameFinishedCallback = {
+            Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
+            val playerStats =
+                it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
+            if (playerStats != null) {
+                Toast.makeText(this, "${playerStats.player.profile.name} " +
+                        "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

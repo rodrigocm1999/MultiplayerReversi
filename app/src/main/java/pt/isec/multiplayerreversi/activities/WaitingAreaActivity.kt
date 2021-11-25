@@ -13,9 +13,8 @@ import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.socket_related.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.new_version.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
-import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupRemoteSide
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -43,7 +42,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         players.add(Player(app.getProfile(), Piece.Light))
 
         val adapter = PlayerListAdapter(this, players)
-        binding.playersListView.adapter = adapter
+        binding.lvPlayers.adapter = adapter
 
         connectionsWelcomer = ConnectionsWelcomer(players) {
             runOnUiThread {
@@ -71,9 +70,10 @@ class WaitingAreaActivity : AppCompatActivity() {
                             finish()
                             val intent = Intent(this, WaitingAreaRemoteActivity::class.java)
                             startActivity(intent)
-                        } catch (e: SocketTimeoutException) {
+                        } catch (e: Exception) {
                             runOnUiThread {
-                                Toast.makeText(this, R.string.failed_to_connect,
+                                Toast.makeText(this,
+                                    "${getString(R.string.failed_to_connect)} $address",
                                     Toast.LENGTH_LONG).show()
                             }
                         }
@@ -88,8 +88,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         }
 
         //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
-        //TODO 100 alterar a fonte
-        //TODO 80 alterar o icon
+        //TODO 10 colocar lista de players no jogo
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -101,7 +100,11 @@ class WaitingAreaActivity : AppCompatActivity() {
         val app = application as App
         val game = Game(8, players)
         app.game = game
-        app.proxy = LocalOnline(game, players[0])
+        app.gamePlayer = LocalOnline(game, players[0])
+        connectionsWelcomer.sendStart(game)
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

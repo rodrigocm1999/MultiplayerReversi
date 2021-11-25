@@ -173,10 +173,4 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-
-
-    companion object {
-        private const val REQ_PERM_CODE = 1234
-    }
-
 }

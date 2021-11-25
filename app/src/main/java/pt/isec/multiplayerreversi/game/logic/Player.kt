@@ -5,7 +5,7 @@ import pt.isec.multiplayerreversi.game.interactors.GameCallbacks
 class Player(
     var profile: Profile = Profile(),
     var piece: Piece = Piece.Empty,
-    var callbacks: GameCallbacks? = null,
+    var callbacks: GameCallbacks? = null, // TODO need to update these when starting the game, they need to become
     var hasUsedBomb: Boolean = false,
     var hasUsedTrade: Boolean = false,
     var playerId: Int = playerIdCounter++,

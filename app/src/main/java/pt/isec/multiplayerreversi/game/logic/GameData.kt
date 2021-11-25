@@ -9,5 +9,7 @@ class GameData {
     lateinit var currentPlayerMoves: ArrayList<Vector>
 
     var shouldShowPossibleMoves: Boolean = true
-
+    override fun toString(): String {
+        return "GameData(sideLength=$sideLength, players=$players, currentPlayer=$currentPlayer, currentPlayerMoves=$currentPlayerMoves, shouldShowPossibleMoves=$shouldShowPossibleMoves)"
+    }
 }

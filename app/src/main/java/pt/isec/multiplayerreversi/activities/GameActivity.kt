@@ -1,9 +1,11 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.app.AlertDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -45,6 +47,8 @@ class GameActivity : AppCompatActivity() {
         darkPiece = AppCompatResources.getDrawable(this, R.drawable.piece_dark)!!
         lightPiece = AppCompatResources.getDrawable(this, R.drawable.piece_light)!!
         bluePiece = AppCompatResources.getDrawable(this, R.drawable.piece_blue)!!
+
+        binding.btnPass.visibility = View.INVISIBLE
 
         proxy.changePlayerCallback = l@{ id ->
             val player = proxy.getPlayerById(id)
@@ -112,8 +116,25 @@ class GameActivity : AppCompatActivity() {
                 }
             }
         }
+        if (clearPossibleMoves == null){
+            binding.btnPass.visibility = View.VISIBLE
+        }
+
 
         //only tell the game to start if this is the game host
         app.game?.start()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        super.onSupportNavigateUp()
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Exit Game")
+            .setMessage("Are you sure you want to leave the game?")
+            .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
+            .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
+            .setCancelable(true)
+            .create()
+        alertDialog.show()
+        return true
     }
 }

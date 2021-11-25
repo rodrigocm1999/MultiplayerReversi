@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -142,5 +143,22 @@ class GameActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         proxy.detach()
+    }
+
+    //TODO SET INVISIBLE BUTTON
+    //TODO winner pop up on end game
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        super.onSupportNavigateUp()
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Exit Game")
+            .setMessage("Are you sure you want to leave the game?")
+            .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
+            .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
+            .setCancelable(true)
+            .create()
+        alertDialog.show()
+        return true
     }
 }

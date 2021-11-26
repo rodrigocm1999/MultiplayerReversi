@@ -61,8 +61,11 @@ class GamePlayerRemoteSide(
                     Log.i(OURTAG, "Received $type GamePlayerRemoteSide socket loop")
                     if (!readSomething) jsonReader.nextNull()
                     jsonReader.endObject()
+                } catch (e: InterruptedException) {
+                    throw e
                 } catch (e: Exception) {
                     Log.e(OURTAG, "", e)
+                    throw e
                 }
             }
         }

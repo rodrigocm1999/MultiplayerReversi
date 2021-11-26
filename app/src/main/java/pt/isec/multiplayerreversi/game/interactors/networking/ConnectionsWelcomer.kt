@@ -94,6 +94,7 @@ class ConnectionsWelcomer(
     override fun close() {
         if (!started) setupers.forEach {
             it.value.setuper.sendExit()
+            it.value.setuper.close()
         }
         serverSocket?.close()
     }

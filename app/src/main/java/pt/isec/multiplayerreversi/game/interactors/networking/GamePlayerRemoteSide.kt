@@ -54,8 +54,10 @@ class GamePlayerRemoteSide(
                             shouldExit = true
                         }
                         else -> {
-                            Log.i(OURTAG,
-                                "Received something ILLEGAL on GamePlayerRemoteSide socket loop : $type")
+                            Log.i(
+                                OURTAG,
+                                "Received something ILLEGAL on GamePlayerRemoteSide socket loop : $type"
+                            )
                         }
                     }
                     Log.i(OURTAG, "Received $type GamePlayerRemoteSide socket loop")
@@ -74,7 +76,7 @@ class GamePlayerRemoteSide(
     override fun playAt(line: Int, column: Int) {
         queueAction {
             beginSendWithType(JsonTypes.InGame.NORMAL_PLAY)
-            jsonWriter.value(getOwnPlayer().playerId)
+            writeVector(Vector(column, line))
             endSend()
         }
     }
@@ -82,7 +84,7 @@ class GamePlayerRemoteSide(
     override fun playBomb(line: Int, column: Int) {
         queueAction {
             beginSendWithType(JsonTypes.InGame.BOMB_PLAY)
-            jsonWriter.value(getOwnPlayer().playerId)
+            writeVector(Vector(column, line))
             endSend()
         }
     }
@@ -90,7 +92,11 @@ class GamePlayerRemoteSide(
     override fun playTrade(tradePieces: ArrayList<Vector>) {
         queueAction {
             beginSendWithType(JsonTypes.InGame.TRADE_PLAY)
-            jsonWriter.value(getOwnPlayer().playerId)
+            jsonWriter.beginArray()
+            tradePieces.forEach {
+                writeVector(it)
+            }
+            jsonWriter.endArray()
             endSend()
         }
     }
@@ -106,6 +112,14 @@ class GamePlayerRemoteSide(
     override fun detach() {
         queueAction {
             beginSendWithType(JsonTypes.InGame.PLAYER_LEFT)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
+    }
+
+    override fun passPlayer() {
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_PASSED)
             jsonWriter.value(getOwnPlayer().playerId)
             endSend()
         }

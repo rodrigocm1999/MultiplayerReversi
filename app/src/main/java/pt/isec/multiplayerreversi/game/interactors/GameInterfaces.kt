@@ -13,6 +13,7 @@ interface GamePlayer : GameDataGetter, GameCallbacks {
 
     fun ready()
     fun detach()
+    fun passPlayer()
 }
 
 interface GameDataGetter {

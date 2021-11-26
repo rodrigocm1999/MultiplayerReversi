@@ -9,6 +9,7 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 import java.net.Socket
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class GamePlayerHostSide(
@@ -36,9 +37,17 @@ class GamePlayerHostSide(
                         playBomb(vector.y, vector.x)
                     }
                     JsonTypes.InGame.TRADE_PLAY -> {
+                        readSomething = true
+                        var tradePieces = ArrayList<Vector>()
+                        for (i in 1..3) {
+                            tradePieces.add(readVector())
+                        }
+                        playTrade(tradePieces)
+                    }
+                    JsonTypes.InGame.PLAYER_PASSED -> {
                         val vector = readVector()
                         readSomething = true
-                        playBomb(vector.y, vector.x)
+                        passPlayer()
                     }
                     //TODO 5 temos de fazer o pass ainda
                     else -> {
@@ -77,6 +86,9 @@ class GamePlayerHostSide(
     }
 
     override fun detach() {}
+    override fun passPlayer() {
+        game.passPlayer(getOwnPlayer())
+    }
     //-------------------------------------------------------
 
     override fun isOnline() = true

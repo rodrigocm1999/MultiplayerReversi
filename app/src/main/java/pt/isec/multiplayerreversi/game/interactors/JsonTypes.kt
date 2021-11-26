@@ -18,6 +18,7 @@ class JsonTypes {
 
     class InGame {
         companion object {
+            val PLAYER_PASSED = "player_passed"
             val PLAYER_LEFT = "player_left"
             val PLAYER_READY = "player_ready"
             val BOARD_CHANGED = "board_changed"

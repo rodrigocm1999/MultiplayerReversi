@@ -93,6 +93,10 @@ class GameActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.btnPass.setOnClickListener{
+            proxy.passPlayer()
+        }
     }
 
     private fun setCallbacks() {

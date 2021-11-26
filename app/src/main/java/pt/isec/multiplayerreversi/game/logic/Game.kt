@@ -75,7 +75,9 @@ class Game(
         sendEventsAfterPlay()
     }
 
-    //TODO pass play
+    fun passPlayer(player: Player){
+        updateState()
+    }
 
     fun playAt(player: Player, line: Int, column: Int): Boolean {
         if (player != currentPlayer)

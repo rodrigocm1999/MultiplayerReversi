@@ -70,6 +70,7 @@ abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Clos
         jsonWriter.endArray()
     }
 
+
     protected fun readVector(): Vector {
         jsonReader.beginArray()
         val v = Vector(jsonReader.nextInt(), jsonReader.nextInt())

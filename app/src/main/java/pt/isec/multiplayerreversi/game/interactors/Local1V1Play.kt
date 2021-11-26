@@ -26,6 +26,9 @@ open class Local1V1Play(protected val game: Game) : GamePlayer {
     }
 
     override fun detach() {} // No need to do anything
+    override fun passPlayer() {
+        game.passPlayer(getOwnPlayer())
+    }
 
     override fun isOnline() = false
     override fun getPlayers() = game.players

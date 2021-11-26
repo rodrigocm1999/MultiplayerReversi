@@ -6,7 +6,7 @@ class GameData {
     lateinit var board: Array<Array<Piece>>
     lateinit var players: ArrayList<Player>
     lateinit var currentPlayer: Player
-    lateinit var currentPlayerPossibleMoves: ArrayList<Vector>
+    var currentPlayerPossibleMoves: ArrayList<Vector> = ArrayList()
 
     var shouldShowPossibleMoves: Boolean = true
     override fun toString(): String {

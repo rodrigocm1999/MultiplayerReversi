@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -9,6 +9,6 @@ interface IGameSetupRemoteSide {
     val hostExitedCallback: (() -> Unit)
     val gameStartingCallback: ((GamePlayer) -> Unit)
 
-    fun ready()
+    fun leave()
     fun getPlayers(): List<Player>
 }

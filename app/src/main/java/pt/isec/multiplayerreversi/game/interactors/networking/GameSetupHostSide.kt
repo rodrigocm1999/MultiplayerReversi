@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
@@ -18,6 +18,7 @@ class GameSetupHostSide(
     private var _player: Player
 
     private var shouldExit = false
+    private var createdPlayer = false
 
     init {
         beginSend()
@@ -34,13 +35,15 @@ class GameSetupHostSide(
         writePlayerIds(_player.playerId, _player.piece)
         endSend()
 
-        thread {
+        addThread{
             try {
                 while (!shouldExit) {
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
                         JsonTypes.Setup.LEFT_PLAYER -> {
+                            val pId = jsonReader.nextInt()
+                            readSomething = true
                             connectionsWelcomer.playerLeft(_player)
                             shouldExit = true
                         }
@@ -48,38 +51,62 @@ class GameSetupHostSide(
                     if (!readSomething) jsonReader.nextNull()
                     jsonReader.endObject()
                 }
-            } catch (e: Exception) {
+            }catch (e: Exception) {
                 connectionsWelcomer.playerLeft(_player)
                 Log.e(OURTAG, "", e)
             }
         }
+
+        addThread {
+                while (!shouldExit) {
+                    val block = blockingQueue.take()
+                    block()
+                }
+        }
     }
 
     override fun arrivedPlayer(player: Player) {
-        beginSendWithType(JsonTypes.Setup.NEW_PLAYER)
-        writePlayer(player)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.NEW_PLAYER)
+            writePlayer(player)
+            endSend()
+        }
     }
 
     override fun leftPayer(playerId: Int) {
-        beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
-        jsonWriter.value(playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
+            jsonWriter.value(playerId)
+            endSend()
+        }
     }
 
     override fun sendExit() {
-        beginSendWithType(JsonTypes.Setup.EXITING)
-        jsonWriter.nullValue()
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.EXITING)
+            jsonWriter.nullValue()
+            endSend()
+        }
     }
 
     override fun sendStart(game: Game) {
-        beginSendWithType(JsonTypes.Setup.STARTING)
-        writeStartingInformation(game)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.STARTING)
+            writeStartingInformation(game)
+            endSend()
+        }
     }
 
     override fun createGamePlayer(game: Game): GameCallbacks {
+        createdPlayer = true
         return GamePlayerHostSide(game, _player, socket)
+    }
+
+    override fun close() {
+        if (!createdPlayer)
+            super.close()
+        else {
+            threads.forEach { it.interrupt() }
+        }
     }
 }

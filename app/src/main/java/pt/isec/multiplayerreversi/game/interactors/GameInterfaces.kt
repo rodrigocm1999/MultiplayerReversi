@@ -10,8 +10,8 @@ interface GamePlayer : GameDataGetter, GameCallbacks {
     fun playAt(line: Int, column: Int)
     fun playBomb(line: Int, column: Int)
     fun playTrade(tradePieces: ArrayList<Vector>)
-    fun ready()
 
+    fun ready()
     fun detach()
 }
 
@@ -22,7 +22,6 @@ interface GameDataGetter {
     fun getOwnPlayer(): Player
     fun getGameBoard(): Array<Array<Piece>>
     fun getPossibleMoves(): List<Vector>
-
 
     fun getPlayerById(id: Int): Player? = getPlayers().find { p -> p.playerId == id }
     fun getGameSideLength(): Int = getGameBoard().size

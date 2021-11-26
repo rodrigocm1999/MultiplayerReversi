@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
@@ -26,12 +26,17 @@ class GamePlayerRemoteSide(
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
-//                    JsonTypes.InGameTypes.GAME_STARTED -> {}
                         JsonTypes.InGame.BOARD_CHANGED -> {
                             readBoardArray(gameData.board)
                             readSomething = true
                             Log.i(OURTAG, "Read Board ${gameData.board}")
                             updateBoardCallback?.invoke(gameData.board)
+                        }
+                        JsonTypes.InGame.PLAYER_CHANGED -> {
+                            val pId = jsonReader.nextInt()
+                            readSomething = true
+                            Log.i(OURTAG, "Player changed")
+                            changePlayerCallback?.invoke(pId)
                         }
                         JsonTypes.InGame.PLAYER_USED_BOMB -> {
                             val playerId = jsonReader.nextInt()
@@ -53,6 +58,7 @@ class GamePlayerRemoteSide(
                                 "Received something ILLEGAL on GamePlayerRemoteSide socket loop : $type")
                         }
                     }
+                    Log.i(OURTAG, "Received $type GamePlayerRemoteSide socket loop")
                     if (!readSomething) jsonReader.nextNull()
                     jsonReader.endObject()
                 } catch (e: Exception) {
@@ -62,35 +68,44 @@ class GamePlayerRemoteSide(
         }
     }
 
-    // This doesnt get called on this side
     override fun playAt(line: Int, column: Int) {
-        beginSendWithType(JsonTypes.InGame.NORMAL_PLAY)
-        jsonWriter.value(getOwnPlayer().playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.NORMAL_PLAY)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
     }
 
     override fun playBomb(line: Int, column: Int) {
-        beginSendWithType(JsonTypes.InGame.BOMB_PLAY)
-        jsonWriter.value(getOwnPlayer().playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.BOMB_PLAY)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
     }
 
     override fun playTrade(tradePieces: ArrayList<Vector>) {
-        beginSendWithType(JsonTypes.InGame.TRADE_PLAY)
-        jsonWriter.value(getOwnPlayer().playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.TRADE_PLAY)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
     }
 
     override fun ready() {
-        beginSendWithType(JsonTypes.InGame.PLAYER_READY)
-        jsonWriter.value(getOwnPlayer().playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_READY)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
     }
 
     override fun detach() {
-        beginSendWithType(JsonTypes.InGame.PLAYER_LEFT)
-        jsonWriter.value(getOwnPlayer().playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_LEFT)
+            jsonWriter.value(getOwnPlayer().playerId)
+            endSend()
+        }
     }
 
     override fun isOnline() = true

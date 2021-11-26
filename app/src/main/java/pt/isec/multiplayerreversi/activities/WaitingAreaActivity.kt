@@ -13,14 +13,13 @@ import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.new_version.ConnectionsWelcomer
+import pt.isec.multiplayerreversi.game.interactors.networking.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.net.SocketTimeoutException
 import kotlin.concurrent.thread
 
 class WaitingAreaActivity : AppCompatActivity() {
@@ -38,18 +37,18 @@ class WaitingAreaActivity : AppCompatActivity() {
 
         val app = application as App
 
-        players = ArrayList(3)
+        players = ArrayList(Game.PLAYER_LIMIT)
         players.add(Player(app.getProfile(), Piece.Light))
 
         val adapter = PlayerListAdapter(this, players)
         binding.lvPlayers.adapter = adapter
 
-        connectionsWelcomer = ConnectionsWelcomer(players) {
+        connectionsWelcomer = ConnectionsWelcomer(players, playersChanged = { amount ->
             runOnUiThread {
                 adapter.notifyDataSetChanged()
-                binding.btnStartGame.isEnabled = true
+                binding.btnStartGame.isEnabled = amount >= 2
             }
-        }
+        })
 
         binding.btnJoinGame.setOnClickListener {
             val editText = EditText(this).apply {
@@ -97,7 +96,7 @@ class WaitingAreaActivity : AppCompatActivity() {
 
     fun startGame() {
         val app = application as App
-        val game = Game(8, players)
+        val game = Game(players)
         app.game = game
         app.gamePlayer = LocalOnline(game, players[0])
         connectionsWelcomer.sendStart(game)

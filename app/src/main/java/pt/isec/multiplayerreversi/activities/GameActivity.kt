@@ -17,6 +17,7 @@ import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Vector
+import kotlin.concurrent.thread
 
 class GameActivity : AppCompatActivity() {
 

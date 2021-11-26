@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import pt.isec.multiplayerreversi.game.interactors.GameCallbacks
 import pt.isec.multiplayerreversi.game.logic.Game

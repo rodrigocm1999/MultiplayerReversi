@@ -18,11 +18,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 
 
-
-
-
-
-
 class LauncherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLauncherBinding
@@ -50,7 +45,7 @@ class LauncherActivity : AppCompatActivity() {
             players.add(p1)
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
-            val game = Game(8, players)
+            val game = Game(players)
             app.game = game
             val proxy = Local1V1Play(game)
             p1.callbacks = proxy

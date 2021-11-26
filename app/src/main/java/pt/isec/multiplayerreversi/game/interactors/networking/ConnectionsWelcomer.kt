@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
@@ -13,48 +13,58 @@ import kotlin.concurrent.thread
 
 class ConnectionsWelcomer(
     private val players: ArrayList<Player>,
-    private val callback: (GameSetupHostSide) -> Unit,
+    private val playersChanged: (Int) -> Unit,
 ) : Closeable {
 
     data class PlayerSetuper(val player: Player, val setuper: IGameSetupHostSide)
 
+    private var receivingThread: Thread? = null
     private var started: Boolean = false
     private val setupers = HashMap<Int, PlayerSetuper>() //= Set<PlayerSetuper>(3)
 
-    private val serverSocket = ServerSocket(listeningPort)
+    private var serverSocket: ServerSocket? = null
     private var shouldClose = false
     private var playersAmount = players.size
 
     init {
-        thread {
-            println("Listening for connections")
-            while (!shouldClose) {
-                try {
-                    val socket = serverSocket.accept()
-                    Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
-                    playersAmount++
+        listenForConnections()
+    }
 
-                    thread {
-                        val p = GameSetupHostSide(socket, this) { playerId ->
-                            Log.i(OURTAG, "Player got ready")
-                            val player = players.find { it.playerId == playerId }
-                            if (player != null)
-                                Log.i(OURTAG, player.toString())
-                            else
-                                Log.i(OURTAG,
-                                    "player that got ready with id $playerId is null for some reason that is unknow to the writer of this message")
+    private fun listenForConnections() {
+        if (receivingThread == null) {
+            serverSocket = ServerSocket(listeningPort)
+            receivingThread = thread {
+                println("Listening for connections")
+                while (!shouldClose) {
+                    try {
+                        serverSocket?.let {
+                            val socket = serverSocket!!.accept()
+                            Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
+                            playersAmount++
+
+                            thread {
+                                GameSetupHostSide(socket, this) { playerId ->
+                                    Log.i(OURTAG, "Player got ready")
+                                    val player = players.find { it.playerId == playerId }
+                                    if (player != null)
+                                        Log.i(OURTAG, player.toString())
+                                    else
+                                        Log.i(OURTAG,
+                                            "player that got ready with id $playerId is null for some reason that is unknow to the writer of this message")
+                                }
+                            }
+
+                            if (playersAmount >= Game.PLAYER_LIMIT) {
+                                shouldClose = true
+                                serverSocket!!.close()
+                                serverSocket = null
+                            }
                         }
-                        callback(p)
-                    }
-
-                    if (playersAmount >= 3)
+                    } catch (e: SocketException) {
                         shouldClose = true
-
-                } catch (e: SocketException) {
-                    shouldClose = true
+                    }
                 }
             }
-            Log.i(OURTAG, "ServerSocket Closed")
         }
     }
 
@@ -69,6 +79,8 @@ class ConnectionsWelcomer(
 
         players.add(newPlayer)
         setupers.put(newPlayer.playerId, PlayerSetuper(newPlayer, setuper))
+
+        playersChanged()
     }
 
     fun sendStart(game: Game) {
@@ -83,7 +95,7 @@ class ConnectionsWelcomer(
         if (!started) setupers.forEach {
             it.value.setuper.sendExit()
         }
-        serverSocket.close()
+        serverSocket?.close()
     }
 
     fun playerLeft(player: Player) {
@@ -97,5 +109,11 @@ class ConnectionsWelcomer(
         setupers.forEach {
             it.value.setuper.leftPayer(player.playerId)
         }
+        playersChanged()
+    }
+
+    private fun playersChanged() {
+        if(players.size<=2) listenForConnections()
+        playersChanged(players.size)
     }
 }

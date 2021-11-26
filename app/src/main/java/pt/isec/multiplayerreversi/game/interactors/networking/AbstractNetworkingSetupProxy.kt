@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -12,6 +12,8 @@ import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import java.io.*
 import java.net.Socket
+import java.util.concurrent.ArrayBlockingQueue
+import kotlin.concurrent.thread
 
 abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Closeable {
 
@@ -19,6 +21,24 @@ abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Clos
     private val osr = InputStreamReader(socket.getInputStream())
     protected lateinit var jsonWriter: JsonWriter
     protected lateinit var jsonReader: JsonReader
+
+
+    protected val blockingQueue = ArrayBlockingQueue<() -> Unit>(5)
+    protected val threads = ArrayList<Thread>(3)
+
+    protected fun queueAction(block: () -> Unit) {
+        blockingQueue.put(block)
+    }
+
+    protected fun addThread(block: () -> Unit) {
+        val t = thread {
+            try {
+                block()
+            } catch (e: InterruptedException) {
+            }
+        }
+        threads.add(t)
+    }
 
     protected fun readBoardArray(board: Array<Array<Piece>>) {
         val sideLength = board.size
@@ -236,5 +256,7 @@ abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Clos
 
     override fun close() {
         socket.close()
+        blockingQueue.clear()
+        threads.forEach { it.interrupt() }
     }
 }

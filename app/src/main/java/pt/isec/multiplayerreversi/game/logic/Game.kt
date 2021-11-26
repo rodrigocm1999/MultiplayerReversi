@@ -4,7 +4,6 @@ import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 
 class Game(
-    sideLength: Int,
     players: ArrayList<Player>,
     startingPlayer: Player = players.random(),
 ) {
@@ -15,7 +14,7 @@ class Game(
 
     init {
         gameData = GameData()
-        gameData.sideLength = sideLength
+        gameData.sideLength = if (players.size == 2) 8 else 10
         gameData.players = players
         gameData.currentPlayer = startingPlayer
         gameData.board = Array(sideLength) { Array(sideLength) { Piece.Empty } }
@@ -324,5 +323,7 @@ class Game(
             Vector(-1, 0), /*     Center    */  Vector(1, 0),
             Vector(-1, 1), Vector(0, 1), Vector(1, 1)
         )
+
+        const val PLAYER_LIMIT = 3
     }
 }

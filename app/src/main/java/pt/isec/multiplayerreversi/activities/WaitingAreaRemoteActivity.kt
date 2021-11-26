@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
-import pt.isec.multiplayerreversi.game.interactors.new_version.GameSetupRemoteSide
+import pt.isec.multiplayerreversi.game.interactors.networking.GameSetupRemoteSide
 import java.net.Socket
 import kotlin.concurrent.thread
 
 class WaitingAreaRemoteActivity : AppCompatActivity() {
+
+    private var setupRemoteSide: GameSetupRemoteSide? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,7 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
 
         val adapter = PlayerListAdapter(this)
         thread {
-            val proxy = GameSetupRemoteSide(socket, app.getProfile(),
+            setupRemoteSide = GameSetupRemoteSide(socket, app.getProfile(),
                 arrivedPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter
                     runOnUiThread { adapter.notifyDataSetChanged() }
                 },
@@ -42,12 +44,14 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
                 },
                 gameStartingCallback = { gamePlayer ->
                     app.gamePlayer = gamePlayer
+                    setupRemoteSide?.close()
+                    setupRemoteSide = null
                     finish()
                     val intent = Intent(this, GameActivity::class.java)
                     startActivity(intent)
                 })
             runOnUiThread {
-                adapter.players = proxy.getPlayers()
+                adapter.players = setupRemoteSide?.getPlayers()!!
                 adapter.notifyDataSetChanged()
             }
         }
@@ -59,4 +63,13 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        thread {
+            setupRemoteSide?.let {
+                it.leave()
+                it.close()
+            }
+        }
+    }
 }

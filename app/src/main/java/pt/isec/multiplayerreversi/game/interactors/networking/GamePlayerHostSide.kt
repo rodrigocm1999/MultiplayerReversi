@@ -1,4 +1,4 @@
-package pt.isec.multiplayerreversi.game.interactors.new_version
+package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App
@@ -8,6 +8,7 @@ import pt.isec.multiplayerreversi.game.logic.*
 import pt.isec.multiplayerreversi.game.logic.Vector
 import java.net.Socket
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
 
 class GamePlayerHostSide(
@@ -16,9 +17,11 @@ class GamePlayerHostSide(
     socket: Socket,
 ) : AbstractNetworkingSetupProxy(socket), GamePlayer {
 
+    private var shouldExit = false
+
     init {
-        thread {
-            while (true) {
+        addThread {
+            while (!shouldExit) {
                 val type = beginReadAndGetType()
                 var readSomething = false
                 when (type) {
@@ -45,6 +48,13 @@ class GamePlayerHostSide(
                 }
                 if (!readSomething) jsonReader.nextNull()
                 jsonReader.endObject()
+            }
+        }
+
+        addThread {
+            while (!shouldExit) {
+                val block = blockingQueue.take()
+                block()
             }
         }
     }
@@ -78,37 +88,49 @@ class GamePlayerHostSide(
 
     //The game calls these functions and we need to send it over to the other device
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = { moves ->
-        beginSendWithType(JsonTypes.InGame.POSSIBLE_MOVES)
-        jsonWriter.beginArray()
-        moves.forEach { vector ->
-            writeVector(vector)
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.POSSIBLE_MOVES)
+            jsonWriter.beginArray()
+            moves.forEach { vector ->
+                writeVector(vector)
+            }
+            jsonWriter.endArray()
+            endSend()
         }
-        jsonWriter.endArray()
-        endSend()
     }
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = { board ->
-        beginSendWithType(JsonTypes.InGame.BOARD_CHANGED)
-        writeBoardArray(board)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.BOARD_CHANGED)
+            writeBoardArray(board)
+            endSend()
+        }
     }
     override var changePlayerCallback: ((Int) -> Unit)? = { playerId ->
-        beginSendWithType(JsonTypes.InGame.PLAYER_CHANGED)
-        jsonWriter.value(playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_CHANGED)
+            jsonWriter.value(playerId)
+            endSend()
+        }
     }
     override var gameFinishedCallback: ((GameEndStats) -> Unit)? = {
         //TODO game finished end stats send over socket
-        beginSendWithType(JsonTypes.InGame.GAME_FINISHED)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.GAME_FINISHED)
+            endSend()
+        }
     }
     override var playerUsedBombCallback: ((Int) -> Unit)? = {
-        beginSendWithType(JsonTypes.InGame.PLAYER_USED_BOMB)
-        jsonWriter.value(it)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_USED_BOMB)
+            jsonWriter.value(it)
+            endSend()
+        }
     }
     override var playerUsedTradeCallback: ((Int) -> Unit)? = {
-        beginSendWithType(JsonTypes.InGame.PLAYER_USED_TRADE)
-        jsonWriter.value(it)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.InGame.PLAYER_USED_TRADE)
+            jsonWriter.value(it)
+            endSend()
+        }
     }
 }

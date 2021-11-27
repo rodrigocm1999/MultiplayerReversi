@@ -153,9 +153,18 @@ class GameActivity : AppCompatActivity() {
     //TODO SET INVISIBLE BUTTON
     //TODO winner pop up on end game
 
+    override fun onBackPressed() {
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Exit Game")
+            .setMessage("Are you sure you want to leave the game?")
+            .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
+            .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
+            .setCancelable(true)
+            .create()
+        alertDialog.show()
+    }
 
-    override fun onSupportNavigateUp(): Boolean {
-        super.onSupportNavigateUp()
+    /*override fun onSupportNavigateUp(): Boolean {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle("Exit Game")
             .setMessage("Are you sure you want to leave the game?")
@@ -165,5 +174,5 @@ class GameActivity : AppCompatActivity() {
             .create()
         alertDialog.show()
         return true
-    }
+    }*/
 }

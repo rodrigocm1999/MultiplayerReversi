@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
@@ -26,16 +27,21 @@ import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.File
 import kotlin.concurrent.thread
 
+
 class EditProfileActivity : AppCompatActivity() {
 
-    private lateinit var bitmap: Bitmap
+    private var bitmapDrawable: BitmapDrawable? = null
     private lateinit var binding: ActivityEditProfileBinding
 
-    private var changedImage = false
-    private var newImageFile: File? = null
+    private var tempImageFile: File? = null
+
     private lateinit var app: App
     private lateinit var profile: Profile
     private lateinit var permissionsHelper: PermissionsHelper
+
+    //TODO fix the rotating thing
+    //quando se tira uma foto com o telemovel rodado e entramos na edição de perfil com ele direito
+    // ao voltar para a aplicação a atividade é construida de novo e esqueçe o que estava a fazer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,32 +56,28 @@ class EditProfileActivity : AppCompatActivity() {
 
         profile = app.getProfile()
         binding.etNameChange.setText(profile.name)
-        binding.imgBtnProfileChange.setImageDrawable(profile.icon)
+        binding.imgBtnProfileChange.background = profile.icon
 
         setOnClicks()
     }
 
     private fun setOnClicks() {
         binding.imgBtnProfileChange.setOnClickListener {
-            permissionsHelper.withPermissions(
-                arrayOf(
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            ) {
-                newImageFile = File.createTempFile(
-                    "avatar", ".img",
-                    getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                )
+            permissionsHelper.withPermissions(arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            {
+                tempImageFile = File.createTempFile("avatar", ".img",
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES))
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                     val fileUri = FileProvider.getUriForFile(
                         this@EditProfileActivity,
-                        "pt.isec.multiplayerreversi.android.fileprovider", newImageFile!!
+                        "pt.isec.multiplayerreversi.android.fileprovider", tempImageFile!!
                     )
                     addFlags(FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 }
-                Log.i(OURTAG, "Image path -> $newImageFile -----------------")
+                Log.i(OURTAG, "Image path -> $tempImageFile -----------------")
                 startActivityForResultFoto.launch(intent)
             }
         }
@@ -93,6 +95,35 @@ class EditProfileActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (bitmapDrawable != null) {
+            profile.icon = bitmapDrawable
+            app.tempProfile = profile
+            outState.putBoolean("changes", true)
+        } else if (tempImageFile != null) {
+            Log.i(OURTAG, "saved state after taking picture -> ${tempImageFile?.absoluteFile}")
+            outState.putString("newImageFile", tempImageFile?.absolutePath)
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val tempImagePath = savedInstanceState.getString("newImageFile")
+        if (savedInstanceState.getBoolean("changes")) {
+            Log.i(OURTAG, "recovered state after rotating")
+            profile = app.tempProfile!!
+            bitmapDrawable = profile.icon
+
+        } else if (tempImagePath != null) {
+            Log.i(OURTAG, "recovered state after taking picture -> $tempImagePath")
+            tempImagePath.let {
+                val file = File(tempImagePath)
+                tempImageFile = file
+            }
+        }
+    }
+
     private var startActivityForResultFoto = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -101,12 +132,21 @@ class EditProfileActivity : AppCompatActivity() {
             return@registerForActivityResult
         }
         thread {
-            changedImage = true
-            newImageFile?.absolutePath?.let {
-                bitmap = BitmapFactory.decodeFile(it)
+            tempImageFile?.absolutePath?.let { path ->
+                var bitmap = BitmapFactory.decodeFile(path)
                 removeTempImgFile()
+                //Fixes rotation on dumb devices
+                val rotationMatrix = Matrix()
+                if (bitmap.width >= bitmap.height)
+                    rotationMatrix.setRotate(-90f)
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                    bitmap.width, bitmap.height, rotationMatrix, true)
+
                 bitmap = bitmap.scale(600, 800)
-                runOnUiThread { binding.imgBtnProfileChange.setImageBitmap(bitmap) }
+
+                bitmapDrawable = BitmapDrawable(resources, bitmap)
+                profile.icon = bitmapDrawable
+                runOnUiThread { binding.imgBtnProfileChange.background = profile.icon }
             }
         }
     }
@@ -123,32 +163,19 @@ class EditProfileActivity : AppCompatActivity() {
         if (writtenName.isNotBlank() && profile.name != writtenName)
             profile.name = writtenName
 
-        if (changedImage)
-            profile.icon = BitmapDrawable(resources, bitmap)
+        if (bitmapDrawable != null)
+            profile.icon = bitmapDrawable
 
-        app.saveProfile(profile)
-
-        if (changedImage) {
-            thread {
-                openFileOutput(App.avatarFileName, MODE_PRIVATE).use {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
-                }
-            }
-        }
+        app.saveProfile(profile, bitmapDrawable != null)
+        app.tempProfile = null
     }
 
     private fun removeTempImgFile() {
-        //To guarantee that there are no leftovers
-//        val asd = newImageFile!!.parentFile!!
-//        asd.listFiles()?.forEach {
-//            it.delete()
-//        }
-        newImageFile!!.delete()
+        tempImageFile!!.delete()
     }
 
     override fun onBackPressed() {
         confirmationToLeave()
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -158,19 +185,20 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun confirmationToLeave() {
         val writtenName = binding.etNameChange.text.toString()
-        if (profile.name != writtenName || changedImage) {
+        if (profile.name != writtenName || bitmapDrawable != null) {
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle(supportActionBar?.title)
                 .setMessage(getString(R.string.question_leave_without_save))
                 .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
                 .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
-                .setNeutralButton(getString(R.string.save_and_leave)){ d, w -> saveProfile()}
+                .setNeutralButton(getString(R.string.save_and_leave)) { d, w -> saveProfile() }
                 .setCancelable(true)
                 .create()
             alertDialog.show()
-        }else{
+        } else {
             finish()
         }
     }
 
 }
+

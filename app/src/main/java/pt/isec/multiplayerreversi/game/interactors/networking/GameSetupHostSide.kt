@@ -35,7 +35,7 @@ class GameSetupHostSide(
         writePlayerIds(_player.playerId, _player.piece)
         endSend()
 
-        addThread{
+        addThread {
             try {
                 while (!shouldExit) {
                     val type = beginReadAndGetType()
@@ -51,17 +51,17 @@ class GameSetupHostSide(
                     if (!readSomething) jsonReader.nextNull()
                     jsonReader.endObject()
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 connectionsWelcomer.playerLeft(_player)
                 Log.e(OURTAG, "", e)
             }
         }
 
         addThread {
-                while (!shouldExit) {
-                    val block = blockingQueue.take()
-                    block()
-                }
+            while (!shouldExit) {
+                val block = blockingQueue.take()
+                block()
+            }
         }
     }
 
@@ -105,8 +105,7 @@ class GameSetupHostSide(
     override fun close() {
         if (!createdPlayer)
             super.close()
-        else {
+        else
             threads.forEach { it.interrupt() }
-        }
     }
 }

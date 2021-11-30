@@ -49,6 +49,10 @@ class GamePlayerHostSide(
                         readSomething = true
                         passPlayer()
                     }
+                    JsonTypes.InGame.PLAYER_LEFT -> {
+                        val pId = jsonReader.nextInt()
+                        readSomething = true
+                    }
                     //TODO 5 temos de fazer o pass ainda
                     else -> {
                         Log.e(App.OURTAG,
@@ -85,7 +89,9 @@ class GamePlayerHostSide(
         game.playerReady(getOwnPlayer())
     }
 
-    override fun detach() {}
+    override fun detach() {
+        //TODO player saiu
+    }
     override fun passPlayer() {
         game.passPlayer(getOwnPlayer())
     }

@@ -1,10 +1,10 @@
 package pt.isec.multiplayerreversi.game.logic
 
-import android.graphics.drawable.Drawable
+import android.graphics.drawable.BitmapDrawable
 
 class Profile(
     var name: String = "",
-    var icon: Drawable? = null,
+    var icon: BitmapDrawable? = null,
 //    var imagePath: String? = null,
 ) {
     override fun toString(): String {

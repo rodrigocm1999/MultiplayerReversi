@@ -121,7 +121,7 @@ abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Clos
                 "image" -> {
                     if (jsonReader.peek() != JsonToken.NULL) {
                         val encodedImg = jsonReader.nextString()
-                        var image: Drawable? = null
+                        var image: BitmapDrawable? = null
                         if (encodedImg != null)
                             image = decodeDrawableFromString(encodedImg)
                         player.profile.icon = image
@@ -234,25 +234,25 @@ abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Clos
         jsonWriter.name(JsonTypes.Setup.DATA)
     }
 
-    private fun encodeDrawableToString(drawable: Drawable): String {
+    private fun encodeDrawableToString(drawable: BitmapDrawable): String {
         return Base64.encodeToString(convertDrawableToByteArray(drawable), Base64.DEFAULT)
     }
 
-    private fun decodeDrawableFromString(encodedImg: String): Drawable {
+    private fun decodeDrawableFromString(encodedImg: String): BitmapDrawable {
         return convertByteArrayToDrawable(Base64.decode(encodedImg, Base64.DEFAULT))
     }
 
-    private fun convertDrawableToByteArray(drawable: Drawable): ByteArray {
-        var bitmap = (drawable as BitmapDrawable).bitmap
+    private fun convertDrawableToByteArray(drawable: BitmapDrawable): ByteArray {
+        var bitmap = drawable.bitmap
         bitmap = bitmap.scale(200, 300)
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 94, stream)
         return stream.toByteArray()
     }
 
-    private fun convertByteArrayToDrawable(byteArray: ByteArray): Drawable {
+    private fun convertByteArrayToDrawable(byteArray: ByteArray): BitmapDrawable {
         val stream = ByteArrayInputStream(byteArray)
-        return BitmapDrawable.createFromStream(stream, "src")
+        return BitmapDrawable.createFromStream(stream, "src") as BitmapDrawable
     }
 
     override fun close() {

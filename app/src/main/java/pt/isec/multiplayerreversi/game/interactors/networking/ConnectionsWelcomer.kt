@@ -16,7 +16,7 @@ class ConnectionsWelcomer(
     private val playersChanged: (Int) -> Unit,
 ) : Closeable {
 
-    data class PlayerSetuper(val player: Player, val setuper: IGameSetupHostSide)
+    data class PlayerSetuper(val player: Player, val setuper: GameSetupHostSide)
 
     private var receivingThread: Thread? = null
     private var started: Boolean = false
@@ -70,7 +70,7 @@ class ConnectionsWelcomer(
 
     fun getPlayers() = players
 
-    fun joinPlayer(newPlayer: Player, setuper: IGameSetupHostSide) {
+    fun joinPlayer(newPlayer: Player, setuper: GameSetupHostSide) {
         val otherPlayer = players[players.lastIndex]
         newPlayer.piece = Piece.getByOrdinal(otherPlayer.piece.ordinal + 1)
             ?: throw IllegalStateException("Player was joining and there were no more free pieces")
@@ -94,6 +94,8 @@ class ConnectionsWelcomer(
     override fun close() {
         if (!started) setupers.forEach {
             it.value.setuper.sendExit()
+        }
+        setupers.forEach {
             it.value.setuper.close()
         }
         serverSocket?.close()
@@ -114,7 +116,7 @@ class ConnectionsWelcomer(
     }
 
     private fun playersChanged() {
-        if(players.size<=2) listenForConnections()
+        if (players.size <= 2) listenForConnections()
         playersChanged(players.size)
     }
 }

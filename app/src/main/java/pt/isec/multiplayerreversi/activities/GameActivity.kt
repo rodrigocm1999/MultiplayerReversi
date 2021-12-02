@@ -94,7 +94,7 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnPass.setOnClickListener{
+        binding.btnPass.setOnClickListener {
             proxy.passPlayer()
         }
     }
@@ -107,19 +107,21 @@ class GameActivity : AppCompatActivity() {
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@l
             }
-            binding.tvPlayerName.text = player.profile.name
-            binding.imgViewCurrentPlayer.background = player.profile.icon
-            binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
-            clearPossibleMoves = null
-            // TODO 6 botão fazer toggle
-            gameLayout.isUsingBombPiece = false
-            gameLayout.isUsingTrade = false
+            runOnUiThread {
+                binding.tvPlayerName.text = player.profile.name
+                binding.imgViewCurrentPlayer.background = player.profile.icon
+                binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
+                clearPossibleMoves = null
+                // TODO 6 botão fazer toggle
+                gameLayout.isUsingBombPiece = false
+                gameLayout.isUsingTrade = false
 
-            if (proxy.isOnline()) {
-                lastPlayerView?.view?.setBackgroundResource(R.drawable.piece_possible_black)
-                val currentPlayerView = playersView.find { it.playerId == id }!!
-                currentPlayerView.view.setBackgroundResource(R.drawable.piece_possible_white)
-                lastPlayerView = currentPlayerView
+                if (proxy.isOnline()) {
+                    lastPlayerView?.view?.setBackgroundResource(R.drawable.piece_possible_black)
+                    val currentPlayerView = playersView.find { it.playerId == id }!!
+                    currentPlayerView.view.setBackgroundResource(R.drawable.piece_possible_white)
+                    lastPlayerView = currentPlayerView
+                }
             }
         }
         if (proxy.isOnline()) {
@@ -133,14 +135,16 @@ class GameActivity : AppCompatActivity() {
         }
 
         proxy.gameFinishedCallback = {
-            Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
-            val playerStats =
-                it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
-            if (playerStats != null) {
-                Toast.makeText(this, "${playerStats.player.profile.name} " +
-                        "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
+                val playerStats =
+                    it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
+                if (playerStats != null) {
+                    Toast.makeText(this, "${playerStats.player.profile.name} " +
+                            "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

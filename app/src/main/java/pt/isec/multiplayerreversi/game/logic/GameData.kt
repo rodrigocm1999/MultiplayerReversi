@@ -14,4 +14,8 @@ class GameData {
     override fun toString(): String {
         return "GameData(sideLength=$sideLength, players=$players, currentPlayer=$currentPlayer, currentPlayerMoves=$currentPlayerPossibleMoves, shouldShowPossibleMoves=$shouldShowPossibleMoves)"
     }
+
+    fun getPlayer(id: Int): Player? {
+        return players.find { p -> p.playerId == id }
+    }
 }

@@ -15,7 +15,7 @@ import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
 
-abstract class AbstractNetworkingSetupProxy(protected val socket: Socket) : Closeable {
+abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable {
 
     private val osw = OutputStreamWriter(socket.getOutputStream())
     private val osr = InputStreamReader(socket.getInputStream())

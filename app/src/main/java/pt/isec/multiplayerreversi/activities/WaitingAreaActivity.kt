@@ -98,7 +98,10 @@ class WaitingAreaActivity : AppCompatActivity() {
         val app = application as App
         val game = Game(players)
         app.game = game
-        app.gamePlayer = LocalOnline(game, players[0])
+        val thisPlayer = players[0]
+        val gamePlayer = LocalOnline(game, players[0])
+        thisPlayer.callbacks = gamePlayer
+        app.gamePlayer = gamePlayer
         connectionsWelcomer.sendStart(game)
         val intent = Intent(this, GameActivity::class.java)
         startActivity(intent)

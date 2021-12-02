@@ -15,7 +15,7 @@ class GamePlayerRemoteSide(
     private val gameData: GameData,
     private val ownPlayer: Player,
 ) :
-    AbstractNetworkingSetupProxy(socket), GamePlayer {
+    AbstractNetworkingProxy(socket), GamePlayer {
 
     private var shouldExit = false
 
@@ -29,23 +29,28 @@ class GamePlayerRemoteSide(
                         JsonTypes.InGame.BOARD_CHANGED -> {
                             readBoardArray(gameData.board)
                             readSomething = true
-                            Log.i(OURTAG, "Read Board ${gameData.board}")
+                            Log.i(OURTAG, "BOARD_CHANGED")
                             updateBoardCallback?.invoke(gameData.board)
                         }
                         JsonTypes.InGame.PLAYER_CHANGED -> {
-                            val pId = jsonReader.nextInt()
+                            val playerId = jsonReader.nextInt()
                             readSomething = true
-                            Log.i(OURTAG, "Player changed")
-                            changePlayerCallback?.invoke(pId)
+                            Log.i(OURTAG, "PLAYER_CHANGED : $playerId")
+                            gameData.currentPlayer = gameData.getPlayer(playerId)!!
+                            changePlayerCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.PLAYER_USED_BOMB -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
+                            Log.i(OURTAG, "PLAYER_USED_BOMB : $playerId")
+                            gameData.getPlayer(playerId)!!.hasUsedBomb = true
                             playerUsedBombCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.PLAYER_USED_TRADE -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
+                            Log.i(OURTAG, "PLAYER_USED_TRADE : $playerId")
+                            gameData.getPlayer(playerId)!!.hasUsedTrade = true
                             playerUsedTradeCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.GAME_FINISHED -> {
@@ -60,7 +65,6 @@ class GamePlayerRemoteSide(
                             )
                         }
                     }
-                    Log.i(OURTAG, "Received $type GamePlayerRemoteSide socket loop")
                     if (!readSomething) jsonReader.nextNull()
                     jsonReader.endObject()
                 } catch (e: InterruptedException) {
@@ -71,12 +75,21 @@ class GamePlayerRemoteSide(
                 }
             }
         }
+
+        addThread {
+            while (!shouldExit) {
+                val block = blockingQueue.take()
+                block()
+            }
+        }
     }
 
     override fun playAt(line: Int, column: Int) {
         queueAction {
             beginSendWithType(JsonTypes.InGame.NORMAL_PLAY)
-            writeVector(Vector(column, line))
+            val v = Vector(column, line)
+            writeVector(v)
+            Log.i(OURTAG, "send NORMAL_PLAY : $v")
             endSend()
         }
     }
@@ -84,7 +97,9 @@ class GamePlayerRemoteSide(
     override fun playBomb(line: Int, column: Int) {
         queueAction {
             beginSendWithType(JsonTypes.InGame.BOMB_PLAY)
-            writeVector(Vector(column, line))
+            val v = Vector(column, line)
+            writeVector(v)
+            Log.i(OURTAG, "send BOMB_PLAY : $v")
             endSend()
         }
     }
@@ -97,6 +112,8 @@ class GamePlayerRemoteSide(
                 writeVector(it)
             }
             jsonWriter.endArray()
+            Log.i(OURTAG,
+                "send TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
             endSend()
         }
     }
@@ -104,7 +121,8 @@ class GamePlayerRemoteSide(
     override fun ready() {
         queueAction {
             beginSendWithType(JsonTypes.InGame.PLAYER_READY)
-            jsonWriter.value(getOwnPlayer().playerId)
+            jsonWriter.nullValue()
+            Log.i(OURTAG, "send PLAYER_READY")
             endSend()
         }
     }
@@ -112,15 +130,19 @@ class GamePlayerRemoteSide(
     override fun detach() {
         queueAction {
             beginSendWithType(JsonTypes.InGame.PLAYER_LEFT)
-            jsonWriter.value(getOwnPlayer().playerId)
+            jsonWriter.nullValue()
+            Log.i(OURTAG, "send PLAYER_LEFT")
             endSend()
+
+            this.close()
         }
     }
 
     override fun passPlayer() {
         queueAction {
             beginSendWithType(JsonTypes.InGame.PLAYER_PASSED)
-            jsonWriter.value(getOwnPlayer().playerId)
+            jsonWriter.nullValue()
+            Log.i(OURTAG, "send PLAYER_PASSED")
             endSend()
         }
     }

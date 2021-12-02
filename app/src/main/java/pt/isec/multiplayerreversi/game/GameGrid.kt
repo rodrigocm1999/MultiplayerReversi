@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.game
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.util.DisplayMetrics
@@ -15,11 +16,12 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
+import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 
 class GameGrid(
-    private val context: Context,
+    private val context: Activity,
     private val gridLayout: GridLayout,
     screenSize: DisplayMetrics,
     layoutInflater: LayoutInflater,
@@ -76,10 +78,15 @@ class GameGrid(
         println("Time taken creating board pieces : ${end - start}ms")
 
         gamePlayer.updateBoardCallback = {
-            updatePieces()
+            context.runOnUiThread {
+                updatePieces()
+            }
+
         }
         gamePlayer.possibleMovesCallback = {
-            showPossibleMoves()
+            context.runOnUiThread {
+                showPossibleMoves()
+            }
         }
     }
 

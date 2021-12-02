@@ -17,9 +17,10 @@ class GameSetupRemoteSide(
     override val leftPlayerCallback: (Player) -> Unit,
     override val hostExitedCallback: (() -> Unit),
     override val gameStartingCallback: ((GamePlayer) -> Unit),
-) : AbstractNetworkingSetupProxy(socket), IGameSetupRemoteSide {
+) : AbstractNetworkingProxy(socket), IGameSetupRemoteSide {
 
     private var createdPlayer = false
+    private var shouldClose = false
     protected var _player: Player = Player(profile)
     protected val _players = ArrayList<Player>()
 
@@ -42,7 +43,7 @@ class GameSetupRemoteSide(
             println(_player)
 
             addThread {
-                while (true) {
+                while (!shouldClose) {
                     try {
                         val type = beginReadAndGetType()
                         var readSomething = false
@@ -74,7 +75,11 @@ class GameSetupRemoteSide(
 
                                 val gamePlayer = createGamePlayer(gameData)
                                 _player.callbacks = gamePlayer
-                                gameStartingCallback(gamePlayer)
+                                thread { // Create and thread and break this loop immediatly to avoid receiving anything in here
+                                    //NOT a good way to do this, but it works
+                                    gameStartingCallback(gamePlayer)
+                                }
+                                shouldClose = true
                             }
                             JsonTypes.Setup.EXITING -> {
                                 hostExitedCallback()
@@ -87,7 +92,7 @@ class GameSetupRemoteSide(
                         Log.i(OURTAG, "Received $type GameSetupRemoteSide socket loop")
                         if (!readSomething) jsonReader.nextNull()
                         jsonReader.endObject()
-                    } catch (e: SocketException) {
+                    } catch (e: SocketException) { //TODO handle errors
                         break
                     }
                 } // while

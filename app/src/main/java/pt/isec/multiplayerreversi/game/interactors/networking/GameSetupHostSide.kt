@@ -8,12 +8,11 @@ import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.lang.Exception
 import java.net.Socket
-import kotlin.concurrent.thread
 
 class GameSetupHostSide(
     socket: Socket, connectionsWelcomer: ConnectionsWelcomer,
     override val readyUpCallback: ((Int) -> Unit),
-) : AbstractNetworkingSetupProxy(socket), IGameSetupHostSide {
+) : AbstractNetworkingProxy(socket), IGameSetupHostSide {
 
     private var _player: Player
 
@@ -94,6 +93,8 @@ class GameSetupHostSide(
             beginSendWithType(JsonTypes.Setup.STARTING)
             writeStartingInformation(game)
             endSend()
+            shouldExit = true
+            threads.forEach { it.interrupt() }
         }
     }
 

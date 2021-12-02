@@ -70,12 +70,18 @@ class Game(
         }
     }
 
-    fun start() {
+    private fun start() {
         updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
     }
 
-    fun passPlayer(player: Player){
+    fun terminate() {
+        players.forEach {
+            //TODO game closed
+        }
+    }
+
+    fun passPlayer(player: Player) {
         updateState()
     }
 

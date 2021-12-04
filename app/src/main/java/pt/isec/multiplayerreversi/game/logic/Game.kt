@@ -82,6 +82,8 @@ class Game(
     }
 
     fun passPlayer(player: Player) {
+        if (player.playerId == currentPlayer.playerId)
+            return
         updateState()
     }
 

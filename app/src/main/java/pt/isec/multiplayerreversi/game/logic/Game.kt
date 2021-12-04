@@ -82,8 +82,7 @@ class Game(
     }
 
     fun passPlayer(player: Player) {
-        if (player.playerId == currentPlayer.playerId)
-            return
+        if (player !== currentPlayer) return
         updateState()
     }
 
@@ -101,7 +100,7 @@ class Game(
     private fun updateState() {
         currentPlayer = getNext(currentPlayer, players)
         updatePossibleMovesForPlayer()
-        //TODO 2 need to be able to ask to pass to the next player when there is no possible move for this player
+
         if (checkIfFinished()) {
             val playersStats = ArrayList<PlayerEndStats>(players.size)
             var highestScoreId = -1
@@ -137,6 +136,9 @@ class Game(
     private fun checkIfFinished(): Boolean {
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
+        // Se ainda poder jogar alguma jogada especial
+        if (!currentPlayer.hasUsedBomb || !currentPlayer.hasUsedTrade) return false
+
         var nextPlayer = currentPlayer
         while (true) {
             // depois vamos ver a todos os outros jogadores se teem uma jogada possível
@@ -145,14 +147,13 @@ class Game(
                 break
             val piece = nextPlayer.piece
 
-            for (column in 0 until sideLength) {
-                for (line in 0 until sideLength) {
-                    val pos = Vector(column, line)
-                    // Se conseguir jogar pelo menos em 1 sitio quer dizer que o jogo ainda não acabou
-                    if (checkCanPlayAt(piece, pos))
-                        return false
-                }
-            }
+            // Se ainda poder jogar alguma jogada especial
+            if (!nextPlayer.hasUsedBomb || !nextPlayer.hasUsedTrade) return false
+
+            // Se conseguir jogar pelo menos em 1 sitio quer dizer que o jogo ainda não acabou
+            for (column in 0 until sideLength)
+                for (line in 0 until sideLength)
+                    if (checkCanPlayAt(piece, Vector(column, line))) return false
         }
         // se não encontrar jogadas possíveis, o jogo tem de terminar
         return true

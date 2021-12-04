@@ -30,7 +30,6 @@ class GameGrid(
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
-//    private var possibleMoves: List<Vector>? = null
 
     var isUsingBombPiece = false
     var isUsingTrade = false
@@ -76,18 +75,6 @@ class GameGrid(
 
         val end = System.currentTimeMillis()
         println("Time taken creating board pieces : ${end - start}ms")
-
-        gamePlayer.updateBoardCallback = {
-            context.runOnUiThread {
-                updatePieces()
-            }
-
-        }
-        gamePlayer.possibleMovesCallback = {
-            context.runOnUiThread {
-                showPossibleMoves()
-            }
-        }
     }
 
     fun clearPossibleMoves(): List<Vector>? {

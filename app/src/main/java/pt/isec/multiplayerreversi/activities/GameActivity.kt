@@ -2,7 +2,6 @@ package pt.isec.multiplayerreversi.activities
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -22,7 +21,6 @@ import pt.isec.multiplayerreversi.game.GameGrid
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import pt.isec.multiplayerreversi.game.logic.Vector
-import kotlin.concurrent.thread
 
 class GameActivity : AppCompatActivity() {
 
@@ -34,7 +32,7 @@ class GameActivity : AppCompatActivity() {
     private var lastPlayerView: PlayerView? = null
 
     private var clearPossibleMoves: List<Vector>? = null
-    private lateinit var proxy: GamePlayer
+    private lateinit var gamePlayer: GamePlayer
     private lateinit var gameLayout: GameGrid
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,16 +45,16 @@ class GameActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val app = application as App
-        proxy = app.gamePlayer
+        gamePlayer = app.gamePlayer
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
         gameLayout = GameGrid(this, binding.gridContainer, displayMetrics,
-            layoutInflater, proxy.getGameSideLength(), proxy)
+            layoutInflater, gamePlayer.getGameSideLength(), gamePlayer)
 
         setCallbacks()
         setListeners()
 
-        proxy.ready()
+        gamePlayer.ready()
     }
 
     override fun onStart() {
@@ -65,9 +63,22 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
+        gamePlayer.updateBoardCallback = {
+            runOnUiThread {
+                gameLayout.updatePieces()
+            }
+        }
+        gamePlayer.possibleMovesCallback = {
+            runOnUiThread {
+                gameLayout.showPossibleMoves()
+                binding.btnPass.visibility =
+                    if (gamePlayer.getPossibleMoves().isEmpty()) View.VISIBLE else View.INVISIBLE
+            }
+        }
+
         binding.btnBombPiece.setOnClickListener {
             when {
-                proxy.getOwnPlayer().hasUsedBomb -> {
+                gamePlayer.getOwnPlayer().hasUsedBomb -> {
                     Toast.makeText(this, R.string.already_used_bomb_piece, Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -84,7 +95,7 @@ class GameActivity : AppCompatActivity() {
 
         binding.btnTradePiece.setOnClickListener {
             when {
-                proxy.getOwnPlayer().hasUsedTrade -> {
+                gamePlayer.getOwnPlayer().hasUsedTrade -> {
                     Toast.makeText(this, R.string.already_used_trade_move, Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -99,18 +110,14 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnPass.setOnClickListener{
-            if (proxy.getPossibleMoves().isEmpty()){
-                it.visibility = View.VISIBLE
-                proxy.passPlayer()
-            }else
-                it.visibility = View.INVISIBLE
+        binding.btnPass.setOnClickListener {
+            gamePlayer.passPlayer()
         }
     }
 
     private fun setCallbacks() {
-        proxy.changePlayerCallback = l@{ id ->
-            val player = proxy.getPlayerById(id)
+        gamePlayer.changePlayerCallback = l@{ id ->
+            val player = gamePlayer.getPlayerById(id)
             if (player == null) {
                 Log.e(OURTAG, "Player is null from id : $id")
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
@@ -125,7 +132,7 @@ class GameActivity : AppCompatActivity() {
                 gameLayout.isUsingBombPiece = false
                 gameLayout.isUsingTrade = false
 
-                if (proxy.isOnline()) {
+                if (gamePlayer.isOnline()) {
                     lastPlayerView?.view?.setBackgroundResource(R.drawable.piece_possible_black)
                     val currentPlayerView = playersView.find { it.playerId == id }!!
                     currentPlayerView.view.setBackgroundResource(R.drawable.piece_possible_white)
@@ -133,9 +140,9 @@ class GameActivity : AppCompatActivity() {
                 }
             }
         }
-        if (proxy.isOnline()) {
+        if (gamePlayer.isOnline()) {
             val list = ArrayList<PlayerView>(3)
-            proxy.getPlayers().forEach {
+            gamePlayer.getPlayers().forEach {
                 val view = layoutInflater.inflate( // returns binding.layoutPlayers
                     R.layout.row_waiting_player, binding.layoutPlayers) as ViewGroup
                 list.add(PlayerView(it.playerId, view[view.childCount - 1]))
@@ -143,7 +150,7 @@ class GameActivity : AppCompatActivity() {
             playersView = list
         }
 
-        proxy.gameFinishedCallback = {
+        gamePlayer.gameFinishedCallback = {
             runOnUiThread {
                 //Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
                 openEndGameLayoutDialog(it)
@@ -161,13 +168,13 @@ class GameActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        proxy.detach()
+        gamePlayer.detach()
     }
 
     //TODO SET INVISIBLE BUTTON
     //TODO winner pop up on end game
 
-    private fun openEndGameLayoutDialog(gameEndStats: GameEndStats){
+    private fun openEndGameLayoutDialog(gameEndStats: GameEndStats) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -181,16 +188,16 @@ class GameActivity : AppCompatActivity() {
         val btnOk = dialog.findViewById(R.id.btnOk) as Button
 
         gameEndStats.playerStats.forEach {
-            if (it.player.playerId == gameEndStats.winningPlayerId){
+            if (it.player.playerId == gameEndStats.winningPlayerId) {
                 tvWinner.text = it.player.profile.name
                 tvWinnerScore.text = it.pieces.toString()
-            }else{
+            } else {
                 tvOpponent1.text = it.player.profile.name
                 tvScoreOpponent1.text = it.pieces.toString()
-                if (gameEndStats.playerStats.size > 2){
+                if (gameEndStats.playerStats.size > 2) {
                     val flThirdPlayer = dialog.findViewById(R.id.lnThirdPlayer) as View
                     flThirdPlayer.visibility = View.VISIBLE
-                    if (tvOpponent1.text != it.player.profile.name ){
+                    if (tvOpponent1.text != it.player.profile.name) {
                         tvOpponent2.text = it.player.profile.name
                         tvScoreOpponent2.text = it.pieces.toString()
                         //TODO test isto
@@ -198,7 +205,7 @@ class GameActivity : AppCompatActivity() {
                 }
             }
         }
-        btnOk.setOnClickListener{
+        btnOk.setOnClickListener {
             dialog.dismiss()
             finish()
         }

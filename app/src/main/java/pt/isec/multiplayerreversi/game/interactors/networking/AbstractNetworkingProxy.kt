@@ -8,6 +8,7 @@ import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import java.io.*
+import java.lang.Exception
 import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
@@ -19,28 +20,63 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     protected lateinit var jsonWriter: JsonWriter
     protected lateinit var jsonReader: JsonReader
 
+    private data class StrThread(val name: String, val thread: Thread)
 
-    protected val queuedActions = ArrayBlockingQueue<() -> Unit>(5)
-    protected val threads = ArrayList<Thread>(3)
+    private val queuedActions = ArrayBlockingQueue<() -> Unit>(10)
+    private val threads = ArrayList<StrThread>(3)
+    private val senderThread: Thread
 
-    protected fun stopAllThreads() {
-        threads.forEach { it.interrupt() }
-        threads.clear()
+    @Volatile
+    protected var shouldExit = false
+
+    init {
+        senderThread = thread {
+            while (!shouldExit) {
+                val block = queuedActions.take()
+                block()
+                Log.i(OURTAG, "Executou bloco de envio")
+            }
+        }
     }
 
     protected fun queueAction(block: () -> Unit) {
-        queuedActions.put(block)
+        synchronized(queuedActions) {
+            queuedActions.put(block)
+        }
     }
 
-    protected fun addThread(threadName: String? = null, block: () -> Unit) {
-        val t = thread {
+    private fun stopAllThreads() {
+        threads.forEach {
             try {
-                block()
-            } catch (e: InterruptedException) {
-                threadName?.let { Log.i(OURTAG, "Closed Thread with name : $threadName") }
+                it.thread.interrupt()
+            } catch (e: Exception) {
+                Log.e(OURTAG, e.toString())
+                throw e
             }
         }
-        threads.add(t)
+        threads.clear()
+    }
+
+    protected fun addReceiving(threadName: String, runner: () -> Unit) {
+        val t = Thread {
+            try {
+                Log.i(OURTAG, "Started Thread with name : $threadName")
+                runner()
+                Log.i(OURTAG, "Finished Thread with name : $threadName")
+                synchronized(threads) {
+                    for (t in threads) {
+                        if (t.name == threadName) {
+                            threads.remove(t)
+                            break
+                        }
+                    }
+                }
+            } catch (e: InterruptedException) {
+                Log.i(OURTAG, "Interrupted Thread with name : $threadName")
+            }
+        }
+        t.start()
+        threads.add(StrThread(threadName, t))
     }
 
     protected fun readBoardArray(board: Array<Array<Piece>>) {
@@ -235,6 +271,7 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
         jsonWriter.beginObject()
         writeType(type)
         jsonWriter.name(JsonTypes.Setup.DATA)
+        Log.i(OURTAG, "Sending $type")
     }
 
     private fun encodeDrawableToString(drawable: BitmapDrawable): String {
@@ -259,9 +296,13 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     }
 
     override fun close() {
-        socket.close()
-        queuedActions.clear()
-        //TODO  quando se sai do jogo tem de fechar os sockets
+        synchronized(queuedActions) {
+            shouldExit = true
+            if (!queuedActions.isEmpty()) {
+                senderThread.join()
+            }
+        }
         stopAllThreads()
+        //TODO  quando se sai do jogo tem de fechar os sockets
     }
 }

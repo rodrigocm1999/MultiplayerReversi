@@ -1,9 +1,6 @@
 package pt.isec.multiplayerreversi.game.interactors
 
-import pt.isec.multiplayerreversi.game.logic.Game
-import pt.isec.multiplayerreversi.game.logic.GameEndStats
-import pt.isec.multiplayerreversi.game.logic.Piece
-import pt.isec.multiplayerreversi.game.logic.Vector
+import pt.isec.multiplayerreversi.game.logic.*
 
 open class Local1V1Play(protected val game: Game) : GamePlayer {
 
@@ -32,6 +29,8 @@ open class Local1V1Play(protected val game: Game) : GamePlayer {
 
     override fun isOnline() = false
     override fun getPlayers() = game.players
+    override fun getCurrentPlayer() = game.currentPlayer
+
     override fun getOwnPlayer() = game.currentPlayer
     override fun getGameBoard() = game.board
     override fun getPossibleMoves() = game.currentPlayerPossibleMoves

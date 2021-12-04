@@ -20,9 +20,8 @@ class GameSetupRemoteSide(
 ) : AbstractNetworkingProxy(socket), IGameSetupRemoteSide {
 
     private var createdPlayer = false
-    private var shouldClose = false
-    protected var _player: Player = Player(profile)
-    protected val _players = ArrayList<Player>()
+    private var _player: Player = Player(profile)
+    private val _players = ArrayList<Player>()
 
     init {
         try {
@@ -42,8 +41,8 @@ class GameSetupRemoteSide(
 
             println(_player)
 
-            addThread("GameSetupRemoteSide send") {
-                while (!shouldClose) {
+            addReceiving("GameSetupRemoteSide send") {
+                while (!shouldExit) {
                     try {
                         val type = beginReadAndGetType()
                         var readSomething = false
@@ -75,11 +74,12 @@ class GameSetupRemoteSide(
 
                                 val gamePlayer = createGamePlayer(gameData)
                                 _player.callbacks = gamePlayer
-                                thread { // Create and thread and break this loop immediatly to avoid receiving anything in here
+                                shouldExit = true
+                                thread {
+                                    // Create and thread and break this loop immediatly to avoid receiving anything in here
                                     //NOT a good way to do this, but it works
                                     gameStartingCallback(gamePlayer)
                                 }
-                                shouldClose = true
                             }
                             JsonTypes.Setup.EXITING -> {
                                 hostExitedCallback()
@@ -93,7 +93,8 @@ class GameSetupRemoteSide(
                         if (!readSomething) jsonReader.nextNull()
                         endRead()
                     } catch (e: InterruptedException) {
-                        endRead()
+                        Log.i(OURTAG,"InterruptedException correu na thread GameSetupRemoteSide")
+                        shouldExit = true
                         throw e
                     } catch (e: SocketException) {
                         //TODO handle errors, ask if want to continue locally or terminate
@@ -110,23 +111,26 @@ class GameSetupRemoteSide(
 
     @Synchronized
     override fun leave() {
-        beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
-        jsonWriter.value(_player.playerId)
-        endSend()
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
+            jsonWriter.value(_player.playerId)
+            endSend()
+        }
     }
 
     override fun getPlayers(): List<Player> = _players
 
-    override fun close() {
-        if (!createdPlayer)
-            super.close()
-        else {
-            stopAllThreads()
-        }
-    }
+//    override fun close() {
+//        if (!createdPlayer)
+//            super.close()
+//        else {
+//            stopAllThreads()
+//        }
+//    }
 
     fun createGamePlayer(gameData: GameData): GamePlayerRemoteSide {
         createdPlayer = true
+        this.close()
         return GamePlayerRemoteSide(socket, gameData, _player)
     }
 }

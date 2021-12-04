@@ -136,12 +136,12 @@ class Game(
     }
 
     private fun checkIfFinished(): Boolean {
+        //Se todos os jogadores fizerem pass acaba
+        if (countPasses >= players.size) return true
         //Se o tabuleiro estiver cheio
         if (boardIsFull()) return true
         //Se o tabuleiro estiver fazio
         if (boardIsEmpty()) return true
-        //Se todos os jogadores fizerem pass acaba
-        if (countPasses >= players.size) return true
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
         // Se ainda poder jogar alguma jogada especial
@@ -174,13 +174,13 @@ class Game(
                     return false
         return true
     }
+
     private fun boardIsEmpty(): Boolean {
-        var foundPieces = true
         for (column in 0 until sideLength)
             for (line in 0 until sideLength)
                 if (board[line][column] != Piece.Empty)
-                    foundPieces = false
-        return foundPieces
+                    return false
+        return true
     }
 
     private fun sendEventsAfterPlay() {

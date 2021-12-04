@@ -86,7 +86,7 @@ class GameGrid(
     }
 
     fun showPossibleMoves() {
-        val temp = gamePlayer.getOwnPlayer().piece.getPossibleDrawable(context)
+        val temp = gamePlayer.getCurrentPlayer().piece.getPossibleDrawable(context)
         for (it in gamePlayer.getPossibleMoves()) {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.background = temp

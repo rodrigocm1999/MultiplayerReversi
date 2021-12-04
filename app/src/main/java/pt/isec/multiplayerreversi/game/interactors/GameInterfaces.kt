@@ -20,10 +20,11 @@ interface GameDataGetter {
     fun isOnline():Boolean
 
     fun getPlayers(): List<Player>
+    fun getCurrentPlayer(): Player
     fun getOwnPlayer(): Player
     fun getGameBoard(): Array<Array<Piece>>
-    fun getPossibleMoves(): List<Vector>
 
+    fun getPossibleMoves(): List<Vector>
     fun getPlayerById(id: Int): Player? = getPlayers().find { p -> p.playerId == id }
     fun getGameSideLength(): Int = getGameBoard().size
 }

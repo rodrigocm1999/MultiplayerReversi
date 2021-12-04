@@ -14,10 +14,10 @@ class GamePlayerHostSide(
     socket: Socket,
 ) : AbstractNetworkingProxy(socket), GamePlayer {
 
-    private var shouldExit = false
+    private var alreadyReceivedReady = false
 
     init {
-        addThread("GamePlayerHostSide receive") {
+        addReceiving("GamePlayerHostSide receive") {
             try {
                 while (!shouldExit) {
                     //TODO 0 find out why this is not receiving anything
@@ -54,11 +54,14 @@ class GamePlayerHostSide(
                             Log.i(OURTAG, "PLAYER_LEFT")
                         }
                         JsonTypes.InGame.PLAYER_READY -> {
+                            if (!alreadyReceivedReady) {
+                                alreadyReceivedReady = true
+                                ready()
+                            }
                             Log.i(OURTAG, "PLAYER_READY")
-                            ready()
                         }
                         else -> {
-                            Log.e(OURTAG,"Received something that shouldn't have" +
+                            Log.e(OURTAG, "Received something that shouldn't have" +
                                     " on GameSetupRemoteSide: $type")
                         }
                     }
@@ -66,17 +69,11 @@ class GamePlayerHostSide(
                     jsonReader.endObject()
                 }
             } catch (e: InterruptedException) {
-                endRead()
+                Log.i(OURTAG, "InterruptedException correu na thread GamePlayerHostSide")
+                shouldExit = true
                 throw e
             } catch (e: Exception) {
                 throw e
-            }
-        }
-
-        addThread("GamePlayerHostSide send") {
-            while (!shouldExit) {
-                val action = queuedActions.take()
-                action()
             }
         }
     }
@@ -109,10 +106,11 @@ class GamePlayerHostSide(
 
     override fun isOnline() = true
     override fun getPlayers() = game.players
+    override fun getCurrentPlayer() = game.currentPlayer
+
     override fun getOwnPlayer() = ownPlayer
     override fun getGameBoard() = game.board
     override fun getPossibleMoves() = game.currentPlayerPossibleMoves
-
 
     //The game calls these functions and we need to send it over to the other device
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = { moves ->

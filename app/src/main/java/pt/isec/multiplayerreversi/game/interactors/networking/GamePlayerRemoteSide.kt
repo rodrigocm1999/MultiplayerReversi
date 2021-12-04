@@ -7,9 +7,7 @@ import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import pt.isec.multiplayerreversi.game.logic.Vector
 import java.net.Socket
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 class GamePlayerRemoteSide(
     socket: Socket,
@@ -18,10 +16,8 @@ class GamePlayerRemoteSide(
 ) :
     AbstractNetworkingProxy(socket), GamePlayer {
 
-    private var shouldExit = false
-
     init {
-        addThread("GamePlayerRemoteSide receive") {
+        addReceiving("GamePlayerRemoteSide receive") {
             while (!shouldExit) {
                 try {
                     val type = beginReadAndGetType()
@@ -111,19 +107,13 @@ class GamePlayerRemoteSide(
                     if (!readSomething) jsonReader.nextNull()
                     endRead()
                 } catch (e: InterruptedException) {
-                    endRead()
+                    Log.i(OURTAG, "InterruptedException correu na thread GamePlayerRemoteSide")
+                    shouldExit = true
                     throw e
                 } catch (e: Exception) {
                     Log.e(OURTAG, "", e)
                     throw e
                 }
-            }
-        }
-
-        addThread("GamePlayerRemoteSide send") {
-            while (!shouldExit) {
-                val block = queuedActions.take()
-                block()
             }
         }
     }
@@ -193,6 +183,8 @@ class GamePlayerRemoteSide(
 
     override fun isOnline() = true
     override fun getPlayers() = gameData.players
+    override fun getCurrentPlayer() = gameData.currentPlayer
+
     override fun getOwnPlayer() = ownPlayer
     override fun getGameBoard() = gameData.board
     override fun getPossibleMoves() = gameData.currentPlayerPossibleMoves

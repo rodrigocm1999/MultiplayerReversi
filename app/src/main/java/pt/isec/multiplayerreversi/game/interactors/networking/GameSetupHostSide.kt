@@ -15,8 +15,6 @@ class GameSetupHostSide(
 ) : AbstractNetworkingProxy(socket), IGameSetupHostSide {
 
     private var _player: Player
-
-    private var shouldExit = false
     private var createdPlayer = false
 
     init {
@@ -34,10 +32,12 @@ class GameSetupHostSide(
         writePlayerIds(_player.playerId, _player.piece)
         endSend()
 
-        addThread("GameSetupHostSide receive") {
+        addReceiving("GameSetupHostSide receive") {
             try {
                 while (!shouldExit) {
+                    Log.i(OURTAG,"STUCK rn pls help")
                     val type = beginReadAndGetType()
+                    Log.i(OURTAG,"STUCK rn pls help -> andou para a frente")
                     var readSomething = false
                     when (type) {
                         JsonTypes.Setup.LEFT_PLAYER -> {
@@ -55,19 +55,12 @@ class GameSetupHostSide(
                     endRead()
                 }
             } catch (e: InterruptedException) {
-                endRead()
+                Log.i(OURTAG,"InterruptedException correu na thread GameSetupHostSide")
                 shouldExit = true
                 throw e
             } catch (e: Exception) {
                 connectionsWelcomer.playerLeft(_player)
                 Log.e(OURTAG, "", e)
-            }
-        }
-
-        addThread("GameSetupHostSide send") {
-            while (!shouldExit) {
-                val block = queuedActions.take()
-                block()
             }
         }
     }
@@ -98,24 +91,18 @@ class GameSetupHostSide(
 
     override fun sendStart(game: Game) {
         queueAction {
+            shouldExit = true
             beginSendWithType(JsonTypes.Setup.STARTING)
             writeStartingInformation(game)
             endSend()
-            shouldExit = true
-            stopAllThreads()
+            Log.i(OURTAG,"Send STARTING correu")
         }
     }
 
     override fun createGamePlayer(game: Game): GameCallbacks {
         createdPlayer = true
-        this.close()
+        close()
+        Log.i(OURTAG,"mandou fechar setuper")
         return GamePlayerHostSide(game, _player, socket)
-    }
-
-    override fun close() {
-        if (!createdPlayer)
-            super.close()
-        else
-            stopAllThreads()
     }
 }

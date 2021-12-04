@@ -17,7 +17,7 @@ class GamePlayerHostSide(
     private var shouldExit = false
 
     init {
-        addThread {
+        addThread("GamePlayerHostSide receive") {
             try {
                 while (!shouldExit) {
                     //TODO 0 find out why this is not receiving anything
@@ -73,7 +73,7 @@ class GamePlayerHostSide(
             }
         }
 
-        addThread {
+        addThread("GamePlayerHostSide send") {
             while (!shouldExit) {
                 val action = queuedActions.take()
                 action()

@@ -34,7 +34,7 @@ class GameSetupHostSide(
         writePlayerIds(_player.playerId, _player.piece)
         endSend()
 
-        addThread {
+        addThread("GameSetupHostSide receive") {
             try {
                 while (!shouldExit) {
                     val type = beginReadAndGetType()
@@ -46,12 +46,17 @@ class GameSetupHostSide(
                             connectionsWelcomer.playerLeft(_player)
                             shouldExit = true
                         }
+                        else->{
+                            Log.e(OURTAG,
+                                "Received something that shouldn't have on GameSetupHostSide: $type")
+                        }
                     }
                     if (!readSomething) jsonReader.nextNull()
                     endRead()
                 }
             } catch (e: InterruptedException) {
                 endRead()
+                shouldExit = true
                 throw e
             } catch (e: Exception) {
                 connectionsWelcomer.playerLeft(_player)
@@ -59,7 +64,7 @@ class GameSetupHostSide(
             }
         }
 
-        addThread {
+        addThread("GameSetupHostSide send") {
             while (!shouldExit) {
                 val block = queuedActions.take()
                 block()

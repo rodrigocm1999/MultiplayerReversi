@@ -2,11 +2,9 @@ package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.util.Base64
-import android.util.JsonReader
-import android.util.JsonToken
-import android.util.JsonWriter
+import android.util.*
 import androidx.core.graphics.scale
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import java.io.*
@@ -27,17 +25,19 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
 
     protected fun stopAllThreads() {
         threads.forEach { it.interrupt() }
+        threads.clear()
     }
 
     protected fun queueAction(block: () -> Unit) {
         queuedActions.put(block)
     }
 
-    protected fun addThread(block: () -> Unit) {
+    protected fun addThread(threadName: String? = null, block: () -> Unit) {
         val t = thread {
             try {
                 block()
             } catch (e: InterruptedException) {
+                threadName?.let { Log.i(OURTAG, "Closed Thread with name : $threadName") }
             }
         }
         threads.add(t)
@@ -261,6 +261,7 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     override fun close() {
         socket.close()
         queuedActions.clear()
-        threads.forEach { it.interrupt() }
+        //TODO  quando se sai do jogo tem de fechar os sockets
+        stopAllThreads()
     }
 }

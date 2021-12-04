@@ -21,7 +21,7 @@ class GamePlayerRemoteSide(
     private var shouldExit = false
 
     init {
-        thread {
+        addThread("GamePlayerRemoteSide receive") {
             while (!shouldExit) {
                 try {
                     val type = beginReadAndGetType()
@@ -107,7 +107,7 @@ class GamePlayerRemoteSide(
             }
         }
 
-        addThread {
+        addThread("GamePlayerRemoteSide send") {
             while (!shouldExit) {
                 val block = queuedActions.take()
                 block()

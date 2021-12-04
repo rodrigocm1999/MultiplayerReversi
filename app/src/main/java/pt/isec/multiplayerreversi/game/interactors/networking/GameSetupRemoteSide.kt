@@ -42,7 +42,7 @@ class GameSetupRemoteSide(
 
             println(_player)
 
-            addThread {
+            addThread("GameSetupRemoteSide send") {
                 while (!shouldClose) {
                     try {
                         val type = beginReadAndGetType()
@@ -121,7 +121,7 @@ class GameSetupRemoteSide(
         if (!createdPlayer)
             super.close()
         else {
-            threads.forEach { it.interrupt() }
+            stopAllThreads()
         }
     }
 

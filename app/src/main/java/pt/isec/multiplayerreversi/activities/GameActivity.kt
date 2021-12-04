@@ -153,14 +153,14 @@ class GameActivity : AppCompatActivity() {
             runOnUiThread {
                 //Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
                 openEndGameLayoutDialog(it)
-                val playerStats =
+                /*val playerStats =
                     it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
                 if (playerStats != null) {
                     Toast.makeText(this, "${playerStats.player.profile.name} " +
                             "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
-                }
+                }*/
             }
         }
     }

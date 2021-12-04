@@ -9,6 +9,7 @@ class Game(
 ) {
 
     private val gameData: GameData
+    private var countPasses: Int = 0
 
     private var readyPlayers: ArrayList<Int>? = ArrayList()
 
@@ -84,6 +85,7 @@ class Game(
     fun passPlayer(player: Player) {
         if (player !== currentPlayer) return
         updateState()
+        countPasses++
     }
 
     fun playAt(player: Player, line: Int, column: Int): Boolean {
@@ -94,6 +96,7 @@ class Game(
         if (!executePlayAt(line, column))
             return false
         updateState()
+        countPasses = 0
         return true
     }
 
@@ -135,6 +138,10 @@ class Game(
     private fun checkIfFinished(): Boolean {
         //Se o tabuleiro estiver cheio
         if (boardIsFull()) return true
+        //Se o tabuleiro estiver fazio
+        if (boardIsEmpty()) return true
+        //Se todos os jogadores fizerem pass acaba
+        if (countPasses >= players.size) return true
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
         // Se ainda poder jogar alguma jogada especial
@@ -166,6 +173,14 @@ class Game(
                 if (board[line][column] == Piece.Empty)
                     return false
         return true
+    }
+    private fun boardIsEmpty(): Boolean {
+        var foundPieces = true
+        for (column in 0 until sideLength)
+            for (line in 0 until sideLength)
+                if (board[line][column] != Piece.Empty)
+                    foundPieces = false
+        return foundPieces
     }
 
     private fun sendEventsAfterPlay() {
@@ -286,6 +301,7 @@ class Game(
             it.callbacks?.playerUsedBombCallback?.invoke(currentPlayer.playerId)
         }
         updateState()
+        countPasses = 0
         return true
     }
 
@@ -313,6 +329,7 @@ class Game(
             it.callbacks?.playerUsedTradeCallback?.invoke(currentPlayer.playerId)
         }
         updateState()
+        countPasses = 0
     }
 
 

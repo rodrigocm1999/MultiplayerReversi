@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,14 @@ import pt.isec.multiplayerreversi.game.logic.Player
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlin.concurrent.thread
+import android.net.wifi.WifiManager
+import android.text.format.Formatter
+import androidx.core.content.ContentProviderCompat
+
+import androidx.core.content.ContentProviderCompat.requireContext
+
+
+
 
 class WaitingAreaActivity : AppCompatActivity() {
 
@@ -39,6 +48,10 @@ class WaitingAreaActivity : AppCompatActivity() {
 
         players = ArrayList(Game.PLAYER_LIMIT)
         players.add(Player(app.getProfile(), Piece.Light))
+
+        val wifiManager  = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val ip: String = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
+        binding.tvRoomAddress.text = ip
 
         val adapter = PlayerListAdapter(this, players)
         binding.lvPlayers.adapter = adapter

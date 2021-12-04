@@ -63,16 +63,16 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
-        gamePlayer.updateBoardCallback = {
+        gamePlayer.updateBoardCallback = { changedBoard ->
             runOnUiThread {
                 gameLayout.updatePieces()
             }
         }
-        gamePlayer.possibleMovesCallback = {
+        gamePlayer.possibleMovesCallback = { possibleMoves ->
             runOnUiThread {
                 gameLayout.showPossibleMoves()
                 binding.btnPass.visibility =
-                    if (gamePlayer.getPossibleMoves().isEmpty()) View.VISIBLE else View.INVISIBLE
+                    if (possibleMoves.isEmpty()) View.VISIBLE else View.INVISIBLE
             }
         }
 

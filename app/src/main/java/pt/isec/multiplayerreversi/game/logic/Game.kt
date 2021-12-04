@@ -134,6 +134,8 @@ class Game(
     }
 
     private fun checkIfFinished(): Boolean {
+        //Se o tabuleiro estiver cheio
+        if (boardIsFull()) return true
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
         // Se ainda poder jogar alguma jogada especial
@@ -143,7 +145,7 @@ class Game(
         while (true) {
             // depois vamos ver a todos os outros jogadores se teem uma jogada possível
             nextPlayer = getNext(nextPlayer, players)
-            if (nextPlayer == currentPlayer)
+            if (nextPlayer === currentPlayer)
                 break
             val piece = nextPlayer.piece
 
@@ -156,6 +158,14 @@ class Game(
                     if (checkCanPlayAt(piece, Vector(column, line))) return false
         }
         // se não encontrar jogadas possíveis, o jogo tem de terminar
+        return true
+    }
+
+    private fun boardIsFull(): Boolean {
+        for (column in 0 until sideLength)
+            for (line in 0 until sideLength)
+                if (board[line][column] == Piece.Empty)
+                    return false
         return true
     }
 

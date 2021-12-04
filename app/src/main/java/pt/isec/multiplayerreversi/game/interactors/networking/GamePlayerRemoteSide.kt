@@ -27,30 +27,41 @@ class GamePlayerRemoteSide(
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
+                        JsonTypes.InGame.POSSIBLE_MOVES -> {
+                            val possibleMoves = ArrayList<Vector>()
+                            jsonReader.beginArray()
+                            while (jsonReader.hasNext()) {
+                                possibleMoves.add(readVector())
+                            }
+                            jsonReader.endArray()
+                            readSomething = true
+                            Log.i(OURTAG, "received POSSIBLE_MOVES")
+                            updateBoardCallback?.invoke(gameData.board)
+                        }
                         JsonTypes.InGame.BOARD_CHANGED -> {
                             readBoardArray(gameData.board)
                             readSomething = true
-                            Log.i(OURTAG, "BOARD_CHANGED")
+                            Log.i(OURTAG, "received BOARD_CHANGED")
                             updateBoardCallback?.invoke(gameData.board)
                         }
                         JsonTypes.InGame.PLAYER_CHANGED -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
-                            Log.i(OURTAG, "PLAYER_CHANGED : $playerId")
+                            Log.i(OURTAG, "received PLAYER_CHANGED : $playerId")
                             gameData.currentPlayer = gameData.getPlayer(playerId)!!
                             changePlayerCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.PLAYER_USED_BOMB -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
-                            Log.i(OURTAG, "PLAYER_USED_BOMB : $playerId")
+                            Log.i(OURTAG, "received PLAYER_USED_BOMB : $playerId")
                             gameData.getPlayer(playerId)!!.hasUsedBomb = true
                             playerUsedBombCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.PLAYER_USED_TRADE -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
-                            Log.i(OURTAG, "PLAYER_USED_TRADE : $playerId")
+                            Log.i(OURTAG, "received PLAYER_USED_TRADE : $playerId")
                             gameData.getPlayer(playerId)!!.hasUsedTrade = true
                             playerUsedTradeCallback?.invoke(playerId)
                         }
@@ -87,6 +98,7 @@ class GamePlayerRemoteSide(
                             val gameEndStats = GameEndStats(highestPlayerScoreId, playersStats)
                             gameFinishedCallback?.invoke(gameEndStats)
                             shouldExit = true
+                            Log.i(OURTAG, "received GAME_FINISHED : $gameEndStats")
                         }
                         else -> {
                             Log.i(

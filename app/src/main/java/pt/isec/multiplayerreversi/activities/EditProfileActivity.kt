@@ -30,18 +30,13 @@ import kotlin.concurrent.thread
 
 class EditProfileActivity : AppCompatActivity() {
 
-    private var bitmapDrawable: BitmapDrawable? = null
     private lateinit var binding: ActivityEditProfileBinding
-
-    private var tempImageFile: File? = null
 
     private lateinit var app: App
     private lateinit var profile: Profile
     private lateinit var permissionsHelper: PermissionsHelper
-
-    //TODO fix the rotating thing
-    //quando se tira uma foto com o telemovel rodado e entramos na edição de perfil com ele direito
-    // ao voltar para a aplicação a atividade é construida de novo e esqueçe o que estava a fazer
+    private var bitmapDrawable: BitmapDrawable? = null
+    private var tempImageFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

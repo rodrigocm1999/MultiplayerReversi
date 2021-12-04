@@ -91,8 +91,12 @@ class GameSetupRemoteSide(
                         }
                         Log.i(OURTAG, "Received $type GameSetupRemoteSide socket loop")
                         if (!readSomething) jsonReader.nextNull()
-                        jsonReader.endObject()
-                    } catch (e: SocketException) { //TODO handle errors
+                        endRead()
+                    } catch (e: InterruptedException) {
+                        endRead()
+                        throw e
+                    } catch (e: SocketException) {
+                        //TODO handle errors, ask if want to continue locally or terminate
                         break
                     }
                 } // while

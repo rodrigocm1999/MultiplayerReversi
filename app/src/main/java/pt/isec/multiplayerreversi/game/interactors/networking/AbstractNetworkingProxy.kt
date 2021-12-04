@@ -2,7 +2,6 @@ package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.Base64
 import android.util.JsonReader
 import android.util.JsonToken
@@ -23,11 +22,15 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     protected lateinit var jsonReader: JsonReader
 
 
-    protected val blockingQueue = ArrayBlockingQueue<() -> Unit>(5)
+    protected val queuedActions = ArrayBlockingQueue<() -> Unit>(5)
     protected val threads = ArrayList<Thread>(3)
 
+    protected fun stopAllThreads() {
+        threads.forEach { it.interrupt() }
+    }
+
     protected fun queueAction(block: () -> Unit) {
-        blockingQueue.put(block)
+        queuedActions.put(block)
     }
 
     protected fun addThread(block: () -> Unit) {
@@ -257,7 +260,7 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
 
     override fun close() {
         socket.close()
-        blockingQueue.clear()
+        queuedActions.clear()
         threads.forEach { it.interrupt() }
     }
 }

@@ -48,8 +48,11 @@ class GameSetupHostSide(
                         }
                     }
                     if (!readSomething) jsonReader.nextNull()
-                    jsonReader.endObject()
+                    endRead()
                 }
+            } catch (e: InterruptedException) {
+                endRead()
+                throw e
             } catch (e: Exception) {
                 connectionsWelcomer.playerLeft(_player)
                 Log.e(OURTAG, "", e)
@@ -58,7 +61,7 @@ class GameSetupHostSide(
 
         addThread {
             while (!shouldExit) {
-                val block = blockingQueue.take()
+                val block = queuedActions.take()
                 block()
             }
         }
@@ -94,12 +97,13 @@ class GameSetupHostSide(
             writeStartingInformation(game)
             endSend()
             shouldExit = true
-            threads.forEach { it.interrupt() }
+            stopAllThreads()
         }
     }
 
     override fun createGamePlayer(game: Game): GameCallbacks {
         createdPlayer = true
+        this.close()
         return GamePlayerHostSide(game, _player, socket)
     }
 
@@ -107,6 +111,6 @@ class GameSetupHostSide(
         if (!createdPlayer)
             super.close()
         else
-            threads.forEach { it.interrupt() }
+            stopAllThreads()
     }
 }

@@ -8,6 +8,7 @@ import pt.isec.multiplayerreversi.game.logic.*
 import pt.isec.multiplayerreversi.game.logic.Vector
 import java.net.Socket
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class GamePlayerRemoteSide(
@@ -54,8 +55,37 @@ class GamePlayerRemoteSide(
                             playerUsedTradeCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.GAME_FINISHED -> {
-                            //TODO read the shits
-//                        gameFinishedCallback?.invoke(gameStats)
+                            val playersStats = ArrayList<PlayerEndStats>()
+                            var highestScore = -1
+                            var highestPlayerScoreId = -1
+                            jsonReader.beginArray()
+                            while (jsonReader.hasNext()) {
+                                jsonReader.beginObject()
+
+                                var score = -1
+                                var pId = -1
+                                while (jsonReader.hasNext()) {
+                                    when (jsonReader.nextName()) {
+                                        "playerId" -> pId = jsonReader.nextInt()
+                                        "score" -> score = jsonReader.nextInt()
+                                    }
+                                }
+                                val p = getPlayers().find { it.playerId == pId }!!
+                                playersStats.add(PlayerEndStats(p, score))
+
+                                if (score > highestScore) {
+                                    highestPlayerScoreId = p.playerId
+                                    highestScore = score
+                                } else if (score == highestScore)
+                                    highestPlayerScoreId = -1
+
+                                jsonReader.endObject()
+                            }
+                            jsonWriter.endArray()
+                            readSomething = true
+
+                            val gameEndStats = GameEndStats(highestPlayerScoreId, playersStats)
+                            gameFinishedCallback?.invoke(gameEndStats)
                             shouldExit = true
                         }
                         else -> {
@@ -66,8 +96,9 @@ class GamePlayerRemoteSide(
                         }
                     }
                     if (!readSomething) jsonReader.nextNull()
-                    jsonReader.endObject()
+                    endRead()
                 } catch (e: InterruptedException) {
+                    endRead()
                     throw e
                 } catch (e: Exception) {
                     Log.e(OURTAG, "", e)
@@ -78,7 +109,7 @@ class GamePlayerRemoteSide(
 
         addThread {
             while (!shouldExit) {
-                val block = blockingQueue.take()
+                val block = queuedActions.take()
                 block()
             }
         }

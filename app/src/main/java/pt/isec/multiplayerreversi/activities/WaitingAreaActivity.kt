@@ -85,8 +85,6 @@ class WaitingAreaActivity : AppCompatActivity() {
         binding.btnStartGame.setOnClickListener {
             startGame()
         }
-
-        //TODO 20 verificar o exit do jogo, não deixar sair sem comfirmar
     }
 
     override fun onSupportNavigateUp(): Boolean {

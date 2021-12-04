@@ -105,16 +105,15 @@ class Game(
             val playersStats = ArrayList<PlayerEndStats>(players.size)
             var highestScoreId = -1
             var highestScore = -1
-            players.forEach {
-                val score = countPieces(it.piece)
-                playersStats.add(PlayerEndStats(it, score))
+            players.forEach { player ->
+                val score = countPieces(player.piece)
+                playersStats.add(PlayerEndStats(player, score))
 
                 if (score > highestScore) {
-                    highestScoreId = it.playerId
+                    highestScoreId = player.playerId
                     highestScore = score
-                } else if (score == highestScore) {
+                } else if (score == highestScore)
                     highestScoreId = -1
-                }
             }
             val endStats = GameEndStats(highestScoreId, playersStats)
             players.forEach {

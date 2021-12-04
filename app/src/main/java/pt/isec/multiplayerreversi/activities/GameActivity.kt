@@ -128,7 +128,6 @@ class GameActivity : AppCompatActivity() {
                 binding.imgViewCurrentPlayer.background = player.profile.icon
                 binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
                 clearPossibleMoves = null
-                // TODO 6 botão fazer toggle
                 gameLayout.isUsingBombPiece = false
                 gameLayout.isUsingTrade = false
 
@@ -171,9 +170,6 @@ class GameActivity : AppCompatActivity() {
         gamePlayer.detach()
     }
 
-    //TODO SET INVISIBLE BUTTON
-    //TODO winner pop up on end game
-
     private fun openEndGameLayoutDialog(gameEndStats: GameEndStats) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -197,10 +193,11 @@ class GameActivity : AppCompatActivity() {
                 if (gameEndStats.playerStats.size > 2) {
                     val flThirdPlayer = dialog.findViewById(R.id.lnThirdPlayer) as View
                     flThirdPlayer.visibility = View.VISIBLE
-                    if (tvOpponent1.text != it.player.profile.name) {
+
+                    if (tvOpponent1.text != it.player.profile.name){
                         tvOpponent2.text = it.player.profile.name
                         tvScoreOpponent2.text = it.pieces.toString()
-                        //TODO test isto
+                        //TODO testar janela dos scores com 3 pessoas
                     }
                 }
             }

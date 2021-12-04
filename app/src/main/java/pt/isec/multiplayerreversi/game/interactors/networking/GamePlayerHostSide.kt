@@ -5,6 +5,7 @@ import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
+import java.lang.Exception
 import java.net.Socket
 
 class GamePlayerHostSide(
@@ -17,59 +18,65 @@ class GamePlayerHostSide(
 
     init {
         addThread {
-            while (!shouldExit) {
-                val type = beginReadAndGetType() //TODO 0 find out why this is not receiving anything
-                //Might be because of the other previous thread? that on the GameSetupHostSide
-                var readSomething = false
-                when (type) {
-                    JsonTypes.InGame.NORMAL_PLAY -> {
-                        readSomething = true
-                        val vector = readVector()
-                        Log.i(OURTAG, "NORMAL_PLAY : $vector")
-                        playAt(vector.y, vector.x)
-                    }
-                    JsonTypes.InGame.BOMB_PLAY -> {
-                        readSomething = true
-                        val vector = readVector()
-                        Log.i(OURTAG, "BOMB_PLAY : $vector")
-                        playBomb(vector.y, vector.x)
-                    }
-                    JsonTypes.InGame.TRADE_PLAY -> {
-                        readSomething = true
-                        val tradePieces = ArrayList<Vector>()
-                        for (i in 1..3) {
-                            tradePieces.add(readVector())
+            try {
+                while (!shouldExit) {
+                    //TODO 0 find out why this is not receiving anything
+                    val type = beginReadAndGetType()
+                    var readSomething = false
+                    when (type) {
+                        JsonTypes.InGame.NORMAL_PLAY -> {
+                            readSomething = true
+                            val vector = readVector()
+                            Log.i(OURTAG, "NORMAL_PLAY : $vector")
+                            playAt(vector.y, vector.x)
                         }
-                        Log.i(OURTAG,
-                            "TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
-                        playTrade(tradePieces)
+                        JsonTypes.InGame.BOMB_PLAY -> {
+                            readSomething = true
+                            val vector = readVector()
+                            Log.i(OURTAG, "BOMB_PLAY : $vector")
+                            playBomb(vector.y, vector.x)
+                        }
+                        JsonTypes.InGame.TRADE_PLAY -> {
+                            readSomething = true
+                            val tradePieces = ArrayList<Vector>()
+                            for (i in 1..3) {
+                                tradePieces.add(readVector())
+                            }
+                            Log.i(OURTAG,
+                                "TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
+                            playTrade(tradePieces)
+                        }
+                        JsonTypes.InGame.PLAYER_PASSED -> {
+                            Log.i(OURTAG, "PLAYER_PASSED")
+                            passPlayer()
+                        }
+                        JsonTypes.InGame.PLAYER_LEFT -> {
+                            Log.i(OURTAG, "PLAYER_LEFT")
+                        }
+                        JsonTypes.InGame.PLAYER_READY -> {
+                            Log.i(OURTAG, "PLAYER_READY")
+                            ready()
+                        }
+                        else -> {
+                            Log.e(OURTAG,"Received something that shouldn't have" +
+                                    " on GameSetupRemoteSide: $type")
+                        }
                     }
-                    JsonTypes.InGame.PLAYER_PASSED -> {
-                        Log.i(OURTAG, "PLAYER_PASSED")
-                        passPlayer()
-                    }
-                    JsonTypes.InGame.PLAYER_LEFT -> {
-                        Log.i(OURTAG, "PLAYER_LEFT")
-                    }
-                    JsonTypes.InGame.PLAYER_READY -> {
-                        Log.i(OURTAG, "PLAYER_READY")
-                        ready()
-                    }
-                    //TODO 5 temos de fazer o pass ainda
-                    else -> {
-                        Log.e(OURTAG,
-                            "Received something that shouldn't have on GameSetupRemoteSide: $type")
-                    }
+                    if (!readSomething) jsonReader.nextNull()
+                    jsonReader.endObject()
                 }
-                if (!readSomething) jsonReader.nextNull()
-                jsonReader.endObject()
+            } catch (e: InterruptedException) {
+                endRead()
+                throw e
+            } catch (e: Exception) {
+                throw e
             }
         }
 
         addThread {
             while (!shouldExit) {
-                val block = blockingQueue.take()
-                block()
+                val action = queuedActions.take()
+                action()
             }
         }
     }
@@ -137,9 +144,16 @@ class GamePlayerHostSide(
         }
     }
     override var gameFinishedCallback: ((GameEndStats) -> Unit)? = {
-        //TODO game finished end stats send over socket
         queueAction {
             beginSendWithType(JsonTypes.InGame.GAME_FINISHED)
+            jsonWriter.beginArray()
+            it.playerStats.forEach {
+                jsonWriter.beginObject()
+                jsonWriter.name("playerId").value(it.player.playerId)
+                jsonWriter.name("score").value(it.pieces)
+                jsonWriter.endObject()
+            }
+            jsonWriter.endArray()
             Log.i(OURTAG, "send GAME_FINISHED")
             endSend()
         }

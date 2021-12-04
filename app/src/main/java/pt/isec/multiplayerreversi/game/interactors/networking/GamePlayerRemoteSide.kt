@@ -35,8 +35,9 @@ class GamePlayerRemoteSide(
                             }
                             jsonReader.endArray()
                             readSomething = true
+                            gameData.currentPlayerPossibleMoves = possibleMoves
                             Log.i(OURTAG, "received POSSIBLE_MOVES")
-                            updateBoardCallback?.invoke(gameData.board)
+                            possibleMovesCallback?.invoke(possibleMoves)
                         }
                         JsonTypes.InGame.BOARD_CHANGED -> {
                             readBoardArray(gameData.board)

@@ -63,19 +63,6 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
-        gamePlayer.updateBoardCallback = { changedBoard ->
-            runOnUiThread {
-                gameLayout.updatePieces()
-            }
-        }
-        gamePlayer.possibleMovesCallback = { possibleMoves ->
-            runOnUiThread {
-                gameLayout.showPossibleMoves()
-                binding.btnPass.visibility =
-                    if (possibleMoves.isEmpty()) View.VISIBLE else View.INVISIBLE
-            }
-        }
-
         binding.btnBombPiece.setOnClickListener {
             when {
                 gamePlayer.getOwnPlayer().hasUsedBomb -> {
@@ -116,6 +103,19 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setCallbacks() {
+        gamePlayer.updateBoardCallback = { changedBoard ->
+            runOnUiThread {
+                gameLayout.updatePieces()
+            }
+        }
+        gamePlayer.possibleMovesCallback = { possibleMoves ->
+            runOnUiThread {
+                gameLayout.showPossibleMoves()
+                binding.btnPass.visibility =
+                    if (possibleMoves.isEmpty()) View.VISIBLE else View.INVISIBLE
+            }
+        }
+
         gamePlayer.changePlayerCallback = l@{ id ->
             val player = gamePlayer.getPlayerById(id)
             if (player == null) {
@@ -124,6 +124,13 @@ class GameActivity : AppCompatActivity() {
                 return@l
             }
             runOnUiThread {
+                //TODO this is not working
+                val shouldShowButtons = id == gamePlayer.getCurrentPlayer().playerId
+                binding.btnBombPiece.isEnabled = shouldShowButtons
+                binding.btnTradePiece.isEnabled = shouldShowButtons
+                // ----------------------------------
+
+
                 binding.tvPlayerName.text = player.profile.name
                 binding.imgViewCurrentPlayer.background = player.profile.icon
                 binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
@@ -189,7 +196,7 @@ class GameActivity : AppCompatActivity() {
                     val flThirdPlayer = dialog.findViewById(R.id.lnThirdPlayer) as View
                     flThirdPlayer.visibility = View.VISIBLE
 
-                    if (tvOpponent1.text != it.player.profile.name){
+                    if (tvOpponent1.text != it.player.profile.name) {
                         tvOpponent2.text = it.player.profile.name
                         tvScoreOpponent2.text = it.pieces.toString()
                         //TODO testar janela dos scores com 3 pessoas

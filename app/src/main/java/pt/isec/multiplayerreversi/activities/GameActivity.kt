@@ -165,11 +165,6 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        gamePlayer.detach()
-    }
-
     private fun openEndGameLayoutDialog(gameEndStats: GameEndStats) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

@@ -54,6 +54,7 @@ class Game(
     }
 
     fun playerReady(player: Player) {
+//        Log.i(OURTAG, "Player passou a passar-se: ${player.profile.name}")
         if (readyPlayers != null) {
             readyPlayers?.let { ready ->
                 if (ready.contains(player.playerId)) {
@@ -65,13 +66,14 @@ class Game(
                 ready.add(player.playerId)
                 if (ready.size == players.size) {
                     readyPlayers = null
-                    start()
+                    startGame()
                 }
             }
         }
     }
 
-    private fun start() {
+    private fun startGame() {
+        Log.i(OURTAG, "Jogo começou")
         updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
     }

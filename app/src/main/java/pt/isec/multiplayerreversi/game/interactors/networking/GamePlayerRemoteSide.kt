@@ -7,23 +7,82 @@ import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import pt.isec.multiplayerreversi.game.logic.Vector
 import java.net.Socket
+import java.net.SocketException
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class GamePlayerRemoteSide(
     socket: Socket,
-    private val gameData: GameData,
-    private val ownPlayer: Player,
+    profile: Profile,
+    override val arrivedPlayerCallback: ((Player) -> Unit),
+    override val leftPlayerCallback: (Player) -> Unit,
+    override val hostExitedCallback: (() -> Unit),
+    override val gameStartingCallback: ((GamePlayer) -> Unit),
 ) :
-    AbstractNetworkingProxy(socket), GamePlayer {
+    AbstractNetworkingProxy(socket), GamePlayer, IGameSetupRemoteSide {
+
+    private val gameData = GameData()
+    private var ownPlayer: Player = Player(profile)
 
     init {
-        addReceiving("GamePlayerRemoteSide receive") {
+        beginRead()
+        gameData.players = ArrayList()
+        gameData.players.addAll(readPlayers())
+        gameData.players.add(ownPlayer)
+        endRead()
+
+        beginSend()
+        writeProfile(profile)
+        endSend()
+
+        //Player object gets its fields filled up
+        beginRead()
+        readPlayerIds(ownPlayer)
+        endRead()
+
+        println(ownPlayer)
+
+        setReceiving("GamePlayerRemoteSide send") {
             while (!shouldExit) {
                 try {
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
+                        JsonTypes.Setup.NEW_PLAYER -> {
+                            Log.i(OURTAG, "received NEW_PLAYER")
+                            val p = Player()
+                            readPlayer(p)
+                            readSomething = true
+                            gameData.players.add(p)
+                            arrivedPlayerCallback(p)
+                        }
+                        JsonTypes.Setup.LEFT_PLAYER -> {
+                            Log.i(OURTAG, "received LEFT_PLAYER")
+                            val p = Player()
+                            val playerId = jsonReader.nextInt()
+                            readSomething = true
+                            for (i in 0 until gameData.players.size)
+                                if (gameData.players[i].playerId == playerId) {
+                                    gameData.players.removeAt(i)
+                                    break
+                                }
+                            leftPlayerCallback(p)
+                        }
+                        JsonTypes.Setup.STARTING -> {
+                            Log.i(OURTAG, "received STARTING")
+                            readStartingInformation(gameData)
+                            readSomething = true
+                            ownPlayer.callbacks = this
+                            thread {
+                                gameStartingCallback(this)
+                            }
+                        }
+                        JsonTypes.Setup.EXITING -> {
+                            Log.i(OURTAG, "received EXITING")
+                            hostExitedCallback()
+                        }
                         JsonTypes.InGame.POSSIBLE_MOVES -> {
+                            Log.i(OURTAG, "received POSSIBLE_MOVES~-----------~-----------~-----------~-----------~-----------")
                             val possibleMoves = ArrayList<Vector>()
                             jsonReader.beginArray()
                             while (jsonReader.hasNext()) {
@@ -98,23 +157,21 @@ class GamePlayerRemoteSide(
                             Log.i(OURTAG, "received GAME_FINISHED : $gameEndStats")
                         }
                         else -> {
-                            Log.i(
-                                OURTAG,
-                                "Received something ILLEGAL on GamePlayerRemoteSide socket loop : $type"
-                            )
+                            Log.e(OURTAG,
+                                "Received something that shouldn't have on GameSetupRemoteSide: $type")
                         }
                     }
                     if (!readSomething) jsonReader.nextNull()
                     endRead()
                 } catch (e: InterruptedException) {
-                    Log.i(OURTAG, "InterruptedException correu na thread GamePlayerRemoteSide")
+                    Log.i(OURTAG, "InterruptedException correu na thread GameSetupRemoteSide")
                     shouldExit = true
                     throw e
-                } catch (e: Exception) {
-                    Log.e(OURTAG, "", e)
-                    throw e
+                } catch (e: SocketException) {
+                    //TODO handle errors, ask if want to continue locally or terminate
+                    break
                 }
-            }
+            } // while
         }
     }
 
@@ -180,6 +237,15 @@ class GamePlayerRemoteSide(
             endSend()
         }
     }
+
+    override fun leave() {
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
+            jsonWriter.value(ownPlayer.playerId)
+            endSend()
+        }
+    }
+
 
     override fun isOnline() = true
     override fun getPlayers() = gameData.players

@@ -20,10 +20,8 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     protected lateinit var jsonWriter: JsonWriter
     protected lateinit var jsonReader: JsonReader
 
-    private data class StrThread(val name: String, val thread: Thread)
-
     private val queuedActions = ArrayBlockingQueue<() -> Unit>(10)
-    private val threads = ArrayList<StrThread>(3)
+    private lateinit var receivingThread: Thread
     private val senderThread: Thread
 
     @Volatile
@@ -34,49 +32,46 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
             while (!shouldExit) {
                 val block = queuedActions.take()
                 block()
-                Log.i(OURTAG, "Executou bloco de envio")
             }
         }
     }
 
     protected fun queueAction(block: () -> Unit) {
-        synchronized(queuedActions) {
-            queuedActions.put(block)
-        }
+        queuedActions.put(block)
     }
 
     private fun stopAllThreads() {
-        threads.forEach {
-            try {
-                it.thread.interrupt()
-            } catch (e: Exception) {
-                Log.e(OURTAG, e.toString())
-                throw e
-            }
-        }
-        threads.clear()
+//        threads.forEach {
+//            try {
+//                it.thread.interrupt()
+//            } catch (e: Exception) {
+//                Log.e(OURTAG, e.toString())
+//                throw e
+//            }
+//        }
+//        threads.clear()
+        senderThread.interrupt()
+        receivingThread.interrupt()
     }
 
-    protected fun addReceiving(threadName: String, runner: () -> Unit) {
-        val t = Thread {
+    protected fun setReceiving(threadName: String, runner: () -> Unit) {
+        receivingThread = thread {
             try {
                 Log.i(OURTAG, "Started Thread with name : $threadName")
                 runner()
                 Log.i(OURTAG, "Finished Thread with name : $threadName")
-                synchronized(threads) {
+/*                synchronized(threads) {
                     for (t in threads) {
                         if (t.name == threadName) {
                             threads.remove(t)
                             break
                         }
                     }
-                }
+                }*/
             } catch (e: InterruptedException) {
                 Log.i(OURTAG, "Interrupted Thread with name : $threadName")
             }
         }
-        t.start()
-        threads.add(StrThread(threadName, t))
     }
 
     protected fun readBoardArray(board: Array<Array<Piece>>) {

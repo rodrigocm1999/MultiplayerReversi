@@ -32,4 +32,8 @@
     <string name="history">Histórico</string>
     <string name="host_exited">Servidor saiu</string>
     <string name="need_wifi">Precisa de estar connectado ao Wifi</string>
+    <string name="pass">Passar</string>
+    <string name="winner">Vencedor</string>
+    <string name="score">Pontos:</string>
+    <string name="opponent_s">Opponente/s</string>
 </resources>

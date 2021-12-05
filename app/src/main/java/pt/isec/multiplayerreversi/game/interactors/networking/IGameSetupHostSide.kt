@@ -12,5 +12,4 @@ interface IGameSetupHostSide : Closeable {
     fun leftPayer(playerId: Int)
     fun sendExit()
     fun sendStart(game: Game)
-    fun createGamePlayer(game: Game): GameCallbacks
 }

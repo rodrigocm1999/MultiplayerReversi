@@ -8,13 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
-import pt.isec.multiplayerreversi.game.interactors.networking.GameSetupRemoteSide
+import pt.isec.multiplayerreversi.game.interactors.networking.GamePlayerRemoteSide
 import java.net.Socket
 import kotlin.concurrent.thread
 
 class WaitingAreaRemoteActivity : AppCompatActivity() {
 
-    private var setupRemoteSide: GameSetupRemoteSide? = null
+    private var setupRemoteSide: GamePlayerRemoteSide? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
 
         val adapter = PlayerListAdapter(this)
         thread {
-            setupRemoteSide = GameSetupRemoteSide(socket, app.getProfile(),
+            setupRemoteSide = GamePlayerRemoteSide(socket, app.getProfile(),
                 arrivedPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter
                     runOnUiThread { adapter.notifyDataSetChanged() }
                 },
@@ -44,8 +44,6 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
                 },
                 gameStartingCallback = { gamePlayer ->
                     app.gamePlayer = gamePlayer
-                    setupRemoteSide?.close()
-                    setupRemoteSide = null
                     finish()
                     val intent = Intent(this, GameActivity::class.java)
                     startActivity(intent)
@@ -59,17 +57,16 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        super.onSupportNavigateUp()
         finish()
+        setupRemoteSide?.leave()
         return true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        thread {
-            setupRemoteSide?.let {
-                it.leave()
-                it.close()
-            }
-        }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+        setupRemoteSide?.leave()
     }
+
 }

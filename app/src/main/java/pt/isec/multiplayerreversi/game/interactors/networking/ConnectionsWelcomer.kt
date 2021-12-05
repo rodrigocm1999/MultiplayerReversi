@@ -3,6 +3,7 @@ package pt.isec.multiplayerreversi.game.interactors.networking
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
+import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -16,7 +17,7 @@ class ConnectionsWelcomer(
     private val playersChanged: (Int) -> Unit,
 ) : Closeable {
 
-    data class PlayerSetuper(val player: Player, val setuper: GameSetupHostSide)
+    data class PlayerSetuper(val player: Player, val setuper: GamePlayerHostSide)
 
     private var receivingThread: Thread? = null
     private var started: Boolean = false
@@ -43,7 +44,7 @@ class ConnectionsWelcomer(
                             playersAmount++
 
                             thread {
-                                GameSetupHostSide(socket, this) { playerId ->
+                                GamePlayerHostSide(socket, this) { playerId ->
                                     Log.i(OURTAG, "Player got ready")
                                     val player = players.find { it.playerId == playerId }
                                     if (player != null)
@@ -70,7 +71,7 @@ class ConnectionsWelcomer(
 
     fun getPlayers() = players
 
-    fun joinPlayer(newPlayer: Player, setuper: GameSetupHostSide) {
+    fun joinPlayer(newPlayer: Player, setuper: GamePlayerHostSide) {
         val otherPlayer = players[players.lastIndex]
         newPlayer.piece = Piece.getByOrdinal(otherPlayer.piece.ordinal + 1)
             ?: throw IllegalStateException("Player was joining and there were no more free pieces")
@@ -78,15 +79,16 @@ class ConnectionsWelcomer(
         setupers.forEach { it.value.setuper.arrivedPlayer(newPlayer) }
 
         players.add(newPlayer)
-        setupers.put(newPlayer.playerId, PlayerSetuper(newPlayer, setuper))
+        setupers[newPlayer.playerId] = PlayerSetuper(newPlayer, setuper)
 
         playersChanged()
     }
 
     fun sendStart(game: Game) {
         setupers.forEach {
+            it.value.setuper.game = game
+            it.value.player.callbacks = it.value.setuper
             it.value.setuper.sendStart(game)
-            it.value.player.callbacks = it.value.setuper.createGamePlayer(game)
         }
         started = true
     }
@@ -94,9 +96,6 @@ class ConnectionsWelcomer(
     override fun close() {
         if (!started) setupers.forEach {
             it.value.setuper.sendExit()
-        }
-        setupers.forEach {
-            it.value.setuper.close()
         }
         serverSocket?.close()
     }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/square_border"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,10 +15,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Winner"
-            android:textSize="40sp"
+            android:layout_gravity="center"
+            android:text="@string/winner"
             android:textColor="@color/dark_orange"
-            android:layout_gravity="center"/>
+            android:textSize="40sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,34 +30,34 @@
                 android:id="@+id/tvWinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
                 android:layout_gravity="center"
-                android:text="dorin"
-                android:textColor="#1E90FF"/>
+                android:textColor="#1E90FF"
+                android:textSize="30sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:layout_gravity="end"
-                    android:text="Score:"/>
+                    android:text="@string/score"
+                    android:textSize="30sp" />
+
                 <TextView
                     android:id="@+id/tvWinnerScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:layout_gravity="right"
-                    android:text=""/>
+                    android:text=""
+                    android:textSize="30sp" />
 
             </LinearLayout>
         </LinearLayout>
 
 
-
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/opponetContainer"
         android:layout_width="match_parent"
@@ -66,10 +67,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opponent"
-            android:textSize="25sp"
+            android:paddingStart="20dp"
+            android:text="@string/opponent_s"
             android:textColor="@color/red"
-            android:paddingStart="20dp"/>
+            android:textSize="25sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,24 +82,24 @@
                 android:id="@+id/tvOpponent1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:layout_gravity="left"
-                android:text="dinu"/>
+                android:textSize="30sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:text="Score:"/>
+                    android:text="@string/score"
+                    android:textSize="30sp" />
+
                 <TextView
                     android:id="@+id/tvScoreOpponent1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:text=""/>
+                    android:textSize="30sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -114,8 +116,8 @@
                 android:id="@+id/tvOpponent2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:text="dinu"/>
+                android:textSize="30sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,17 +126,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:text="Score:"/>
+                    android:text="@string/score"
+                    android:textSize="30sp" />
+
                 <TextView
                     android:id="@+id/tvScoreOpponent2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:text=""/>
+                    android:textSize="30sp" />
             </LinearLayout>
         </LinearLayout>
-
 
 
     </LinearLayout>
@@ -144,11 +145,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:theme="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
-        android:text="OK"
-        android:textSize="20sp"/>
-
-
-
-
+        android:text="@string/ok"
+        android:textSize="20sp" />
 </LinearLayout>

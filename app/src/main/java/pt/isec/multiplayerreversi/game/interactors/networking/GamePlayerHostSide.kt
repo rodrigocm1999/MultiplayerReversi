@@ -2,6 +2,7 @@ package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
+import pt.isec.multiplayerreversi.game.interactors.GameCallbacks
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
@@ -9,21 +10,43 @@ import java.lang.Exception
 import java.net.Socket
 
 class GamePlayerHostSide(
-    private val game: Game,
-    private val ownPlayer: Player,
     socket: Socket,
-) : AbstractNetworkingProxy(socket), GamePlayer {
+    connectionsWelcomer: ConnectionsWelcomer,
+    override val readyUpCallback: (Int) -> Unit,
+) : AbstractNetworkingProxy(socket), GamePlayer, IGameSetupHostSide {
+
+
+    private var ownPlayer: Player
+    lateinit var game: Game
 
     private var alreadyReceivedReady = false
 
     init {
-        addReceiving("GamePlayerHostSide receive") {
+        beginSend()
+        writePlayers(connectionsWelcomer.getPlayers())
+        endSend()
+
+        beginRead()
+        ownPlayer = Player()
+        readPlayer(ownPlayer)
+        connectionsWelcomer.joinPlayer(ownPlayer, this)
+        endRead()
+
+        beginSend()
+        writePlayerIds(ownPlayer.playerId, ownPlayer.piece)
+        endSend()
+
+        setReceiving("GameSetupHostSide receive") {
             try {
                 while (!shouldExit) {
-                    //TODO 0 find out why this is not receiving anything
                     val type = beginReadAndGetType()
                     var readSomething = false
                     when (type) {
+                        JsonTypes.Setup.LEFT_PLAYER -> {
+                            val pId = jsonReader.nextInt()
+                            readSomething = true
+                            connectionsWelcomer.playerLeft(ownPlayer)
+                        }
                         JsonTypes.InGame.NORMAL_PLAY -> {
                             readSomething = true
                             val vector = readVector()
@@ -47,35 +70,37 @@ class GamePlayerHostSide(
                             playTrade(tradePieces)
                         }
                         JsonTypes.InGame.PLAYER_PASSED -> {
-                            Log.i(OURTAG, "PLAYER_PASSED")
+                            Log.i(OURTAG, "received PLAYER_PASSED")
                             passPlayer()
                         }
                         JsonTypes.InGame.PLAYER_LEFT -> {
-                            Log.i(OURTAG, "PLAYER_LEFT")
+                            Log.i(OURTAG, "received PLAYER_LEFT")
                         }
                         JsonTypes.InGame.PLAYER_READY -> {
                             if (!alreadyReceivedReady) {
                                 alreadyReceivedReady = true
                                 ready()
                             }
-                            Log.i(OURTAG, "PLAYER_READY")
+                            Log.i(OURTAG, "received PLAYER_READY")
                         }
                         else -> {
-                            Log.e(OURTAG, "Received something that shouldn't have" +
-                                    " on GameSetupRemoteSide: $type")
+                            Log.e(OURTAG,
+                                "Received something that shouldn't have on GameSetupHostSide: $type")
                         }
                     }
                     if (!readSomething) jsonReader.nextNull()
-                    jsonReader.endObject()
+                    endRead()
                 }
             } catch (e: InterruptedException) {
-                Log.i(OURTAG, "InterruptedException correu na thread GamePlayerHostSide")
+                Log.i(OURTAG, "InterruptedException correu na thread GameSetupHostSide")
                 shouldExit = true
                 throw e
             } catch (e: Exception) {
-                throw e
+                connectionsWelcomer.playerLeft(ownPlayer)
+                Log.e(OURTAG, "", e)
             }
         }
+
     }
 
     //These functions get called from inside the thread loop
@@ -170,6 +195,40 @@ class GamePlayerHostSide(
             jsonWriter.value(pId)
             Log.i(OURTAG, "send PLAYER_USED_TRADE")
             endSend()
+        }
+    }
+
+    override fun arrivedPlayer(player: Player) {
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.NEW_PLAYER)
+            writePlayer(player)
+            endSend()
+        }
+    }
+
+    override fun leftPayer(playerId: Int) {
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.LEFT_PLAYER)
+            jsonWriter.value(playerId)
+            endSend()
+        }
+    }
+
+    override fun sendExit() {
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.EXITING)
+            jsonWriter.nullValue()
+            endSend()
+            close()
+        }
+    }
+
+    override fun sendStart(game: Game) {
+        queueAction {
+            beginSendWithType(JsonTypes.Setup.STARTING)
+            writeStartingInformation(game)
+            endSend()
+            Log.i(OURTAG, "Send STARTING correu")
         }
     }
 }

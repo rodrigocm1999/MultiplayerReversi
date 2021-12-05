@@ -46,11 +46,43 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/imgViewCurrentPlayerPiece"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical|end" />
+
+        <LinearLayout
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="5dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgViewCurrentPlayerPiece"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgViewCurrentBombState"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/bomb_icon"
+                    android:layout_marginEnd="5dp"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:id="@+id/imgViewCurrentTradeState"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/trade_icon"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </FrameLayout>
 
@@ -66,7 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/light_yellow_board_background">
+            android:background="@color/board_background">
 
         </GridLayout>
 
@@ -91,37 +123,38 @@
             android:layout_gravity="top"
             android:orientation="vertical">
 
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="horizontal">
+
             <Button
                 android:id="@+id/btnPass"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_gravity="center"
                 android:text="@string/pass"
                 android:visibility="invisible" />
-        </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
-
-
-            <Button
+            <ImageView
                 android:id="@+id/btnBombPiece"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="@string/use_bomb_piece" />
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/bomb_icon" />
 
-            <Button
+            <ImageView
                 android:id="@+id/btnTradePiece"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="@string/use_trade_piece" />
-        </FrameLayout>
-
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/trade_icon" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

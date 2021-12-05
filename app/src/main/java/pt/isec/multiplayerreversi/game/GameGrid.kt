@@ -1,7 +1,6 @@
 package pt.isec.multiplayerreversi.game
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -9,15 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
-import kotlin.concurrent.thread
-import kotlin.system.exitProcess
 
 
 class GameGrid(
@@ -30,12 +26,15 @@ class GameGrid(
 ) {
 
     private val grid: Array<Array<BoardSlotView>>
+    private val tradePieces = ArrayList<BoardSlotView>(3)
 
     var isUsingBombPiece = false
     var isUsingTrade = false
-
-    private val tradePieces = ArrayList<Vector>(3)
-
+        set(value) {
+            field = value
+            if (!value)
+                clearTrade()
+        }
 
     init {
         gridLayout.columnCount = boardSideLength
@@ -52,15 +51,18 @@ class GameGrid(
             Array(boardSideLength) { column ->
                 val view = layoutInflater.inflate(R.layout.piece_layout, null) as ViewGroup
                 view.layoutParams = ViewGroup.LayoutParams(sideLength, sideLength)
-                val boardView = BoardSlotView(view, view[0], view[1] as TextView)
+                val boardView =
+                    BoardSlotView(view, view[0], view[1] as TextView, Vector(column, line))
 
                 view.setOnClickListener {
                     when {
                         isUsingBombPiece -> gamePlayer.playBomb(line, column)
                         isUsingTrade -> {
-                            addPieceToTrade(line, column)
+                            addPieceToTrade(boardView)
                             if (tradePieces.size == 3) {
-                                gamePlayer.playTrade(tradePieces)
+                                val pieces = ArrayList<Vector>(3)
+                                tradePieces.forEach { pieces.add(it.vector) }
+                                gamePlayer.playTrade(pieces)
                                 tradePieces.clear()
                             }
                         }
@@ -77,12 +79,18 @@ class GameGrid(
         println("Time taken creating board pieces : ${end - start}ms")
     }
 
-    fun clearPossibleMoves(): List<Vector>? {
+    fun clearPossibleMoves() {
         gamePlayer.getPossibleMoves().forEach {
             val boardSlot = grid[it.y][it.x]
             boardSlot.piece.isVisible = false
         }
-        return gamePlayer.getPossibleMoves()
+    }
+
+    private fun clearTrade() {
+        tradePieces.forEach {
+            it.slot.setBackgroundResource(R.drawable.square_border)
+        }
+        tradePieces.clear()
     }
 
     fun showPossibleMoves() {
@@ -113,16 +121,23 @@ class GameGrid(
         }
     }
 
-    private fun addPieceToTrade(line: Int, column: Int) {
+    private fun addPieceToTrade(boardSlotView: BoardSlotView) {
         val playerPiece = gamePlayer.getOwnPlayer().piece
+        val line = boardSlotView.vector.y
+        val column = boardSlotView.vector.x
         val boardPiece = gamePlayer.getGameBoard()[line][column]
-        val v = Vector(column, line)
 
-        if (!tradePieces.contains(v)) {
-            if (tradePieces.size < 2 && playerPiece == boardPiece)
-                tradePieces.add(v)
-            else if (playerPiece != boardPiece)
-                tradePieces.add(v)
+        if (!tradePieces.contains(boardSlotView)) {
+            if (tradePieces.size < 2 && playerPiece == boardPiece) {
+                tradePieces.add(boardSlotView)
+                boardSlotView.slot.setBackgroundResource(R.color.trade_board_background)
+            } else if (tradePieces.size == 2 && playerPiece != boardPiece) {
+                tradePieces.add(boardSlotView)
+                boardSlotView.slot.setBackgroundResource(R.color.trade_board_background)
+            }
+        } else {
+            tradePieces.remove(boardSlotView)
+            boardSlotView.slot.setBackgroundResource(R.drawable.square_border)
         }
     }
 
@@ -131,5 +146,10 @@ class GameGrid(
         showPossibleMoves()
     }
 
-    data class BoardSlotView(val slot: ViewGroup, val piece: View, val pieceText: TextView)
+    data class BoardSlotView(
+        val slot: ViewGroup,
+        val piece: View,
+        val pieceText: TextView,
+        val vector: Vector,
+    )
 }

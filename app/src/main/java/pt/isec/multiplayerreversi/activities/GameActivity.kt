@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,8 +26,6 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 class GameActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameBinding
-
-    data class PlayerView(val playerId: Int, val view: View)
 
     private lateinit var playersView: List<PlayerView>
     private var lastPlayerView: PlayerView? = null
@@ -74,7 +73,7 @@ class GameActivity : AppCompatActivity() {
                     gameLayout.isUsingBombPiece = false
                 }
                 else -> {
-                    clearPossibleMoves = gameLayout.clearPossibleMoves()
+                    gameLayout.clearPossibleMoves()
                     gameLayout.isUsingBombPiece = true
                 }
             }
@@ -91,7 +90,7 @@ class GameActivity : AppCompatActivity() {
                     gameLayout.isUsingTrade = false
                 }
                 else -> {
-                    clearPossibleMoves = gameLayout.clearPossibleMoves()
+                    gameLayout.clearPossibleMoves()
                     gameLayout.isUsingTrade = true
                 }
             }
@@ -123,12 +122,16 @@ class GameActivity : AppCompatActivity() {
                 Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
                 return@l
             }
+            val shouldShowButtons = id == gamePlayer.getCurrentPlayer().playerId
             runOnUiThread {
                 //TODO this is not working
-                val shouldShowButtons = id == gamePlayer.getCurrentPlayer().playerId
                 binding.btnBombPiece.isEnabled = shouldShowButtons
                 binding.btnTradePiece.isEnabled = shouldShowButtons
                 // ----------------------------------
+
+
+
+                //TODO acabar de meter as cenas no topo do ecra meter os icones bem entre outras cenas
 
 
                 binding.tvPlayerName.text = player.profile.name
@@ -139,19 +142,31 @@ class GameActivity : AppCompatActivity() {
                 gameLayout.isUsingTrade = false
 
                 if (gamePlayer.isOnline()) {
-                    lastPlayerView?.view?.setBackgroundResource(R.drawable.piece_possible_black)
+                    lastPlayerView?.parentView?.setBackgroundResource(R.drawable.piece_possible_black)
                     val currentPlayerView = playersView.find { it.playerId == id }!!
-                    currentPlayerView.view.setBackgroundResource(R.drawable.piece_possible_white)
+                    currentPlayerView.parentView.setBackgroundResource(R.drawable.piece_possible_white)
                     lastPlayerView = currentPlayerView
                 }
             }
         }
         if (gamePlayer.isOnline()) {
             val list = ArrayList<PlayerView>(3)
-            gamePlayer.getPlayers().forEach {
+            gamePlayer.getPlayers().forEach { player ->
                 val view = layoutInflater.inflate( // returns binding.layoutPlayers
-                    R.layout.row_waiting_player, binding.layoutPlayers) as ViewGroup
-                list.add(PlayerView(it.playerId, view[view.childCount - 1]))
+                    R.layout.playing_player, binding.layoutPlayers) as ViewGroup
+                val parentView = view[view.childCount - 1]
+                val playerView = PlayerView(player.playerId, parentView,
+                    ivPlayerImg = view.findViewById(R.id.imgViewPlayerIcon),
+                    tvPlayerName = view.findViewById(R.id.tvPlayerName),
+                    ivPlayerPiece = view.findViewById(R.id.imgViewPlayerPiece),
+                    ivBomb = view.findViewById(R.id.imgViewBombState),
+                    ivTrade = view.findViewById(R.id.imgViewTradeState)
+                )
+                playerView.ivPlayerImg.setImageDrawable(player.profile.icon)
+                playerView.tvPlayerName.text = player.profile.name
+                playerView.ivPlayerPiece.setImageDrawable(player.piece.getIsolatedDrawable(this))
+                //TODO mudar os estados quando um player joga uma peça especial
+                list.add(playerView)
             }
             playersView = list
         }
@@ -221,6 +236,17 @@ class GameActivity : AppCompatActivity() {
             .setCancelable(true)
             .create()
         alertDialog.show()
+    }
+
+    class PlayerView(
+        val playerId: Int,
+        val parentView: View,
+        val ivPlayerImg: ImageView,
+        val tvPlayerName: TextView,
+        val ivPlayerPiece: ImageView,
+        val ivBomb: ImageView,
+        val ivTrade: ImageView,
+    ) {
     }
 
     /*override fun onSupportNavigateUp(): Boolean {

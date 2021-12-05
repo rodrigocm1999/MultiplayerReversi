@@ -9,7 +9,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.logic.Player
 
-class PlayerListAdapter(
+class WaitingPlayerListAdapter(
     private val context: Context,
     var players: List<Player> = ArrayList(),
 ) : BaseAdapter(){

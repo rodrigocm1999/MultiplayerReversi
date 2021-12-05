@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
-import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
+import pt.isec.multiplayerreversi.activities.others.WaitingPlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
 import pt.isec.multiplayerreversi.game.interactors.networking.ConnectionsWelcomer
@@ -24,11 +24,6 @@ import java.net.Socket
 import kotlin.concurrent.thread
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
-import androidx.core.content.ContentProviderCompat
-
-import androidx.core.content.ContentProviderCompat.requireContext
-
-
 
 
 class WaitingAreaActivity : AppCompatActivity() {
@@ -53,7 +48,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val ip: String = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
         binding.tvRoomAddress.text = ip
 
-        val adapter = PlayerListAdapter(this, players)
+        val adapter = WaitingPlayerListAdapter(this, players)
         binding.lvPlayers.adapter = adapter
 
         connectionsWelcomer = ConnectionsWelcomer(players, playersChanged = { amount ->

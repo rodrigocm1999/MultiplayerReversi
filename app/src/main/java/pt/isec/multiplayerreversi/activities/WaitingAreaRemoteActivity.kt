@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.activities.others.PlayerListAdapter
+import pt.isec.multiplayerreversi.activities.others.WaitingPlayerListAdapter
 import pt.isec.multiplayerreversi.game.interactors.networking.GamePlayerRemoteSide
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -27,7 +27,7 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         val socket = app.temp as Socket
         val lvPlayers = findViewById<ListView>(R.id.lvPlayers)
 
-        val adapter = PlayerListAdapter(this)
+        val adapter = WaitingPlayerListAdapter(this)
         thread {
             setupRemoteSide = GamePlayerRemoteSide(socket, app.getProfile(),
                 arrivedPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter

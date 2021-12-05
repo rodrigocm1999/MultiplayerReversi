@@ -16,13 +16,20 @@ enum class Piece(val char: Char, private val pieceId: Int?, private val possible
     private var possibleDrawable: Drawable? = null
 
     fun getDrawable(context: Context): Drawable? {
-        if (pieceId != null && drawable == null)
+        if (pieceId == null) return null
+        if (drawable == null)
             drawable = AppCompatResources.getDrawable(context, pieceId)
         return drawable
     }
 
+    fun getIsolatedDrawable(context: Context): Drawable? {
+        if (pieceId == null) return null
+        return AppCompatResources.getDrawable(context, pieceId)
+    }
+
     fun getPossibleDrawable(context: Context): Drawable? {
-        if (possiblePieceId != null && possibleDrawable == null)
+        if (possiblePieceId == null) return null
+        if (possibleDrawable == null)
             possibleDrawable = AppCompatResources.getDrawable(context, possiblePieceId)
         return possibleDrawable
     }

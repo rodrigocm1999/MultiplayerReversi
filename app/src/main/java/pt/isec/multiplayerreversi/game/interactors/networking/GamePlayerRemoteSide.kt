@@ -24,18 +24,18 @@ class GamePlayerRemoteSide(
     private var ownPlayer: Player = Player(profile)
 
     init {
-        beginRead()
+        beginReadAndGetType()
         gameData.players = ArrayList()
         gameData.players.addAll(readPlayers())
         gameData.players.add(ownPlayer)
         endRead()
 
-        beginSend()
+        beginSendWithType(JsonTypes.Setup.SEND_PROFILE)
         writeProfile(profile)
         endSend()
 
         //Player object gets its fields filled up
-        beginRead()
+        beginReadAndGetType()
         readPlayerIds(ownPlayer)
         endRead()
 
@@ -146,7 +146,7 @@ class GamePlayerRemoteSide(
 
                                 jsonReader.endObject()
                             }
-                            jsonWriter.endArray()
+                            jsonReader.endArray()
                             readSomething = true
 
                             val gameEndStats = GameEndStats(highestPlayerScoreId, playersStats)
@@ -159,14 +159,15 @@ class GamePlayerRemoteSide(
                                 "Received something that shouldn't have on GameSetupRemoteSide: $type")
                         }
                     }
-                    if (!readSomething) jsonReader.nextNull()
+                    if (!readSomething) jsonReader.skipValue()
                     endRead()
                 } catch (e: InterruptedException) {
-                    Log.i(OURTAG, "InterruptedException correu na thread GameSetupRemoteSide")
+                    Log.i(OURTAG, "InterruptedException correu na thread GameSetupRemoteSide", e)
                     shouldExit = true
                     throw e
                 } catch (e: SocketException) {
                     //TODO handle errors, ask if want to continue locally or terminate
+                    Log.e(OURTAG, "Error socket exception", e)
                     break
                 }
             } // while

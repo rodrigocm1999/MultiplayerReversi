@@ -22,17 +22,17 @@ class GamePlayerHostSide(
     private var alreadyReceivedReady = false
 
     init {
-        beginSend()
+        beginSendWithType(JsonTypes.Setup.PLAYERS)
         writePlayers(connectionsWelcomer.getPlayers())
         endSend()
 
-        beginRead()
+        beginReadAndGetType()
         ownPlayer = Player()
         readPlayer(ownPlayer)
         connectionsWelcomer.joinPlayer(ownPlayer, this)
         endRead()
 
-        beginSend()
+        beginSendWithType(JsonTypes.Setup.PLAYER_IDS)
         writePlayerIds(ownPlayer.playerId, ownPlayer.piece)
         endSend()
 
@@ -90,7 +90,7 @@ class GamePlayerHostSide(
                                 "Received something that shouldn't have on GameSetupHostSide: $type")
                         }
                     }
-                    if (!readSomething) jsonReader.nextNull()
+                    if (!readSomething) jsonReader.skipValue()
                     endRead()
                 }
             } catch (e: InterruptedException) {

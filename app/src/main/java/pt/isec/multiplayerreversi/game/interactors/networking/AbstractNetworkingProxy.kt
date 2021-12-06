@@ -16,10 +16,10 @@ import kotlin.concurrent.thread
 
 abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable {
 
-    private val osw = OutputStreamWriter(BufferedOutputStream(socket.getOutputStream()))
-    private val osr = InputStreamReader(BufferedInputStream(socket.getInputStream()))
-    protected lateinit var jsonWriter: JsonWriter
-    protected lateinit var jsonReader: JsonReader
+    private val osw = OutputStreamWriter((socket.getOutputStream()))
+    private val osr = InputStreamReader((socket.getInputStream()))
+    protected var jsonWriter: JsonWriter = JsonWriter(osw)
+    protected var jsonReader: JsonReader = JsonReader(osr)
 
     private val queuedActions = ArrayBlockingQueue<() -> Unit>(10)
     private lateinit var receivingThread: Thread
@@ -29,6 +29,9 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     protected var shouldExit = false
 
     init {
+        jsonWriter.beginArray().flush()
+        jsonReader.beginArray()
+
         senderThread = thread {
             while (!shouldExit) {
                 val block = queuedActions.take()
@@ -42,15 +45,6 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
     }
 
     private fun stopAllThreads() {
-//        threads.forEach {
-//            try {
-//                it.thread.interrupt()
-//            } catch (e: Exception) {
-//                Log.e(OURTAG, e.toString())
-//                throw e
-//            }
-//        }
-//        threads.clear()
         senderThread.interrupt()
         receivingThread.interrupt()
     }
@@ -61,14 +55,6 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
                 Log.i(OURTAG, "Started Thread with name : $threadName")
                 runner()
                 Log.i(OURTAG, "Finished Thread with name : $threadName")
-/*                synchronized(threads) {
-                    for (t in threads) {
-                        if (t.name == threadName) {
-                            threads.remove(t)
-                            break
-                        }
-                    }
-                }*/
             } catch (e: InterruptedException) {
                 Log.i(OURTAG, "Interrupted Thread with name : $threadName")
             }
@@ -228,33 +214,17 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
         jsonWriter.endObject()
     }
 
-    protected fun beginSend() {
-        jsonWriter = JsonWriter(osw)
-        jsonWriter.beginObject()
-        jsonWriter.name(JsonTypes.Setup.DATA)
-    }
-
-    protected fun endSend() {
-        jsonWriter.endObject()
-        jsonWriter.flush()
-    }
-
-    protected fun beginRead() {
-        jsonReader = JsonReader(osr)
-        jsonReader.beginObject()
-        jsonReader.nextName()
-    }
-
-    protected fun endRead() {
-        jsonReader.endObject()
-    }
-
-    protected fun writeType(type: String) {
+    private fun writeType(type: String) {
         jsonWriter.name("type").value(type)
     }
 
+    protected fun beginSendWithType(type: String) {
+        jsonWriter.beginObject()
+        writeType(type)
+        jsonWriter.name(JsonTypes.Setup.DATA)
+    }
+
     protected fun beginReadAndGetType(): String {
-        jsonReader = JsonReader(osr)
         jsonReader.beginObject()
         jsonReader.nextName() // "type" :
         val type = jsonReader.nextString()
@@ -262,12 +232,13 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
         return type
     }
 
-    protected fun beginSendWithType(type: String) {
-        jsonWriter = JsonWriter(osw)
-        jsonWriter.beginObject()
-        writeType(type)
-        jsonWriter.name(JsonTypes.Setup.DATA)
-        Log.i(OURTAG, "Sending $type")
+    protected fun endSend() {
+        jsonWriter.endObject()
+        jsonWriter.flush()
+    }
+
+    protected fun endRead() {
+        jsonReader.endObject()
     }
 
     private fun encodeDrawableToString(drawable: BitmapDrawable): String {

@@ -1,11 +1,11 @@
 ~~Jogador inicial aleatório~~
 Visualização das jogadas possíveis é opcional dependendo do contexto
 Jogo termina quando não há peças possíveis, ou jogadas possíveis
-Ganha jogador com mais peças
+~~Ganha jogador com mais peças~~
 
 Peças especiais (1 vez por jogo):
-Peça bomba - substitui peça do jogador, limpa area 3x3
-Troca de peças - pressionar 2 peças proprias e 1 uma peça do oponente, e trocam de cor com o adversário
+~~Peça bomba - substitui peça do jogador, limpa area 3x3~~
+~~Troca de peças - pressionar 2 peças proprias e 1 uma peça do oponente, e trocam de cor com o adversário~~
 
 Modos (ver layouts):
 ~~Modo 1 - 2 jogadores, tabuleiro 8x8, 1 dispositivo~~

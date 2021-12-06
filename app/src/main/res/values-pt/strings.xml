@@ -36,4 +36,5 @@
     <string name="winner">Vencedor</string>
     <string name="score">Pontos:</string>
     <string name="opponent_s">Opponente/s</string>
+    <string name="draw">Empate</string>
 </resources>

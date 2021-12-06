@@ -69,6 +69,7 @@ class LauncherActivity : AppCompatActivity() {
             val intent = Intent(this, WaitingAreaActivity::class.java)
             startActivity(intent)
         }
+        // TODO history
     }
 
     override fun onStart() {

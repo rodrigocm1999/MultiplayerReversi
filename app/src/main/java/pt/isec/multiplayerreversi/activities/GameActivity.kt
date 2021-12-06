@@ -124,11 +124,8 @@ class GameActivity : AppCompatActivity() {
             }
             val shouldShowButtons = id == gamePlayer.getCurrentPlayer().playerId
             runOnUiThread {
-                //TODO this is not working
-                binding.btnBombPiece.isEnabled = shouldShowButtons
-                binding.btnTradePiece.isEnabled = shouldShowButtons
-                // ----------------------------------
-
+                if (shouldShowButtons)
+                    updatePlayerButtons()
 
 
                 //TODO acabar de meter as cenas no topo do ecra meter os icones bem entre outras cenas
@@ -187,6 +184,26 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    private fun updatePlayerButtons(){
+
+        val currentPlayer = gamePlayer.getCurrentPlayer()
+        if (currentPlayer.hasUsedTrade) {
+            binding.btnTradePiece.visibility = View.GONE
+            binding.imgViewCurrentTradeState.visibility = View.GONE
+        }
+        else {
+            binding.btnTradePiece.visibility = View.VISIBLE
+            binding.imgViewCurrentTradeState.visibility = View.VISIBLE
+        }
+        if (currentPlayer.hasUsedBomb){
+            binding.btnBombPiece.visibility = View.GONE
+            binding.imgViewCurrentBombState.visibility = View.GONE
+        }else{
+            binding.btnBombPiece.visibility = View.VISIBLE
+            binding.imgViewCurrentBombState.visibility = View.VISIBLE
+        }
+    }
+
     private fun openEndGameLayoutDialog(gameEndStats: GameEndStats) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -200,11 +217,18 @@ class GameActivity : AppCompatActivity() {
         val tvScoreOpponent2 = dialog.findViewById(R.id.tvScoreOpponent2) as TextView
         val btnOk = dialog.findViewById(R.id.btnOk) as Button
 
+
+        if (gameEndStats.winningPlayerId == -1){
+            val tvGameResult = dialog.findViewById(R.id.tvGameResult) as TextView
+            tvGameResult.text = getString(R.string.draw)
+            tvWinner.text = gamePlayer.getOwnPlayer().profile.name
+        }
+
         gameEndStats.playerStats.forEach {
             if (it.player.playerId == gameEndStats.winningPlayerId) {
                 tvWinner.text = it.player.profile.name
                 tvWinnerScore.text = it.pieces.toString()
-            } else {
+            } else if(tvWinner.text != it.player.profile.name) {
                 tvOpponent1.text = it.player.profile.name
                 tvScoreOpponent1.text = it.pieces.toString()
                 if (gameEndStats.playerStats.size > 2) {

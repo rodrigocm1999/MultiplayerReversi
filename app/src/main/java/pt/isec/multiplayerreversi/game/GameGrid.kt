@@ -63,7 +63,7 @@ class GameGrid(
                                 val pieces = ArrayList<Vector>(3)
                                 tradePieces.forEach { pieces.add(it.vector) }
                                 gamePlayer.playTrade(pieces)
-                                tradePieces.clear()
+                                clearTrade()
                             }
                         }
                         else -> gamePlayer.playAt(line, column)

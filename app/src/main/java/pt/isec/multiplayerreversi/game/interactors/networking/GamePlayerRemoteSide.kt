@@ -18,8 +18,7 @@ class GamePlayerRemoteSide(
     override val leftPlayerCallback: (Player) -> Unit,
     override val hostExitedCallback: (() -> Unit),
     override val gameStartingCallback: ((GamePlayer) -> Unit),
-) :
-    AbstractNetworkingProxy(socket), GamePlayer, IGameSetupRemoteSide {
+) : AbstractNetworkingProxy(socket), GamePlayer, IGameSetupRemoteSide {
 
     private val gameData = GameData()
     private var ownPlayer: Player = Player(profile)

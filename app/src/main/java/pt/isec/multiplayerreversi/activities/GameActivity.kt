@@ -30,7 +30,6 @@ class GameActivity : AppCompatActivity() {
     private lateinit var playersView: List<PlayerView>
     private var lastPlayerView: PlayerView? = null
 
-    private var clearPossibleMoves: List<Vector>? = null
     private lateinit var gamePlayer: GamePlayer
     private lateinit var gameLayout: GameGrid
 
@@ -64,34 +63,38 @@ class GameActivity : AppCompatActivity() {
     private fun setListeners() {
         binding.btnBombPiece.setOnClickListener {
             when {
-                gamePlayer.getOwnPlayer().hasUsedBomb -> {
+                !gamePlayer.getOwnPlayer().canUseBomb() -> {
                     Toast.makeText(this, R.string.already_used_bomb_piece, Toast.LENGTH_SHORT)
                         .show()
                 }
                 gameLayout.isUsingBombPiece -> {
                     gameLayout.showPossibleMoves()
                     gameLayout.isUsingBombPiece = false
+                    it.background = null
                 }
                 else -> {
                     gameLayout.clearPossibleMoves()
                     gameLayout.isUsingBombPiece = true
+                    it.setBackgroundResource(R.color.clickedSpecial)
                 }
             }
         }
 
         binding.btnTradePiece.setOnClickListener {
             when {
-                gamePlayer.getOwnPlayer().hasUsedTrade -> {
+                !gamePlayer.getOwnPlayer().canUseTrade() -> {
                     Toast.makeText(this, R.string.already_used_trade_move, Toast.LENGTH_SHORT)
                         .show()
                 }
                 gameLayout.isUsingTrade -> {
                     gameLayout.showPossibleMoves()
                     gameLayout.isUsingTrade = false
+                    it.background = null
                 }
                 else -> {
                     gameLayout.clearPossibleMoves()
                     gameLayout.isUsingTrade = true
+                    it.setBackgroundResource(R.color.clickedSpecial)
                 }
             }
         }
@@ -115,33 +118,59 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        gamePlayer.changePlayerCallback = l@{ id ->
-            val player = gamePlayer.getPlayerById(id)
-            if (player == null) {
-                Log.e(OURTAG, "Player is null from id : $id")
-                Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
-                return@l
+        gamePlayer.playerUsedBombCallback = { id ->
+            if (gamePlayer.isOnline()) {
+                val playerView = playersView.find { it.playerId == id }
+                runOnUiThread {
+                    playerView?.ivBomb?.visibility = View.GONE
+                }
             }
-            val shouldShowButtons = id == gamePlayer.getCurrentPlayer().playerId
+        }
+
+        gamePlayer.playerUsedTradeCallback = { id ->
+            if (gamePlayer.isOnline()) {
+                val playerView = playersView.find { it.playerId == id }
+                runOnUiThread {
+                    playerView?.ivTrade?.visibility = View.GONE
+                }
+            }
+        }
+
+        gamePlayer.changePlayerCallback = { id ->
             runOnUiThread {
-                if (shouldShowButtons)
+                val player = gamePlayer.getPlayerById(id)
+                if (player == null) {
+                    Log.e(OURTAG, "Player is null from id : $id")
+                    Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
+                    return@runOnUiThread
+                }
+                val isPlayerTurn = id == gamePlayer.getOwnPlayer().playerId
+
+                if (isPlayerTurn)
                     updatePlayerButtons()
+                else {
+                    binding.btnBombPiece.visibility = View.GONE
+                    binding.btnTradePiece.visibility = View.GONE
+                }
 
 
                 //TODO acabar de meter as cenas no topo do ecra meter os icones bem entre outras cenas
 
 
+                binding.btnTradePiece.background = null
+                binding.btnBombPiece.background = null
+
                 binding.tvPlayerName.text = player.profile.name
-                binding.imgViewCurrentPlayer.background = player.profile.icon
-                binding.imgViewCurrentPlayerPiece.background = player.piece.getDrawable(this)
-                clearPossibleMoves = null
+                binding.imgViewCurrentPlayer.setImageDrawable(player.profile.getIcon(this))
+                binding.imgViewCurrentPlayerPiece.setImageDrawable(
+                    player.piece.getIsolatedDrawable(this))
                 gameLayout.isUsingBombPiece = false
                 gameLayout.isUsingTrade = false
 
                 if (gamePlayer.isOnline()) {
-                    lastPlayerView?.parentView?.setBackgroundResource(R.drawable.piece_possible_black)
+                    lastPlayerView?.parentView?.background = null
                     val currentPlayerView = playersView.find { it.playerId == id }!!
-                    currentPlayerView.parentView.setBackgroundResource(R.drawable.piece_possible_white)
+                    currentPlayerView.parentView.setBackgroundResource(R.color.clickedSpecial)
                     lastPlayerView = currentPlayerView
                 }
             }
@@ -154,12 +183,13 @@ class GameActivity : AppCompatActivity() {
                 val parentView = view[view.childCount - 1]
                 val playerView = PlayerView(player.playerId, parentView,
                     ivPlayerImg = view.findViewById(R.id.imgViewPlayerIcon),
-                    tvPlayerName = view.findViewById(R.id.tvPlayerName),
+                    tvPlayerName = view.findViewById(R.id.textViewPlayerName),
                     ivPlayerPiece = view.findViewById(R.id.imgViewPlayerPiece),
                     ivBomb = view.findViewById(R.id.imgViewBombState),
                     ivTrade = view.findViewById(R.id.imgViewTradeState)
                 )
                 playerView.ivPlayerImg.setImageDrawable(player.profile.icon)
+                Log.i(OURTAG, "PERFILE ------- ${player.profile}")
                 playerView.tvPlayerName.text = player.profile.name
                 playerView.ivPlayerPiece.setImageDrawable(player.piece.getIsolatedDrawable(this))
                 //TODO mudar os estados quando um player joga uma peça especial
@@ -170,7 +200,6 @@ class GameActivity : AppCompatActivity() {
 
         gamePlayer.gameFinishedCallback = {
             runOnUiThread {
-                //Toast.makeText(this, "Game finished", Toast.LENGTH_SHORT).show()
                 openEndGameLayoutDialog(it)
                 /*val playerStats =
                     it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
@@ -184,23 +213,21 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun updatePlayerButtons(){
-
+    private fun updatePlayerButtons() {
         val currentPlayer = gamePlayer.getCurrentPlayer()
-        if (currentPlayer.hasUsedTrade) {
-            binding.btnTradePiece.visibility = View.GONE
-            binding.imgViewCurrentTradeState.visibility = View.GONE
-        }
-        else {
-            binding.btnTradePiece.visibility = View.VISIBLE
-            binding.imgViewCurrentTradeState.visibility = View.VISIBLE
-        }
-        if (currentPlayer.hasUsedBomb){
-            binding.btnBombPiece.visibility = View.GONE
-            binding.imgViewCurrentBombState.visibility = View.GONE
-        }else{
+        if (currentPlayer.canUseBomb()) {
             binding.btnBombPiece.visibility = View.VISIBLE
             binding.imgViewCurrentBombState.visibility = View.VISIBLE
+        } else {
+            binding.btnBombPiece.visibility = View.GONE
+            binding.imgViewCurrentBombState.visibility = View.GONE
+        }
+        if (currentPlayer.canUseTrade()) {
+            binding.btnTradePiece.visibility = View.VISIBLE
+            binding.imgViewCurrentTradeState.visibility = View.VISIBLE
+        } else {
+            binding.btnTradePiece.visibility = View.GONE
+            binding.imgViewCurrentTradeState.visibility = View.GONE
         }
     }
 
@@ -218,7 +245,7 @@ class GameActivity : AppCompatActivity() {
         val btnOk = dialog.findViewById(R.id.btnOk) as Button
 
 
-        if (gameEndStats.winningPlayerId == -1){
+        if (gameEndStats.winningPlayerId == -1) {
             val tvGameResult = dialog.findViewById(R.id.tvGameResult) as TextView
             tvGameResult.text = getString(R.string.draw)
             tvWinner.text = gamePlayer.getOwnPlayer().profile.name
@@ -228,7 +255,7 @@ class GameActivity : AppCompatActivity() {
             if (it.player.playerId == gameEndStats.winningPlayerId) {
                 tvWinner.text = it.player.profile.name
                 tvWinnerScore.text = it.pieces.toString()
-            } else if(tvWinner.text != it.player.profile.name) {
+            } else if (tvWinner.text != it.player.profile.name) {
                 tvOpponent1.text = it.player.profile.name
                 tvScoreOpponent1.text = it.pieces.toString()
                 if (gameEndStats.playerStats.size > 2) {

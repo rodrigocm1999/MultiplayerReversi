@@ -27,8 +27,7 @@ class WaitingPlayerListAdapter(
             this.setImageDrawable(player.piece.getDrawable(context))
         }
         view.findViewById<ImageView>(R.id.imgViewPlayerIcon).apply {
-            this.setImageDrawable(player.profile.icon
-                ?: AppCompatResources.getDrawable(context, R.drawable.avatar_icon))
+            this.setImageDrawable(player.profile.getIcon(context))
         }
         return view
     }

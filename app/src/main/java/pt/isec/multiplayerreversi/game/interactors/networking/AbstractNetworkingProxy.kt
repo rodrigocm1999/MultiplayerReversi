@@ -15,8 +15,8 @@ import kotlin.concurrent.thread
 
 abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable {
 
-    private val osw = OutputStreamWriter(socket.getOutputStream())
-    private val osr = InputStreamReader(socket.getInputStream())
+    private val osw = OutputStreamWriter(BufferedOutputStream(socket.getOutputStream()))
+    private val osr = InputStreamReader(BufferedInputStream(socket.getInputStream()))
     protected lateinit var jsonWriter: JsonWriter
     protected lateinit var jsonReader: JsonReader
 

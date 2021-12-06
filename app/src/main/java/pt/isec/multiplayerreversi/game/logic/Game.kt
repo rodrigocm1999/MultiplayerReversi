@@ -124,6 +124,7 @@ class Game(
             players.forEach {
                 it.callbacks?.gameFinishedCallback?.let { it(endStats) }
             }
+            return
         }
         sendEventsAfterPlay()
     }
@@ -147,7 +148,7 @@ class Game(
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
         // Se ainda poder jogar alguma jogada especial
-        if (!currentPlayer.hasUsedBomb || !currentPlayer.hasUsedTrade) return false
+        if (currentPlayer.canUseBomb() || currentPlayer.canUseTrade()) return false
 
         var nextPlayer = currentPlayer
         while (true) {
@@ -155,12 +156,12 @@ class Game(
             nextPlayer = getNext(nextPlayer, players)
             if (nextPlayer === currentPlayer)
                 break
-            val piece = nextPlayer.piece
 
             // Se ainda poder jogar alguma jogada especial
-            if (!nextPlayer.hasUsedBomb || !nextPlayer.hasUsedTrade) return false
+            if (nextPlayer.canUseBomb() || nextPlayer.canUseTrade()) return false
 
             // Se conseguir jogar pelo menos em 1 sitio quer dizer que o jogo ainda não acabou
+            val piece = nextPlayer.piece
             for (column in 0 until sideLength)
                 for (line in 0 until sideLength)
                     if (checkCanPlayAt(piece, Vector(column, line))) return false
@@ -283,10 +284,10 @@ class Game(
         return false
     }
 
-    fun playBombPiece(player: Player, line: Int, column: Int): Boolean {
-        if (board[line][column] != player.piece || player.hasUsedBomb) {
-            return false
-        }
+    fun playBombPiece(player: Player, line: Int, column: Int) {
+        if (player != currentPlayer) return
+        if (!player.canUseBomb() || board[line][column] != player.piece) return
+
         board[line][column] = Piece.Empty
         for (offset in directions) {
             val currPos = Vector(column, line)
@@ -298,17 +299,17 @@ class Game(
             board[currPos.y][currPos.x] = Piece.Empty
 
         }
-        player.hasUsedBomb = true
+        player.useBomb()
         players.forEach {
             it.callbacks?.playerUsedBombCallback?.invoke(currentPlayer.playerId)
         }
         updateState()
         countPasses = 0
-        return true
     }
 
     fun playTrade(player: Player, piece: ArrayList<Vector>) {
         if (player != currentPlayer) return
+        if (!player.canUseTrade()) return
 
         val piece1 = piece[0]
         val piece2 = piece[1]
@@ -326,7 +327,7 @@ class Game(
         board[opponent.y][opponent.x] = Piece.Empty
         executePlayAt(opponent.y, opponent.x)
 
-        currentPlayer.hasUsedTrade = true
+        currentPlayer.useTrade()
         players.forEach {
             it.callbacks?.playerUsedTradeCallback?.invoke(currentPlayer.playerId)
         }

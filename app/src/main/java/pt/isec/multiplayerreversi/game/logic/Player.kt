@@ -6,8 +6,8 @@ class Player(
     var profile: Profile = Profile(),
     var piece: Piece = Piece.Empty,
     var callbacks: GameCallbacks? = null,
-    var hasUsedBomb: Boolean = false,
-    var hasUsedTrade: Boolean = false,
+    private var hasUsedBomb: Boolean = false,
+    private var hasUsedTrade: Boolean = false,
     var playerId: Int = playerIdCounter++,
 ) {
 
@@ -23,5 +23,21 @@ class Player(
 
     override fun toString(): String {
         return "Player(playerId=$playerId, profile=$profile, piece=$piece, hasUsedBomb=$hasUsedBomb, hasUsedTrade=$hasUsedTrade)"
+    }
+
+    fun canUseBomb(): Boolean {
+        return !hasUsedBomb
+    }
+
+    fun canUseTrade(): Boolean {
+        return !hasUsedTrade
+    }
+
+    fun useBomb() {
+        hasUsedBomb = true
+    }
+
+    fun useTrade() {
+        hasUsedTrade = true
     }
 }

@@ -82,7 +82,6 @@ class GamePlayerRemoteSide(
                             hostExitedCallback()
                         }
                         JsonTypes.InGame.POSSIBLE_MOVES -> {
-                            Log.i(OURTAG, "received POSSIBLE_MOVES~-----------~-----------~-----------~-----------~-----------")
                             val possibleMoves = ArrayList<Vector>()
                             jsonReader.beginArray()
                             while (jsonReader.hasNext()) {
@@ -111,14 +110,14 @@ class GamePlayerRemoteSide(
                             val playerId = jsonReader.nextInt()
                             readSomething = true
                             Log.i(OURTAG, "received PLAYER_USED_BOMB : $playerId")
-                            gameData.getPlayer(playerId)!!.hasUsedBomb = true
+                            gameData.getPlayer(playerId)!!.useBomb()
                             playerUsedBombCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.PLAYER_USED_TRADE -> {
                             val playerId = jsonReader.nextInt()
                             readSomething = true
                             Log.i(OURTAG, "received PLAYER_USED_TRADE : $playerId")
-                            gameData.getPlayer(playerId)!!.hasUsedTrade = true
+                            gameData.getPlayer(playerId)!!.useTrade()
                             playerUsedTradeCallback?.invoke(playerId)
                         }
                         JsonTypes.InGame.GAME_FINISHED -> {

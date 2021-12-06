@@ -54,6 +54,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         connectionsWelcomer = ConnectionsWelcomer(players, playersChanged = { amount ->
             runOnUiThread {
                 adapter.notifyDataSetChanged()
+                binding.tvPlayerAmount.text = amount.toString()
                 binding.btnStartGame.isEnabled = amount >= 2
             }
         })

@@ -21,7 +21,6 @@ import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
-import pt.isec.multiplayerreversi.game.logic.Vector
 
 class GameActivity : AppCompatActivity() {
 
@@ -114,7 +113,7 @@ class GameActivity : AppCompatActivity() {
             runOnUiThread {
                 gameLayout.showPossibleMoves()
                 binding.btnPass.visibility =
-                    if (possibleMoves.isEmpty()) View.VISIBLE else View.INVISIBLE
+                    if (possibleMoves.isEmpty()) View.VISIBLE else View.GONE
             }
         }
 
@@ -145,7 +144,6 @@ class GameActivity : AppCompatActivity() {
                     return@runOnUiThread
                 }
                 val isPlayerTurn = id == gamePlayer.getOwnPlayer().playerId
-
                 if (isPlayerTurn)
                     updatePlayerButtons()
                 else {
@@ -153,10 +151,7 @@ class GameActivity : AppCompatActivity() {
                     binding.btnTradePiece.visibility = View.GONE
                 }
 
-
-                //TODO acabar de meter as cenas no topo do ecra meter os icones bem entre outras cenas
-
-
+                binding.btnPass.visibility = View.GONE
                 binding.btnTradePiece.background = null
                 binding.btnBombPiece.background = null
 
@@ -178,21 +173,18 @@ class GameActivity : AppCompatActivity() {
         if (gamePlayer.isOnline()) {
             val list = ArrayList<PlayerView>(3)
             gamePlayer.getPlayers().forEach { player ->
-                val view = layoutInflater.inflate( // returns binding.layoutPlayers
+                val linearLayout = layoutInflater.inflate( // returns binding.layoutPlayers
                     R.layout.playing_player, binding.layoutPlayers) as ViewGroup
-                val parentView = view[view.childCount - 1]
-                val playerView = PlayerView(player.playerId, parentView,
-                    ivPlayerImg = view.findViewById(R.id.imgViewPlayerIcon),
-                    tvPlayerName = view.findViewById(R.id.textViewPlayerName),
-                    ivPlayerPiece = view.findViewById(R.id.imgViewPlayerPiece),
-                    ivBomb = view.findViewById(R.id.imgViewBombState),
-                    ivTrade = view.findViewById(R.id.imgViewTradeState)
-                )
+                val playerParentView = linearLayout[linearLayout.childCount - 1]
+                val playerView = PlayerView(player.playerId, playerParentView,
+                    ivPlayerImg = playerParentView.findViewById(R.id.imgViewPlayerIcon),
+                    tvPlayerName = playerParentView.findViewById(R.id.textViewPlayerName),
+                    ivPlayerPiece = playerParentView.findViewById(R.id.imgViewPlayerPiece),
+                    ivBomb = playerParentView.findViewById(R.id.imgViewBombState),
+                    ivTrade = playerParentView.findViewById(R.id.imgViewTradeState))
                 playerView.ivPlayerImg.setImageDrawable(player.profile.icon)
-                Log.i(OURTAG, "PERFILE ------- ${player.profile}")
                 playerView.tvPlayerName.text = player.profile.name
                 playerView.ivPlayerPiece.setImageDrawable(player.piece.getIsolatedDrawable(this))
-                //TODO mudar os estados quando um player joga uma peça especial
                 list.add(playerView)
             }
             playersView = list
@@ -289,7 +281,7 @@ class GameActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
-    class PlayerView(
+    data class PlayerView(
         val playerId: Int,
         val parentView: View,
         val ivPlayerImg: ImageView,
@@ -297,8 +289,7 @@ class GameActivity : AppCompatActivity() {
         val ivPlayerPiece: ImageView,
         val ivBomb: ImageView,
         val ivTrade: ImageView,
-    ) {
-    }
+    )
 
     /*override fun onSupportNavigateUp(): Boolean {
         val alertDialog = AlertDialog.Builder(this)

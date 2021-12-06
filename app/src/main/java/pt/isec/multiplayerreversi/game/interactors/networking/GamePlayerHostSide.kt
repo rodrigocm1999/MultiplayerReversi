@@ -62,9 +62,11 @@ class GamePlayerHostSide(
                         JsonTypes.InGame.TRADE_PLAY -> {
                             readSomething = true
                             val tradePieces = ArrayList<Vector>()
+                            jsonReader.beginArray()
                             for (i in 1..3) {
                                 tradePieces.add(readVector())
                             }
+                            jsonReader.endArray()
                             Log.i(OURTAG,
                                 "TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
                             playTrade(tradePieces)

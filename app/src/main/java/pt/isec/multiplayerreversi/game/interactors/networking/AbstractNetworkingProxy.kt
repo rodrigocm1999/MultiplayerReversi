@@ -4,22 +4,20 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.*
 import androidx.core.graphics.scale
-import org.json.JSONObject
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import java.io.*
-import java.lang.Exception
 import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
 
-abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable {
+abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
 
-    private val osw = OutputStreamWriter((socket.getOutputStream()))
-    private val osr = InputStreamReader((socket.getInputStream()))
+    private val osw = OutputStreamWriter(BufferedOutputStream(socket.getOutputStream()))
+    private val isr = InputStreamReader(BufferedInputStream(socket.getInputStream()))
     protected var jsonWriter: JsonWriter = JsonWriter(osw)
-    protected var jsonReader: JsonReader = JsonReader(osr)
+    protected var jsonReader: JsonReader = JsonReader(isr)
 
     private val queuedActions = ArrayBlockingQueue<() -> Unit>(10)
     private lateinit var receivingThread: Thread
@@ -270,6 +268,8 @@ abstract class AbstractNetworkingProxy(protected val socket: Socket) : Closeable
             }
         }
         stopAllThreads()
+        osw.close()
+        isr.close()
         //TODO  quando se sai do jogo tem de fechar os sockets
     }
 }

@@ -33,7 +33,8 @@ open class Local1V1Play(protected val game: Game) : GamePlayer {
 
     override fun getOwnPlayer() = game.currentPlayer
     override fun getGameBoard() = game.board
-    override fun getPossibleMoves() = game.currentPlayerPossibleMoves
+    override fun getPossibleMoves() =
+        if (game.gameSettings.showPossibleMoves) game.currentPlayerPossibleMoves else ArrayList()
 
     override fun getGameSideLength() = game.sideLength
 

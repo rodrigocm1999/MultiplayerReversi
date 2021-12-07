@@ -24,13 +24,14 @@ import java.net.Socket
 import kotlin.concurrent.thread
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
+import pt.isec.multiplayerreversi.game.logic.GameData
 
 
 class WaitingAreaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWaitingAreaBinding
     private lateinit var players: ArrayList<Player>
-    private lateinit var connectionsWelcomer: ConnectionsWelcomer
+    private var connectionsWelcomer: ConnectionsWelcomer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +45,14 @@ class WaitingAreaActivity : AppCompatActivity() {
         players = ArrayList(Game.PLAYER_LIMIT)
         players.add(Player(app.getProfile(), Piece.Light))
 
-        val wifiManager  = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val ip: String = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
         binding.tvRoomAddress.text = ip
 
         val adapter = WaitingPlayerListAdapter(this, players)
         binding.lvPlayers.adapter = adapter
 
-        connectionsWelcomer = ConnectionsWelcomer(players, playersChanged = { amount ->
+        connectionsWelcomer = ConnectionsWelcomer(app, players, playersChanged = { amount ->
             runOnUiThread {
                 adapter.notifyDataSetChanged()
                 binding.tvPlayerAmount.text = amount.toString()
@@ -101,15 +102,17 @@ class WaitingAreaActivity : AppCompatActivity() {
         return true
     }
 
-    fun startGame() {
+    private fun startGame() {
         val app = application as App
-        val game = Game(players)
+        val game = Game(GameData(app.sharedGamePreferences, players))
         app.game = game
         val thisPlayer = players[0]
         val gamePlayer = LocalOnline(game, players[0])
         thisPlayer.callbacks = gamePlayer
         app.gamePlayer = gamePlayer
-        connectionsWelcomer.sendStart(game)
+        connectionsWelcomer?.sendStart(game)
+        connectionsWelcomer?.close()
+        connectionsWelcomer = null
         val intent = Intent(this, GameActivity::class.java)
         startActivity(intent)
         finish()
@@ -117,7 +120,7 @@ class WaitingAreaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        connectionsWelcomer.close()
+        connectionsWelcomer?.close()
     }
 
 }

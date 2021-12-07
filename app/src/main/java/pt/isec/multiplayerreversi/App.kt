@@ -3,7 +3,6 @@ package pt.isec.multiplayerreversi
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Profile
@@ -64,4 +63,35 @@ class App : Application() {
 
     private val avatarFile: File
         get() = File(filesDir, avatarFileName)
+
+
+    data class GameSettings(var showPossibleMoves: Boolean = true)
+
+    private var _sharedGamePreferences: GameSettings? = null
+    var sharedGamePreferences: GameSettings
+        get() {
+            if (_sharedGamePreferences == null)
+                _sharedGamePreferences = readSettingsFromPreferences()
+            return _sharedGamePreferences!!
+        }
+        set(value) {
+            storeGamePreferences(value)
+            _sharedGamePreferences = value
+        }
+
+    private fun readSettingsFromPreferences(): GameSettings {
+        val settings = GameSettings()
+        val pref = getSharedPreferences("game", MODE_PRIVATE)
+        settings.showPossibleMoves =
+            pref.getBoolean("showPossibleMoves", settings.showPossibleMoves)
+        return settings
+    }
+
+    private fun storeGamePreferences(settings: GameSettings) {
+        val pref = getSharedPreferences("game", MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.putBoolean("showPossibleMoves", settings.showPossibleMoves)
+        editor.apply()
+        sharedGamePreferences = settings
+    }
 }

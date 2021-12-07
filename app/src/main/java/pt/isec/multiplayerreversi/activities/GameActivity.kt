@@ -106,16 +106,19 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setCallbacks() {
-        gamePlayer.updateBoardCallback = { changedBoard ->
+        gamePlayer.updateBoardCallback = {
             runOnUiThread {
                 gameLayout.updatePieces()
             }
         }
         gamePlayer.possibleMovesCallback = { possibleMoves ->
             runOnUiThread {
-                gameLayout.showPossibleMoves()
-                binding.btnPass.visibility =
-                    if (possibleMoves.isEmpty()) View.VISIBLE else View.GONE
+                if (possibleMoves.isNotEmpty()) {
+                    gameLayout.showPossibleMoves()
+                    binding.btnPass.visibility = View.GONE
+                } else {
+                    binding.btnPass.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -151,9 +154,9 @@ class GameActivity : AppCompatActivity() {
                 else {
                     binding.btnBombPiece.visibility = View.GONE
                     binding.btnTradePiece.visibility = View.GONE
+                    binding.btnPass.visibility = View.GONE
                 }
 
-                binding.btnPass.visibility = View.GONE
                 binding.btnTradePiece.background = null
                 binding.btnBombPiece.background = null
 

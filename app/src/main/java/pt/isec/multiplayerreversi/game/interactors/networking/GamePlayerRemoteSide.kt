@@ -1,6 +1,7 @@
 package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
@@ -11,28 +12,41 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class GamePlayerRemoteSide(
-    socket: Socket,
-    profile: Profile,
+    socket: Socket, profile: Profile,
     override val arrivedPlayerCallback: ((Player) -> Unit),
     override val leftPlayerCallback: (Player) -> Unit,
     override val hostExitedCallback: (() -> Unit),
     override val gameStartingCallback: ((GamePlayer) -> Unit),
 ) : AbstractNetworkingProxy(socket), GamePlayer, IGameSetupRemoteSide {
 
-    private val gameData = GameData()
+    private var gameData: GameData
     private var ownPlayer: Player = Player(profile)
 
     init {
+        val settings = App.GameSettings()
         receiveThrough { _, jsonReader ->
-            gameData.players = ArrayList()
-            gameData.players.addAll(jsonReader.readPlayers())
-            gameData.players.add(ownPlayer)
+            jsonReader.beginObject()
+            while (jsonReader.hasNext()) {
+                when (jsonReader.nextName()) {
+                    "showPossibleMoves" -> settings.showPossibleMoves = jsonReader.nextBoolean()
+                }
+            }
+            jsonReader.endObject()
+            return@receiveThrough true
+        }
+
+        val players = ArrayList<Player>(3)
+        receiveThrough { _, jsonReader ->
+            players.addAll(jsonReader.readPlayers())
+            players.add(ownPlayer)
             return@receiveThrough true
         }
 
         sendThrough(JsonTypes.Setup.SEND_PROFILE) { jsonWriter ->
             jsonWriter.writeProfile(profile)
         }
+
+        gameData = GameData(settings, players)
 
         receiveThrough { _, jsonReader ->
             //Player object gets its fields filled up

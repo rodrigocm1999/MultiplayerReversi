@@ -1,6 +1,5 @@
 package pt.isec.multiplayerreversi.activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -9,13 +8,9 @@ import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
 import pt.isec.multiplayerreversi.game.interactors.Local1V1Play
-import pt.isec.multiplayerreversi.game.logic.Game
-import pt.isec.multiplayerreversi.game.logic.Piece
-import pt.isec.multiplayerreversi.game.logic.Player
-import pt.isec.multiplayerreversi.game.logic.Profile
 import kotlin.concurrent.thread
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import pt.isec.multiplayerreversi.game.logic.*
 
 
 class LauncherActivity : AppCompatActivity() {
@@ -45,7 +40,7 @@ class LauncherActivity : AppCompatActivity() {
             players.add(p1)
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
-            val game = Game(players)
+            val game = Game(GameData(app.sharedGamePreferences, players))
             app.game = game
             val proxy = Local1V1Play(game)
             p1.callbacks = proxy

@@ -131,13 +131,15 @@ class EditProfileActivity : AppCompatActivity() {
                 var bitmap = BitmapFactory.decodeFile(path)
                 removeTempImgFile()
                 //Fixes rotation on dumb devices
-                val rotationMatrix = Matrix()
-                if (bitmap.width >= bitmap.height)
-                    rotationMatrix.setRotate(-90f)
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                    bitmap.width, bitmap.height, rotationMatrix, true)
 
-                bitmap = bitmap.scale(600, 800)
+                if (bitmap.width >= bitmap.height) {
+                    val rotationMatrix = Matrix()
+                    rotationMatrix.setRotate(-90f)
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                        bitmap.width, bitmap.height, rotationMatrix, true)
+                }
+
+                bitmap = bitmap.scale(300, 400)
 
                 bitmapDrawable = BitmapDrawable(resources, bitmap)
                 profile.icon = bitmapDrawable

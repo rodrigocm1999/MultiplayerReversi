@@ -4,6 +4,7 @@ class JsonTypes {
 
     class Setup {
         companion object {
+            val SETTINGS = "settings"
             val READY = "ready"
             val EXITING = "exiting"
             val DATA = "data"

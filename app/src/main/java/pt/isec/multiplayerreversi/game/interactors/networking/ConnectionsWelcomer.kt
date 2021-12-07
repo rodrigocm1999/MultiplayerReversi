@@ -1,6 +1,7 @@
 package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.listeningPort
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
@@ -13,6 +14,7 @@ import java.net.SocketException
 import kotlin.concurrent.thread
 
 class ConnectionsWelcomer(
+    val app: App,
     private val players: ArrayList<Player>,
     private val playersChanged: (Int) -> Unit,
 ) : Closeable {
@@ -21,7 +23,7 @@ class ConnectionsWelcomer(
 
     private var receivingThread: Thread? = null
     private var started: Boolean = false
-    private val setupers = HashMap<Int, PlayerSetuper>() //= Set<PlayerSetuper>(3)
+    private val setupers = HashMap<Int, PlayerSetuper>()
 
     private var serverSocket: ServerSocket? = null
     private var shouldClose = false
@@ -44,14 +46,14 @@ class ConnectionsWelcomer(
                             playersAmount++
 
                             thread {
-                                GamePlayerHostSide(socket, this) { playerId ->
+                                GamePlayerHostSide(app, socket, this) { playerId ->
                                     Log.i(OURTAG, "Player got ready")
                                     val player = players.find { it.playerId == playerId }
                                     if (player != null)
                                         Log.i(OURTAG, player.toString())
                                     else
                                         Log.i(OURTAG,
-                                            "player that got ready with id $playerId is null for some reason that is unknow to the writer of this message")
+                                            "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
                                 }
                             }
 

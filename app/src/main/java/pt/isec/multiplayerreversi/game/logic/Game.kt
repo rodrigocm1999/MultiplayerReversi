@@ -1,27 +1,22 @@
 package pt.isec.multiplayerreversi.game.logic
 
 import android.util.Log
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 
-class Game(
-    players: ArrayList<Player>,
-    startingPlayer: Player = players.random(),
-) {
+class Game(private val gameData: GameData) {
 
-    private val gameData: GameData = GameData()
     private var countPasses: Int = 0
 
     private var readyPlayers: ArrayList<Int>? = ArrayList()
 
     init {
-        gameData.sideLength = if (players.size == 2) 8 else 10
-        gameData.players = players
-        gameData.currentPlayer = startingPlayer
-        gameData.board = Array(sideLength) { Array(sideLength) { Piece.Empty } }
-        gameData.shouldShowPossibleMoves = true
+        if (!gameData.boardIsReady())
+            gameData.board = prepareBoard(players)
     }
 
-    init {
+    private fun prepareBoard(players: ArrayList<Player>): Array<Array<Piece>> {
+        val board = Array(sideLength) { Array(sideLength) { Piece.Empty } }
         when (players.size) {
             2 -> {
                 val p1 = players[0].piece
@@ -50,6 +45,7 @@ class Game(
             }
             else -> throw IllegalStateException("Games are only allowed with 2 or 3 players")
         }
+        return board
     }
 
     fun playerReady(player: Player) {
@@ -188,11 +184,11 @@ class Game(
         players.forEach {
             it.callbacks?.updateBoardCallback?.let { it(board) }
             it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
-        }
-        if (gameData.shouldShowPossibleMoves) {
-            players.forEach {
-                it.callbacks?.possibleMovesCallback?.let { it(currentPlayerPossibleMoves) }
-            }
+
+            var possibleMoves = currentPlayerPossibleMoves
+            if (!gameData.gameSettings.showPossibleMoves)
+                possibleMoves = ArrayList(0)
+            it.callbacks?.possibleMovesCallback?.let { it(possibleMoves) }
         }
     }
 
@@ -326,9 +322,9 @@ class Game(
 
 
     val board: Array<Array<Piece>>
-        get() = gameData.board
+        get() = gameData.board!!
 
-    val players: List<Player>
+    val players: ArrayList<Player>
         get() = gameData.players
 
     var currentPlayer: Player
@@ -345,6 +341,9 @@ class Game(
         private set(value) {
             gameData.currentPlayerPossibleMoves = value
         }
+
+    val gameSettings: App.GameSettings
+        get() = gameData.gameSettings
 
     companion object {
         private val directions = arrayOf(

@@ -1,6 +1,7 @@
 package pt.isec.multiplayerreversi.game.interactors.networking
 
 import android.util.Log
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
@@ -9,11 +10,11 @@ import java.lang.Exception
 import java.net.Socket
 
 class GamePlayerHostSide(
+    app: App,
     socket: Socket,
     connectionsWelcomer: ConnectionsWelcomer,
     override val readyUpCallback: (Int) -> Unit,
 ) : AbstractNetworkingProxy(socket), GamePlayer, IGameSetupHostSide {
-
 
     private lateinit var ownPlayer: Player
     lateinit var game: Game
@@ -21,6 +22,13 @@ class GamePlayerHostSide(
     private var alreadyReceivedReady = false
 
     init {
+        val gameSettings = app.sharedGamePreferences
+        sendThrough(JsonTypes.Setup.SETTINGS) {
+            it.beginObject()
+            it.name("showPossibleMoves").value(gameSettings.showPossibleMoves)
+            it.endObject()
+        }
+
         sendThrough(JsonTypes.Setup.PLAYERS) {
             it.writePlayers(connectionsWelcomer.getPlayers())
         }

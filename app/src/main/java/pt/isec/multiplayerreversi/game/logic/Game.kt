@@ -8,13 +8,12 @@ class Game(
     startingPlayer: Player = players.random(),
 ) {
 
-    private val gameData: GameData
+    private val gameData: GameData = GameData()
     private var countPasses: Int = 0
 
     private var readyPlayers: ArrayList<Int>? = ArrayList()
 
     init {
-        gameData = GameData()
         gameData.sideLength = if (players.size == 2) 8 else 10
         gameData.players = players
         gameData.currentPlayer = startingPlayer
@@ -54,20 +53,16 @@ class Game(
     }
 
     fun playerReady(player: Player) {
-//        Log.i(OURTAG, "Player passou a passar-se: ${player.profile.name}")
-        if (readyPlayers != null) {
-            readyPlayers?.let { ready ->
-                if (ready.contains(player.playerId)) {
-                    Log.e(OURTAG,
-                        "Player that is already ready got ready again : ${player.playerId}")
-                    return
-                }
+        readyPlayers?.let { ready ->
+            if (ready.contains(player.playerId)) {
+                Log.e(OURTAG, "Player that is already ready got ready again : ${player.playerId}")
+                return
+            }
 
-                ready.add(player.playerId)
-                if (ready.size == players.size) {
-                    readyPlayers = null
-                    startGame()
-                }
+            ready.add(player.playerId)
+            if (ready.size == players.size) {
+                readyPlayers = null
+                startGame()
             }
         }
     }
@@ -122,12 +117,15 @@ class Game(
             }
             val endStats = GameEndStats(highestScoreId, playersStats)
             players.forEach {
+                it.callbacks?.updateBoardCallback?.let { it(board) }
                 it.callbacks?.gameFinishedCallback?.let { it(endStats) }
             }
             return
         }
         sendEventsAfterPlay()
     }
+
+    //TODO resolver o problema dos passes, pode ter de passar mesmo tendo jogadas especiais porque não tem peça nehuma no tabuleiro
 
     private fun countPieces(piece: Piece): Int {
         var count = 0
@@ -187,16 +185,11 @@ class Game(
     }
 
     private fun sendEventsAfterPlay() {
-//        propertyChange.firePropertyChange(updateBoardEvent, null, board)
         players.forEach {
             it.callbacks?.updateBoardCallback?.let { it(board) }
-        }
-//        propertyChange.firePropertyChange(updateCurrentPlayerEvent, null, currentPlayer.playerId)
-        players.forEach {
             it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
         }
         if (gameData.shouldShowPossibleMoves) {
-//            propertyChange.firePropertyChange(showMovesEvent, null, currentPlayerMoves)
             players.forEach {
                 it.callbacks?.possibleMovesCallback?.let { it(currentPlayerPossibleMoves) }
             }
@@ -300,9 +293,7 @@ class Game(
 
         }
         player.useBomb()
-        players.forEach {
-            it.callbacks?.playerUsedBombCallback?.invoke(currentPlayer.playerId)
-        }
+        players.forEach { it.callbacks?.playerUsedBombCallback?.invoke(currentPlayer.playerId) }
         updateState()
         countPasses = 0
     }
@@ -328,9 +319,7 @@ class Game(
         executePlayAt(opponent.y, opponent.x)
 
         currentPlayer.useTrade()
-        players.forEach {
-            it.callbacks?.playerUsedTradeCallback?.invoke(currentPlayer.playerId)
-        }
+        players.forEach { it.callbacks?.playerUsedTradeCallback?.invoke(currentPlayer.playerId) }
         updateState()
         countPasses = 0
     }

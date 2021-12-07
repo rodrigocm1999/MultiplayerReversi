@@ -61,6 +61,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun setListeners() {
         binding.btnBombPiece.setOnClickListener {
+            if (gameLayout.isUsingTrade) return@setOnClickListener
             when {
                 !gamePlayer.getOwnPlayer().canUseBomb() -> {
                     Toast.makeText(this, R.string.already_used_bomb_piece, Toast.LENGTH_SHORT)
@@ -80,6 +81,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         binding.btnTradePiece.setOnClickListener {
+            if (gameLayout.isUsingBombPiece) return@setOnClickListener
             when {
                 !gamePlayer.getOwnPlayer().canUseTrade() -> {
                     Toast.makeText(this, R.string.already_used_trade_move, Toast.LENGTH_SHORT)

@@ -189,7 +189,7 @@ class GamePlayerHostSide(
     }
 
     override fun arrivedPlayer(player: Player) {
-        writeJson(JsonTypes.InGame.PLAYER_USED_TRADE) { jsonWriter ->
+        writeJson(JsonTypes.Setup.NEW_PLAYER) { jsonWriter ->
             jsonWriter.writePlayer(player)
         }
     }

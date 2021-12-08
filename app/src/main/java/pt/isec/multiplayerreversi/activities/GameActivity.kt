@@ -112,12 +112,14 @@ class GameActivity : AppCompatActivity() {
             }
         }
         gamePlayer.possibleMovesCallback = { possibleMoves ->
-            runOnUiThread {
-                if (possibleMoves.isNotEmpty()) {
-                    gameLayout.showPossibleMoves()
-                    binding.btnPass.visibility = View.GONE
-                } else {
-                    binding.btnPass.visibility = View.VISIBLE
+            if (gamePlayer.getCurrentPlayer() == gamePlayer.getOwnPlayer()) {
+                runOnUiThread {
+                    if (possibleMoves.isNotEmpty()) {
+                        gameLayout.showPossibleMoves()
+                        binding.btnPass.visibility = View.GONE
+                    } else {
+                        binding.btnPass.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -172,6 +174,12 @@ class GameActivity : AppCompatActivity() {
                     val currentPlayerView = playersView.find { it.playerId == id }!!
                     currentPlayerView.parentView.setBackgroundResource(R.color.clickedSpecial)
                     lastPlayerView = currentPlayerView
+                }
+
+                if (isPlayerTurn && gamePlayer.playerHasNoMoves()) {
+                    gamePlayer.passPlayer()
+                    Toast.makeText(this, R.string.you_had_no_possible_moves, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }

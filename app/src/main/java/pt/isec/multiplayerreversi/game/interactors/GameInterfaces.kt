@@ -17,7 +17,7 @@ interface GamePlayer : GameDataGetter, GameCallbacks {
 }
 
 interface GameDataGetter {
-    fun isOnline():Boolean
+    fun isOnline(): Boolean
 
     fun getPlayers(): List<Player>
     fun getCurrentPlayer(): Player
@@ -27,6 +27,7 @@ interface GameDataGetter {
     fun getPossibleMoves(): List<Vector>
     fun getPlayerById(id: Int): Player? = getPlayers().find { p -> p.playerId == id }
     fun getGameSideLength(): Int = getGameBoard().size
+    fun playerHasNoMoves(): Boolean = getPossibleMoves().isEmpty()
 }
 
 interface GameCallbacks {

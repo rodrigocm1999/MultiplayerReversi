@@ -38,4 +38,5 @@
     <string name="opponent_s">Opponente/s</string>
     <string name="draw">Empate</string>
     <string name="room_address">Endereço da sala:</string>
+    <string name="you_had_no_possible_moves">Não tinhas jogodas possíveis, por isso foste passado</string>
 </resources>

@@ -6,8 +6,8 @@ import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
-import java.lang.Exception
 import java.net.Socket
+import java.net.SocketException
 
 class GamePlayerHostSide(
     app: App,
@@ -65,9 +65,8 @@ class GamePlayerHostSide(
                     JsonTypes.InGame.TRADE_PLAY -> {
                         val tradePieces = ArrayList<Vector>()
                         jsonReader.beginArray()
-                        for (i in 1..3) {
+                        for (i in 1..3)
                             tradePieces.add(jsonReader.readVector())
-                        }
                         jsonReader.endArray()
                         Log.i(OURTAG,
                             "TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
@@ -75,10 +74,12 @@ class GamePlayerHostSide(
                         return@setReceiving true
                     }
                     JsonTypes.InGame.PLAYER_PASSED -> {
-                        Log.i(OURTAG, "received PLAYER_PASSED")
                         passPlayer()
+                        Log.i(OURTAG, "received PLAYER_PASSED")
                     }
                     JsonTypes.InGame.PLAYER_LEFT -> {
+                        game.playerLeaving(getOwnPlayer())
+                        shouldExit = true
                         Log.i(OURTAG, "received PLAYER_LEFT")
                     }
                     JsonTypes.InGame.PLAYER_READY -> {
@@ -87,6 +88,9 @@ class GamePlayerHostSide(
                             ready()
                         }
                         Log.i(OURTAG, "received PLAYER_READY")
+                    }
+                    JsonTypes.Setup.DATA -> {
+                        Log.e(OURTAG, "Received DATA not to worry about GameSetupHostSide")
                     }
                     else -> {
                         Log.e(OURTAG,
@@ -97,9 +101,11 @@ class GamePlayerHostSide(
                 Log.i(OURTAG, "InterruptedException correu na thread GameSetupHostSide")
                 shouldExit = true
                 throw e
-            } catch (e: Exception) {
-                connectionsWelcomer.playerLeft(ownPlayer)
-                Log.e(OURTAG, "", e)
+            } catch (e: SocketException) {
+                shouldExit = true
+                gameTerminatedCallback?.let { it() }
+                game.playerLeaving(getOwnPlayer())
+                Log.e(OURTAG, "Socket exception", e)
             }
             return@setReceiving false
         }
@@ -122,8 +128,8 @@ class GamePlayerHostSide(
         game.playerReady(getOwnPlayer())
     }
 
-    override fun detach() {
-        //TODO player saiu
+    override fun leaveGame() {
+        game.playerLeaving(getOwnPlayer())
     }
 
     override fun passPlayer() {
@@ -136,6 +142,8 @@ class GamePlayerHostSide(
     override fun getCurrentPlayer() = game.currentPlayer
 
     override fun getOwnPlayer() = ownPlayer
+    override fun getGameData() = game.gameData
+
     override fun getGameBoard() = game.board
     override fun getPossibleMoves() = game.currentPlayerPossibleMoves
 
@@ -143,29 +151,27 @@ class GamePlayerHostSide(
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = { moves ->
         //TODO conseguir desligar as jogadas possíveis
         //TODO scores no layout
-        writeJson(JsonTypes.InGame.POSSIBLE_MOVES) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.POSSIBLE_MOVES) { jsonWriter ->
             jsonWriter.beginArray()
-            moves.forEach { vector ->
-                jsonWriter.writeVector(vector)
-            }
+            moves.forEach { jsonWriter.writeVector(it) }
             jsonWriter.endArray()
             Log.i(OURTAG, "send POSSIBLE_MOVES")
         }
     }
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = { board ->
-        writeJson(JsonTypes.InGame.BOARD_CHANGED) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.BOARD_CHANGED) { jsonWriter ->
             jsonWriter.writeBoardArray(board)
             Log.i(OURTAG, "send BOARD_CHANGED")
         }
     }
     override var changePlayerCallback: ((Int) -> Unit)? = { playerId ->
-        writeJson(JsonTypes.InGame.PLAYER_CHANGED) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_CHANGED) { jsonWriter ->
             jsonWriter.value(playerId)
             Log.i(OURTAG, "send PLAYER_CHANGED")
         }
     }
     override var gameFinishedCallback: ((GameEndStats) -> Unit)? = {
-        writeJson(JsonTypes.InGame.GAME_FINISHED) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.GAME_FINISHED) { jsonWriter ->
             jsonWriter.beginArray()
             it.playerStats.forEach {
                 jsonWriter.beginObject()
@@ -178,41 +184,51 @@ class GamePlayerHostSide(
         }
     }
     override var playerUsedBombCallback: ((Int) -> Unit)? = { pId ->
-        writeJson(JsonTypes.InGame.PLAYER_USED_BOMB) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_USED_BOMB) { jsonWriter ->
             jsonWriter.value(pId)
             Log.i(OURTAG, "send PLAYER_USED_BOMB")
         }
     }
     override var playerUsedTradeCallback: ((Int) -> Unit)? = { pId ->
-        writeJson(JsonTypes.InGame.PLAYER_USED_TRADE) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_USED_TRADE) { jsonWriter ->
             jsonWriter.value(pId)
             Log.i(OURTAG, "send PLAYER_USED_TRADE")
         }
     }
+    override var gameTerminatedCallback: (() -> Unit)? = {
+        queueJsonWrite(JsonTypes.InGame.GAME_TERMINATED) { jsonWriter ->
+            jsonWriter.nullValue()
+            Log.i(OURTAG, "send GAME_TERMINATED")
+        }
+        queueJsonWrite(JsonTypes.Setup.DATA, false) { jsonWriter ->
+            jsonWriter.close()
+        }
+    }
 
     override fun arrivedPlayer(player: Player) {
-        writeJson(JsonTypes.Setup.NEW_PLAYER) { jsonWriter ->
+        queueJsonWrite(JsonTypes.Setup.NEW_PLAYER) { jsonWriter ->
             jsonWriter.writePlayer(player)
         }
     }
 
     override fun leftPayer(playerId: Int) {
-        writeJson(JsonTypes.Setup.LEFT_PLAYER) { jsonWriter ->
+        queueJsonWrite(JsonTypes.Setup.LEFT_PLAYER) { jsonWriter ->
             jsonWriter.value(playerId)
         }
     }
 
     override fun sendExit() {
-        writeJson(JsonTypes.Setup.EXITING) { jsonWriter ->
+        queueJsonWrite(JsonTypes.Setup.EXITING) { jsonWriter ->
             jsonWriter.nullValue()
             close()
         }
     }
 
     override fun sendStart(game: Game) {
-        writeJson(JsonTypes.Setup.STARTING) { jsonWriter ->
+        queueJsonWrite(JsonTypes.Setup.STARTING) { jsonWriter ->
             jsonWriter.writeStartingInformation(game)
             Log.i(OURTAG, "Send STARTING correu")
         }
     }
+
 }

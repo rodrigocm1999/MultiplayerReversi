@@ -186,9 +186,9 @@ class EditProfileActivity : AppCompatActivity() {
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle(supportActionBar?.title)
                 .setMessage(getString(R.string.question_leave_without_save))
-                .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
-                .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
-                .setNeutralButton(getString(R.string.save_and_leave)) { d, w -> saveProfile() }
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> finish() }
+                .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
+                .setNeutralButton(getString(R.string.save_and_leave)) { _, _ -> saveProfile() }
                 .setCancelable(true)
                 .create()
             alertDialog.show()

@@ -59,14 +59,14 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         super.onSupportNavigateUp()
         finish()
-        setupRemoteSide?.leave()
+        setupRemoteSide?.leaveWaitingArea()
         return true
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
-        setupRemoteSide?.leave()
+        setupRemoteSide?.leaveWaitingArea()
     }
 
 }

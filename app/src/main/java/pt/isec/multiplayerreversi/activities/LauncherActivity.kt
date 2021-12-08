@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
-import pt.isec.multiplayerreversi.game.interactors.Local1V1Play
+import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
 import kotlin.concurrent.thread
 import android.net.ConnectivityManager
 import pt.isec.multiplayerreversi.game.logic.*
@@ -42,22 +42,22 @@ class LauncherActivity : AppCompatActivity() {
 
             val game = Game(GameData(app.sharedGamePreferences, players))
             app.game = game
-            val proxy = Local1V1Play(game)
+            val proxy = LocalPlayer(game)
             p1.callbacks = proxy
             app.gamePlayer = proxy
             startActivity(intent)
         }
         binding.btnRemote.setOnClickListener {
+            val profile = app.getProfile()
+            if (profile.name.isBlank()) {
+                Toast.makeText(this, R.string.need_to_setup_user, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val connManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
             if (!mWifi!!.isConnected) {
                 Toast.makeText(this, R.string.need_wifi, Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            val profile = app.getProfile()
-            if (profile.name.isBlank()) {
-                Toast.makeText(this, R.string.need_to_setup_user, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 

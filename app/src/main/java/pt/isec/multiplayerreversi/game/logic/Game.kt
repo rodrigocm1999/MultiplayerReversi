@@ -4,7 +4,7 @@ import android.util.Log
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 
-class Game(private val gameData: GameData) {
+class Game(val gameData: GameData) {
 
     private var countPasses: Int = 0
 
@@ -67,12 +67,6 @@ class Game(private val gameData: GameData) {
         Log.i(OURTAG, "Jogo começou")
         updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
-    }
-
-    fun terminate() {
-        players.forEach {
-            //TODO game closed
-        }
     }
 
     fun passPlayer(player: Player) {
@@ -320,9 +314,16 @@ class Game(private val gameData: GameData) {
         countPasses = 0
     }
 
+    fun playerLeaving(ownPlayer: Player) {
+        players.forEach {
+            if (it.playerId != ownPlayer.playerId)
+                it.callbacks?.gameTerminatedCallback?.invoke()
+        }
+    }
+
 
     val board: Array<Array<Piece>>
-        get() = gameData.board!!
+        get() = gameData.board
 
     val players: ArrayList<Player>
         get() = gameData.players

@@ -1,5 +1,6 @@
 package pt.isec.multiplayerreversi.game.interactors.networking
 
+import android.system.Os
 import android.util.JsonReader
 import android.util.JsonWriter
 import android.util.Log
@@ -10,16 +11,20 @@ import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
 
-abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
+abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
 
     private val osw = OutputStreamWriter(BufferedOutputStream(socket.getOutputStream()))
     private val isr = InputStreamReader(BufferedInputStream(socket.getInputStream()))
     private var jsonWriter: JsonWriter = JsonWriter(osw)
     private var jsonReader: JsonReader = JsonReader(isr)
 
-    data class RunnableJSONBlock(val type: String, val block: (JsonWriter) -> Unit)
+    data class RunnableBlock(
+        val type: String,
+        val block: (JsonWriter) -> Unit,
+        val isSendRelated: Boolean,
+    )
 
-    private val queuedActions = ArrayBlockingQueue<RunnableJSONBlock>(10)
+    private val queuedActions = ArrayBlockingQueue<RunnableBlock>(10)
     private lateinit var receivingThread: Thread
     private val senderThread: Thread
 
@@ -32,8 +37,25 @@ abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
 
         senderThread = thread {
             while (!shouldExit) {
+                try {
+                    val block = queuedActions.take()
+                    if (block.isSendRelated)
+                        sendThrough(block.type, block.block)
+                } catch (e: InterruptedException) {
+                    shouldExit = true
+                } catch (e: IOException) {
+                    this.close()
+                    Log.e(OURTAG, "IOException, socket closed")
+                } catch (e: Throwable) {
+                    Log.e(OURTAG, "Exception", e)
+                }
+            }
+            while (queuedActions.isNotEmpty()) {
                 val block = queuedActions.take()
-                sendThrough(block.type, block.block)
+                if (block.isSendRelated)
+                    sendThrough(block.type, block.block)
+                else
+                    block.block(jsonWriter)
             }
         }
     }
@@ -51,8 +73,11 @@ abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
         endRead()
     }
 
-    protected fun writeJson(type: String, block: (jsonReader: JsonWriter) -> Unit) {
-        queuedActions.put(RunnableJSONBlock(type, block))
+    protected fun queueJsonWrite(
+        type: String, isSendRelated: Boolean = true,
+        block: (jsonReader: JsonWriter) -> Unit,
+    ) {
+        queuedActions.put(RunnableBlock(type, block, isSendRelated))
     }
 
     protected fun setReceiving(
@@ -61,15 +86,14 @@ abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
     ) {
         receivingThread = thread {
             try {
-                Log.i(OURTAG, "Started Thread with name : $threadName")
-                while (!shouldExit) {
+                while (!shouldExit)
                     receiveThrough(reader)
-                }
-                Log.i(OURTAG, "Finished Thread with name : $threadName")
             } catch (e: InterruptedException) {
-                Log.e(OURTAG, "Interrupted Thread with name : $threadName")
-            } catch (e: Exception) {
-                Log.e(OURTAG, "Exception in Thread with name : $threadName", e)
+                shouldExit = true
+            } catch (e: IOException) {
+                Log.e(OURTAG, "Lost connection : IOException")
+            } catch (e: Throwable) {
+                Log.e(OURTAG, "Throwable in Thread with name : $threadName", e)
             }
         }
     }
@@ -97,21 +121,14 @@ abstract class AbstractNetworkingProxy(socket: Socket) : Closeable {
         jsonReader.endObject()
     }
 
-    private fun stopAllThreads() {
-        senderThread.interrupt()
-        receivingThread.interrupt()
-    }
-
     override fun close() {
-        synchronized(queuedActions) {
-            shouldExit = true
-            if (!queuedActions.isEmpty()) {
-                senderThread.join()
-            }
-        }
-        stopAllThreads()
+        shouldExit = true
+        receivingThread.interrupt()
+        senderThread.interrupt()
+        receivingThread.join()
+        senderThread.join()
         osw.close()
         isr.close()
-        //TODO  quando se sai do jogo tem de fechar os sockets
+        socket.close()
     }
 }

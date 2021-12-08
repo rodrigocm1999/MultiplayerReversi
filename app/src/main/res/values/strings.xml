@@ -40,4 +40,8 @@
     <string name="draw">Draw</string>
     <string name="room_address">Room Address:</string>
     <string name="you_had_no_possible_moves">You had no possible plays, so you were passed</string>
+    <string name="exit_game">Exit Game</string>
+    <string name="ask_leave_game">Are you sure you want to leave the game?</string>
+    <string name="game_interrupted">Game Interrupted</string>
+    <string name="ask_keep_locally">Do you want to continue playing locally on this device?</string>
 </resources>

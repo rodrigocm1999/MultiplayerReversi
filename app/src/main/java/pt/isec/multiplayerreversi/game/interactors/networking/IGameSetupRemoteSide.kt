@@ -10,6 +10,6 @@ interface IGameSetupRemoteSide : Closeable {
     val hostExitedCallback: (() -> Unit)
     val gameStartingCallback: ((GamePlayer) -> Unit)
 
-    fun leave()
+    fun leaveWaitingArea()
     fun getPlayers(): List<Player>
 }

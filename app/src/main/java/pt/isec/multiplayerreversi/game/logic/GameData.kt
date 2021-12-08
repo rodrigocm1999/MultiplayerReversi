@@ -24,7 +24,4 @@ class GameData(
         return _board != null
     }
 
-    fun getPlayer(id: Int): Player? {
-        return players.find { p -> p.playerId == id }
-    }
 }

@@ -2,6 +2,7 @@ package pt.isec.multiplayerreversi.activities
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -20,10 +21,13 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
+import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
+import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 
 class GameActivity : AppCompatActivity() {
 
+    private lateinit var app: App
     private lateinit var binding: ActivityGameBinding
 
     private lateinit var playersView: List<PlayerView>
@@ -41,7 +45,7 @@ class GameActivity : AppCompatActivity() {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        val app = application as App
+        app = application as App
         gamePlayer = app.gamePlayer
             ?: throw IllegalStateException("InteractionSender from App is null when entering the game activity")
 
@@ -52,11 +56,6 @@ class GameActivity : AppCompatActivity() {
         setListeners()
 
         gamePlayer.ready()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        gameLayout.refreshBoard()
     }
 
     private fun setListeners() {
@@ -106,20 +105,16 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setCallbacks() {
-        gamePlayer.updateBoardCallback = {
-            runOnUiThread {
-                gameLayout.updatePieces()
-            }
-        }
+        gamePlayer.updateBoardCallback = { runOnUiThread { gameLayout.updatePieces() } }
+
         gamePlayer.possibleMovesCallback = { possibleMoves ->
             if (gamePlayer.getCurrentPlayer() == gamePlayer.getOwnPlayer()) {
                 runOnUiThread {
                     if (possibleMoves.isNotEmpty()) {
                         gameLayout.showPossibleMoves()
                         binding.btnPass.visibility = View.GONE
-                    } else {
+                    } else
                         binding.btnPass.visibility = View.VISIBLE
-                    }
                 }
             }
         }
@@ -127,18 +122,14 @@ class GameActivity : AppCompatActivity() {
         gamePlayer.playerUsedBombCallback = { id ->
             if (gamePlayer.isOnline()) {
                 val playerView = playersView.find { it.playerId == id }
-                runOnUiThread {
-                    playerView?.ivBomb?.visibility = View.GONE
-                }
+                runOnUiThread { playerView?.ivBomb?.visibility = View.GONE }
             }
         }
 
         gamePlayer.playerUsedTradeCallback = { id ->
             if (gamePlayer.isOnline()) {
                 val playerView = playersView.find { it.playerId == id }
-                runOnUiThread {
-                    playerView?.ivTrade?.visibility = View.GONE
-                }
+                runOnUiThread { playerView?.ivTrade?.visibility = View.GONE }
             }
         }
 
@@ -176,7 +167,7 @@ class GameActivity : AppCompatActivity() {
                     lastPlayerView = currentPlayerView
                 }
 
-                if (isPlayerTurn && gamePlayer.playerHasNoMoves()) {
+                if (isPlayerTurn && !gamePlayer.playerHasAnyMoves()) {
                     gamePlayer.passPlayer()
                     Toast.makeText(this, R.string.you_had_no_possible_moves, Toast.LENGTH_LONG)
                         .show()
@@ -203,19 +194,8 @@ class GameActivity : AppCompatActivity() {
             playersView = list
         }
 
-        gamePlayer.gameFinishedCallback = {
-            runOnUiThread {
-                openEndGameLayoutDialog(it)
-                /*val playerStats =
-                    it.playerStats.find { p -> p.player.playerId == it.winningPlayerId }
-                if (playerStats != null) {
-                    Toast.makeText(this, "${playerStats.player.profile.name} " +
-                            "-> ${playerStats.pieces} pieces", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Draw", Toast.LENGTH_SHORT).show()
-                }*/
-            }
-        }
+        gamePlayer.gameFinishedCallback = { runOnUiThread { openEndGameLayoutDialog(it) } }
+        gamePlayer.gameTerminatedCallback = { runOnUiThread { gameTerminated() } }
     }
 
     private fun updatePlayerButtons() {
@@ -277,17 +257,53 @@ class GameActivity : AppCompatActivity() {
         }
         btnOk.setOnClickListener {
             dialog.dismiss()
-            finish()
+            leaveGame()
         }
 
         dialog.show()
     }
 
+    private fun gameTerminated() {
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle(R.string.game_interrupted)
+            .setMessage(R.string.ask_keep_locally)
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                val game = Game(gamePlayer.getGameData())
+                val gamePlayer = LocalPlayer(game)
+                game.players.forEach { it.callbacks = null }
+                game.players[0].callbacks = gamePlayer
+                app.game = game
+                app.gamePlayer = gamePlayer
+                val intent = Intent(this, GameActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                finish()
+            }
+            .setCancelable(false)
+            .create()
+        alertDialog.show()
+    }
+
+    private fun leaveGame() {
+        gamePlayer.leaveGame()
+        unreferenceGame()
+        finish()
+    }
+
+    //TODO resolver o problema do tabuleiro usar muito espaço em ecrãs mais quadrados
+
+    private fun unreferenceGame() {
+        app.gamePlayer = null
+        app.game = null
+    }
+
     override fun onBackPressed() {
         val alertDialog = AlertDialog.Builder(this)
-            .setTitle("Exit Game")
-            .setMessage("Are you sure you want to leave the game?")
-            .setPositiveButton(getString(R.string.yes)) { d, w -> finish() }
+            .setTitle(R.string.exit_game)
+            .setMessage(R.string.ask_leave_game)
+            .setPositiveButton(getString(R.string.yes)) { d, w -> leaveGame() }
             .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
             .setCancelable(true)
             .create()

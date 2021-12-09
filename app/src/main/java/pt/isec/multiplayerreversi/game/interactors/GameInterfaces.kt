@@ -27,8 +27,9 @@ interface GameDataGetter {
     fun getGameSideLength(): Int = getGameBoard().size
 
     fun playerHasAnyMoves(): Boolean {
-        return getPossibleMoves().isNotEmpty() || getOwnPlayer().canUseTrade() ||
-                getOwnPlayer().canUseBomb() || playerHasPiecesOnBoard(getOwnPlayer().piece)
+        return getPossibleMoves().isNotEmpty() ||
+                playerHasPiecesOnBoard(getOwnPlayer().piece) &&
+                (getOwnPlayer().canUseTrade() || getOwnPlayer().canUseBomb())
     }
 
     fun playerHasPiecesOnBoard(piece: Piece): Boolean {

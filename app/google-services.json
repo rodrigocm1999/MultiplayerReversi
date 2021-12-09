@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "34327672905",
+    "project_id": "multiplayerrever-1638913960907",
+    "storage_bucket": "multiplayerrever-1638913960907.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34327672905:android:82e45fa2438257157c6798",
+        "android_client_info": {
+          "package_name": "pt.isec.multiplayerreversi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34327672905-i19phoohlpskkpt454334cnv347gv70s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJLrxiMHQI3X-B_hPm6ebryzw6uLbHPOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34327672905-i19phoohlpskkpt454334cnv347gv70s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

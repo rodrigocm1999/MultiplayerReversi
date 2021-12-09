@@ -3,7 +3,7 @@ package pt.isec.multiplayerreversi.game.interactors.networking
 import android.util.Log
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
-import pt.isec.multiplayerreversi.App.Companion.listeningPort
+import pt.isec.multiplayerreversi.App.Companion.LISTENING_PORT
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
@@ -34,7 +34,7 @@ class ConnectionsWelcomer(
 
     private fun listenForConnections() {
         if (receivingThread == null) {
-            serverSocket = ServerSocket(listeningPort)
+            serverSocket = ServerSocket(LISTENING_PORT)
             receivingThread = thread {
                 println("Listening for connections")
                 while (!shouldClose) {

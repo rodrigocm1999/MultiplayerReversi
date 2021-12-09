@@ -6,8 +6,8 @@ import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
+import java.io.IOException
 import java.net.Socket
-import java.net.SocketException
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
@@ -70,7 +70,7 @@ class GamePlayerRemoteSide(
                         arrivedPlayerCallback(p)
                         return@setReceiving true
                     }
-                    JsonTypes.Setup.LEFT_PLAYER -> {
+                    JsonTypes.Setup.PLAYER_LEFT_WAITING_ROOM -> {
                         Log.i(OURTAG, "received LEFT_PLAYER")
                         val p = Player()
                         val playerId = jsonReader.nextInt()
@@ -91,7 +91,7 @@ class GamePlayerRemoteSide(
                         }
                         return@setReceiving true
                     }
-                    JsonTypes.Setup.EXITING -> {
+                    JsonTypes.Setup.HOST_EXITING -> {
                         Log.i(OURTAG, "received EXITING")
                         hostExitedCallback()
                     }
@@ -173,9 +173,7 @@ class GamePlayerRemoteSide(
                         Log.i(OURTAG, "received GAME_TERMINATED")
                         gameTerminatedCallback?.let { it() }
                     }
-                    JsonTypes.Setup.DATA -> {
-                        Log.e(OURTAG, "Received DATA not to worry about GameSetupRemoteSide")
-                    }
+                    JsonTypes.Setup.DATA -> {}
                     else -> {
                         Log.e(OURTAG,
                             "Received something that shouldn't have on GameSetupRemoteSide: $type")
@@ -183,11 +181,7 @@ class GamePlayerRemoteSide(
                     }
                 }
                 return@setReceiving false
-            } catch (e: InterruptedException) {
-                Log.i(OURTAG, "InterruptedException correu na thread GameSetupRemoteSide", e)
-                shouldExit = true
-                throw e
-            } catch (e: SocketException) {
+            } catch (e: IOException) {
                 shouldExit = true
                 gameTerminatedCallback?.let { it() }
                 Log.e(OURTAG, "Error socket exception", e)
@@ -224,34 +218,33 @@ class GamePlayerRemoteSide(
     }
 
     override fun ready() {
-        queueJsonWrite(JsonTypes.InGame.PLAYER_READY) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_DEVICE_READY) { jsonWriter ->
             jsonWriter.nullValue()
             Log.i(OURTAG, "send PLAYER_READY")
         }
     }
 
     override fun leaveGame() {
-        queueJsonWrite(JsonTypes.InGame.PLAYER_LEFT) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_LEFT_RUNNING_GAME) { jsonWriter ->
             jsonWriter.nullValue()
             Log.i(OURTAG, "send PLAYER_LEFT")
         }
-        queueJsonWrite(JsonTypes.Setup.DATA, false) { jsonWriter ->
-            close()
-        }
+        queueClose()
     }
 
     override fun passPlayer() {
-        queueJsonWrite(JsonTypes.InGame.PLAYER_PASSED) { jsonWriter ->
+        queueJsonWrite(JsonTypes.InGame.PLAYER_PASSED_TURN) { jsonWriter ->
             jsonWriter.nullValue()
             Log.i(OURTAG, "send PLAYER_PASSED")
         }
     }
 
     override fun leaveWaitingArea() {
-        queueJsonWrite(JsonTypes.Setup.LEFT_PLAYER) { jsonWriter ->
+        queueJsonWrite(JsonTypes.Setup.PLAYER_LEFT_WAITING_ROOM) { jsonWriter ->
             jsonWriter.value(ownPlayer.playerId)
             Log.i(OURTAG, "send LEFT_PLAYER")
         }
+        queueClose()
     }
 
 

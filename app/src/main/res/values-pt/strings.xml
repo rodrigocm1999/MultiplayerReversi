@@ -39,4 +39,8 @@
     <string name="draw">Empate</string>
     <string name="room_address">Endereço da sala:</string>
     <string name="you_had_no_possible_moves">Não tinhas jogodas possíveis, por isso foste passado</string>
+    <string name="exit_game">Sair do jogo</string>
+    <string name="ask_leave_game">Tens a certeza que pretendes sair do jogo?</string>
+    <string name="game_interrupted">Jogo interrompido</string>
+    <string name="ask_keep_locally">Pretendes continuar a jogar localmente?</string>
 </resources>

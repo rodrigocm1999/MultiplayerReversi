@@ -21,7 +21,6 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
     data class RunnableBlock(
         val type: String,
         val block: (JsonWriter) -> Unit,
-        val isSendRelated: Boolean,
     )
 
     private val queuedActions = ArrayBlockingQueue<RunnableBlock>(10)
@@ -39,8 +38,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
             while (!shouldExit) {
                 try {
                     val block = queuedActions.take()
-                    if (block.isSendRelated)
-                        sendThrough(block.type, block.block)
+                    sendThrough(block.type, block.block)
                 } catch (e: InterruptedException) {
                     shouldExit = true
                 } catch (e: IOException) {
@@ -52,10 +50,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
             }
             while (queuedActions.isNotEmpty()) {
                 val block = queuedActions.take()
-                if (block.isSendRelated)
-                    sendThrough(block.type, block.block)
-                else
-                    block.block(jsonWriter)
+                sendThrough(block.type, block.block)
             }
         }
     }
@@ -73,16 +68,19 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
         endRead()
     }
 
-    protected fun queueJsonWrite(
-        type: String, isSendRelated: Boolean = true,
-        block: (jsonReader: JsonWriter) -> Unit,
-    ) {
-        queuedActions.put(RunnableBlock(type, block, isSendRelated))
+    protected fun queueJsonWrite(type: String, block: (jsonReader: JsonWriter) -> Unit) {
+        queuedActions.put(RunnableBlock(type, block))
+    }
+
+    protected fun queueClose() {
+        queuedActions.put(RunnableBlock(JsonTypes.Setup.DATA) {
+            jsonWriter.nullValue()
+            thread { close() }
+        })
     }
 
     protected fun setReceiving(
-        threadName: String,
-        reader: (type: String, jsonReader: JsonReader) -> Boolean,
+        threadName: String, reader: (type: String, jsonReader: JsonReader) -> Boolean,
     ) {
         receivingThread = thread {
             try {
@@ -123,10 +121,6 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
 
     override fun close() {
         shouldExit = true
-        receivingThread.interrupt()
-        senderThread.interrupt()
-        receivingThread.join()
-        senderThread.join()
         osw.close()
         isr.close()
         socket.close()

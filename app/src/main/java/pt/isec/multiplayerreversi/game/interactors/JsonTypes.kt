@@ -6,10 +6,10 @@ class JsonTypes {
         companion object {
             val SETTINGS = "settings"
             val READY = "ready"
-            val EXITING = "exiting"
+            val HOST_EXITING = "exiting"
             val DATA = "data"
             val NEW_PLAYER = "new_player"
-            val LEFT_PLAYER = "left_player"
+            val PLAYER_LEFT_WAITING_ROOM = "left_player"
             val STARTING = "starting"
             val PLAYERS = "players"
             val PLAYER_IDS = "ids"
@@ -20,9 +20,9 @@ class JsonTypes {
     class InGame {
         companion object {
             val GAME_TERMINATED = "game_terminated"
-            val PLAYER_PASSED = "player_passed"
-            val PLAYER_LEFT = "player_left"
-            val PLAYER_READY = "player_ready"
+            val PLAYER_PASSED_TURN = "player_passed"
+            val PLAYER_LEFT_RUNNING_GAME = "player_left"
+            val PLAYER_DEVICE_READY = "player_ready"
             val BOARD_CHANGED = "board_changed"
             val PLAYER_CHANGED = "player_changed"
             val POSSIBLE_MOVES = "possible_moves"

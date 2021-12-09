@@ -97,6 +97,7 @@ class ConnectionsWelcomer(
     override fun close() {
         if (!started) setupers.forEach {
             it.value.setuper.sendExit()
+            it.value.setuper.connectionsWelcomer = null
         }
         serverSocket?.close()
     }
@@ -112,6 +113,7 @@ class ConnectionsWelcomer(
         setupers.forEach {
             it.value.setuper.leftPayer(player.playerId)
         }
+        playersAmount--
         playersChanged()
     }
 

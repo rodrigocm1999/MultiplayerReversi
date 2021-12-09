@@ -110,6 +110,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val gamePlayer = LocalOnline(game, players[0])
         thisPlayer.callbacks = gamePlayer
         app.gamePlayer = gamePlayer
+
         connectionsWelcomer?.sendStart(game)
         connectionsWelcomer?.close()
         connectionsWelcomer = null

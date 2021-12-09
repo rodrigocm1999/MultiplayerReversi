@@ -43,4 +43,5 @@
     <string name="ask_leave_game">Tens a certeza que pretendes sair do jogo?</string>
     <string name="game_interrupted">Jogo interrompido</string>
     <string name="ask_keep_locally">Pretendes continuar a jogar localmente?</string>
+    <string name="players">Jogadores</string>
 </resources>

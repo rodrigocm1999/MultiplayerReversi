@@ -56,7 +56,6 @@ class GameActivity : AppCompatActivity() {
 
         setCallbacks()
         setListeners()
-        //TODO scores no layout , se calhar tanto em cima como em baixo
         gamePlayer.ready()
     }
 
@@ -64,16 +63,15 @@ class GameActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         gameLayout.refreshBoard()
+
         playersView?.forEach { playerView ->
             if (!playerView.player.canUseBomb()) playerView.ivBomb.visibility = View.INVISIBLE
             if (!playerView.player.canUseTrade()) playerView.ivTrade.visibility = View.INVISIBLE
+            playerView.tvPlayerScore.text = playerView.player.score.toString()
         }
         val player = gamePlayer.getOwnPlayer()
         if (player.playerId == gamePlayer.getCurrentPlayer().playerId) {
-            binding.btnPass.visibility =
-                if (gamePlayer.getPossibleMoves().isEmpty()) View.VISIBLE else View.GONE
-            binding.btnBombPiece.visibility = if (player.canUseBomb()) View.VISIBLE else View.GONE
-            binding.btnTradePiece.visibility = if (player.canUseTrade()) View.VISIBLE else View.GONE
+            updateCurrentPlayerBar(player)
         }
     }
 
@@ -124,7 +122,12 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setCallbacks() {
-        gamePlayer.updateBoardCallback = { runOnUiThread { gameLayout.updatePieces() } }
+        gamePlayer.updateBoardCallback = { runOnUiThread {
+            gameLayout.updatePieces()
+            playersView?.forEach {
+                it.tvPlayerScore.text = it.player.score.toString()
+            }
+        } }
 
         gamePlayer.possibleMovesCallback = { possibleMoves ->
             if (gamePlayer.getCurrentPlayer() == gamePlayer.getOwnPlayer()) {
@@ -202,9 +205,11 @@ class GameActivity : AppCompatActivity() {
                     tvPlayerName = parentView.findViewById(R.id.textViewPlayerName),
                     ivPlayerPiece = parentView.findViewById(R.id.imgViewPlayerPiece),
                     ivBomb = parentView.findViewById(R.id.imgViewBombState),
-                    ivTrade = parentView.findViewById(R.id.imgViewTradeState))
+                    ivTrade = parentView.findViewById(R.id.imgViewTradeState),
+                    tvPlayerScore = parentView.findViewById(R.id.tvPlayerScore))
                 playerView.ivPlayerImg.setImageDrawable(player.profile.icon)
                 playerView.tvPlayerName.text = player.profile.name
+                playerView.tvPlayerScore.text = player.score.toString()
                 playerView.ivPlayerPiece.setImageDrawable(player.piece.getIsolatedDrawable(this))
                 list.add(playerView)
             }
@@ -229,6 +234,7 @@ class GameActivity : AppCompatActivity() {
             if (player.canUseBomb()) View.VISIBLE else View.INVISIBLE
         binding.imgViewCurrentTradeState.visibility =
             if (player.canUseTrade()) View.VISIBLE else View.INVISIBLE
+        binding.tvPlayerNowPlaying.text = player.score.toString()
     }
 
     private fun saveScoreIfThatIsThyWish() {
@@ -278,7 +284,7 @@ class GameActivity : AppCompatActivity() {
                     if (tvOpponent1.text != it.player.profile.name) {
                         tvOpponent2.text = it.player.profile.name
                         tvScoreOpponent2.text = it.pieces.toString()
-                        //TODO testar janela dos scores com 3 pessoas
+                        //TODO mudar isto para uma lista decente
                     }
                 }
             }
@@ -321,7 +327,6 @@ class GameActivity : AppCompatActivity() {
         finish()
     }
 
-    //TODO resolver o problema do tabuleiro usar muito espaço em ecrãs mais quadrados
 
     private fun unreferenceGame() {
         app.gamePlayer = null
@@ -347,6 +352,7 @@ class GameActivity : AppCompatActivity() {
         val ivPlayerPiece: ImageView,
         val ivBomb: ImageView,
         val ivTrade: ImageView,
+        val tvPlayerScore: TextView,
     )
 
     /*override fun onSupportNavigateUp(): Boolean {

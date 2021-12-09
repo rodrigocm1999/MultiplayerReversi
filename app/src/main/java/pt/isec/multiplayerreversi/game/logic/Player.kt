@@ -11,6 +11,8 @@ class Player(
     var playerId: Int = playerIdCounter++,
 ) {
 
+    var score: Int = 0
+
     constructor(profile: Profile, piece: Piece, hasUsedBomb: Boolean, hasUsedTrade: Boolean)
             : this(profile, piece) {
         this.hasUsedBomb = hasUsedBomb

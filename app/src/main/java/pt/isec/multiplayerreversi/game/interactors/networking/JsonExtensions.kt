@@ -22,6 +22,13 @@ fun JsonReader.readBoardArray(board: Array<Array<Piece>>) {
     }
     this.endArray()
 }
+fun JsonReader.readScoresArray(players: List<Player>){
+    this.beginArray()
+    players.forEach {
+        it.score = this.nextInt()
+    }
+    this.endArray()
+}
 
 fun JsonWriter.writeBoardArray(board: Array<Array<Piece>>) {
     val sideLength = board.size
@@ -31,6 +38,13 @@ fun JsonWriter.writeBoardArray(board: Array<Array<Piece>>) {
         for (column in 0 until sideLength)
             this.value(board[line][column].char.toString())
         this.endArray()
+    }
+    this.endArray()
+}
+fun JsonWriter.writeScoresArray(players: List<Player>){
+    this.beginArray()
+    players.forEach {
+        this.value(it.score)
     }
     this.endArray()
 }

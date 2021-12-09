@@ -24,14 +24,15 @@ import java.net.Socket
 import kotlin.concurrent.thread
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
+import android.widget.BaseAdapter
 import pt.isec.multiplayerreversi.game.logic.GameData
 
 
 class WaitingAreaActivity : AppCompatActivity() {
 
+    private lateinit var app: App
     private lateinit var binding: ActivityWaitingAreaBinding
-    private lateinit var players: ArrayList<Player>
-    private var connectionsWelcomer: ConnectionsWelcomer? = null
+    private var adapter: BaseAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,32 +41,79 @@ class WaitingAreaActivity : AppCompatActivity() {
         title = getString(R.string.waiting_area)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val app = application as App
+        app = application as App
 
-        players = ArrayList(Game.PLAYER_LIMIT)
-        players.add(Player(app.getProfile(), Piece.Light))
+        if (app.connectionsWelcomer == null) {
+            val players = ArrayList<Player>(Game.PLAYER_LIMIT)
+            players.add(Player(app.getProfile(), Piece.Light))
+            app.connectionsWelcomer = ConnectionsWelcomer(app, players)
+            Log.i(OURTAG,"Created ConnectionsWelcomer")
+        }
+
+        val connWelcom = app.connectionsWelcomer!!
+        adapter = WaitingPlayerListAdapter(this, connWelcom.getPlayers())
+        binding.lvPlayers.adapter = adapter
+        connWelcom.playersChanged = { runOnUiThread { updateView() } }
 
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val ip: String = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
         binding.tvRoomAddress.text = ip
 
-        val adapter = WaitingPlayerListAdapter(this, players)
-        binding.lvPlayers.adapter = adapter
+       setOnClickListeners()
+    }
 
-        connectionsWelcomer = ConnectionsWelcomer(app, players, playersChanged = { amount ->
-            runOnUiThread {
-                adapter.notifyDataSetChanged()
-                binding.tvPlayerAmount.text = amount.toString()
-                binding.btnStartGame.isEnabled = amount >= 2
-            }
-        })
+    private fun updateView() {
+        adapter?.notifyDataSetChanged()
+        val amount = app.connectionsWelcomer!!.getPlayers().size
+        binding.tvPlayerAmount.text = amount.toString()
+        binding.btnStartGame.isEnabled = amount >= 2
+        Log.i(OURTAG,"update view , $amount $adapter")
+    }
 
+    override fun finish() {
+        super.finish()
+        fullyCloseConnectionsWelcomer()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        updateView()
+    }
+
+    private fun fullyCloseConnectionsWelcomer() {
+        app.connectionsWelcomer?.close()
+        app.connectionsWelcomer = null
+    }
+
+    private fun startGame() {
+        val players = app.connectionsWelcomer!!.getPlayers()
+        val game = Game(GameData(app.sharedGamePreferences, players))
+        app.game = game
+        val thisPlayer = players[0]
+        val gamePlayer = LocalOnline(game, players[0])
+        thisPlayer.callbacks = gamePlayer
+        app.gamePlayer = gamePlayer
+
+        app.connectionsWelcomer?.sendStart(game)
+        app.connectionsWelcomer?.close()
+        app.connectionsWelcomer = null
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun setOnClickListeners() {
         binding.btnJoinGame.setOnClickListener {
             val editText = EditText(this).apply {
                 this.isSingleLine = true
             }
             val dialog = AlertDialog.Builder(this)
-                .setCancelable(true)
+                .setCancelable(false)
                 .setTitle(R.string.enter_address)
                 .setNegativeButton(R.string.cancel) { d, _ -> d.dismiss() }
                 .setPositiveButton(R.string.join) { _, _ ->
@@ -96,32 +144,4 @@ class WaitingAreaActivity : AppCompatActivity() {
             startGame()
         }
     }
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
-
-    private fun startGame() {
-        val app = application as App
-        val game = Game(GameData(app.sharedGamePreferences, players))
-        app.game = game
-        val thisPlayer = players[0]
-        val gamePlayer = LocalOnline(game, players[0])
-        thisPlayer.callbacks = gamePlayer
-        app.gamePlayer = gamePlayer
-
-        connectionsWelcomer?.sendStart(game)
-        connectionsWelcomer?.close()
-        connectionsWelcomer = null
-        val intent = Intent(this, GameActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        connectionsWelcomer?.close()
-    }
-
 }

@@ -8,6 +8,7 @@ import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.io.Closeable
+import java.lang.Exception
 import java.net.ServerSocket
 import java.net.SocketException
 import kotlin.concurrent.thread
@@ -15,7 +16,6 @@ import kotlin.concurrent.thread
 class ConnectionsWelcomer(
     val app: App,
     private val players: ArrayList<Player>,
-    private val playersChanged: (Int) -> Unit,
 ) : Closeable {
 
     data class PlayerSetuper(val player: Player, val setuper: GamePlayerHostSide)
@@ -27,6 +27,8 @@ class ConnectionsWelcomer(
     private var serverSocket: ServerSocket? = null
     private var shouldClose = false
     private var playersAmount = players.size
+
+    lateinit var playersChanged: (Int) -> Unit
 
     init {
         listenForConnections()
@@ -45,14 +47,18 @@ class ConnectionsWelcomer(
                             playersAmount++
 
                             thread {
-                                GamePlayerHostSide(app, socket, this) { playerId ->
-                                    Log.i(OURTAG, "Player got ready")
-                                    val player = players.find { it.playerId == playerId }
-                                    if (player != null)
-                                        Log.i(OURTAG, player.toString())
-                                    else
-                                        Log.i(OURTAG,
-                                            "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
+                                try {
+                                    GamePlayerHostSide(app, socket, this) { playerId ->
+                                        val player = players.find { it.playerId == playerId }
+                                        if (player != null)
+                                            Log.i(OURTAG, player.toString())
+                                        else
+                                            Log.i(OURTAG,
+                                                "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
+                                    }
+                                    Log.i(OURTAG, "finished connecting")
+                                } catch (e: Exception) {
+                                    Log.e(OURTAG, "Exception", e)
                                 }
                             }
 

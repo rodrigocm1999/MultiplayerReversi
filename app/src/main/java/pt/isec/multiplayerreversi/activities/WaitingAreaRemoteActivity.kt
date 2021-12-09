@@ -14,6 +14,7 @@ import kotlin.concurrent.thread
 
 class WaitingAreaRemoteActivity : AppCompatActivity() {
 
+    private lateinit var app: App
     private var setupRemoteSide: GamePlayerRemoteSide? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,50 +24,64 @@ class WaitingAreaRemoteActivity : AppCompatActivity() {
         title = getString(R.string.waiting_for_host)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val app = application as App
+        app = application as App
         val socket = app.temp as Socket
-        val lvPlayers = findViewById<ListView>(R.id.lvPlayers)
 
+        val lvPlayers = findViewById<ListView>(R.id.lvPlayers)
         val adapter = WaitingPlayerListAdapter(this)
-        thread {
-            setupRemoteSide = GamePlayerRemoteSide(socket, app.getProfile(),
-                arrivedPlayerCallback = { p -> // player is already inside list, which is the same on the list adapter
-                    runOnUiThread { adapter.notifyDataSetChanged() }
-                },
-                leftPlayerCallback = {
-                    runOnUiThread { adapter.notifyDataSetChanged() }
-                },
-                hostExitedCallback = {
-                    runOnUiThread {
-                        Toast.makeText(this, R.string.host_exited, Toast.LENGTH_LONG).show()
+        lvPlayers.adapter = adapter
+
+
+        if (app.setupRemoteSide == null) {
+            thread {
+                setupRemoteSide = GamePlayerRemoteSide(socket, app.getProfile(),
+                    arrivedPlayerCallback = { runOnUiThread { adapter.notifyDataSetChanged() } },
+                    leftPlayerCallback = { runOnUiThread { adapter.notifyDataSetChanged() } },
+                    hostExitedCallback = {
+                        runOnUiThread {
+                            Toast.makeText(this, R.string.host_exited, Toast.LENGTH_LONG).show()
+                            finish()
+                        }
+                    },
+                    gameStartingCallback = { gamePlayer ->
+                        app.gamePlayer = gamePlayer
                         finish()
-                    }
-                },
-                gameStartingCallback = { gamePlayer ->
-                    app.gamePlayer = gamePlayer
-                    finish()
-                    val intent = Intent(this, GameActivity::class.java)
-                    startActivity(intent)
-                })
+                        val intent = Intent(this, GameActivity::class.java)
+                        startActivity(intent)
+                    })
+                runOnUiThread {
+                    adapter.players = setupRemoteSide?.getPlayers()!!
+                    adapter.notifyDataSetChanged()
+                }
+                app.setupRemoteSide = setupRemoteSide
+            }
+        } else {
+            setupRemoteSide = app.setupRemoteSide
             runOnUiThread {
                 adapter.players = setupRemoteSide?.getPlayers()!!
                 adapter.notifyDataSetChanged()
             }
         }
-        lvPlayers.adapter = adapter
     }
 
     override fun onSupportNavigateUp(): Boolean {
         super.onSupportNavigateUp()
-        finish()
         setupRemoteSide?.leaveWaitingArea()
+        finish()
         return true
     }
 
+    //is called when we leave this area, but not on screen rotation
+    override fun finish() {
+        super.finish()
+        app.setupRemoteSide = null
+    }
+
+
     override fun onBackPressed() {
         super.onBackPressed()
-        finish()
         setupRemoteSide?.leaveWaitingArea()
+        finish()
     }
 
 }

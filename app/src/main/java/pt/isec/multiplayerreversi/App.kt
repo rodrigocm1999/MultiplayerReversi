@@ -57,6 +57,7 @@ class App : Application() {
     companion object {
         const val OURTAG = "reversiTag"
         const val listeningPort = 43338
+        const val RC_SIGN_IN = 123
         val avatarFileName: String
             get() = "avatar.jpg"
     }

@@ -115,8 +115,6 @@ class Game(val gameData: GameData) {
         sendEventsAfterPlay()
     }
 
-    //TODO resolver o problema dos passes, pode ter de passar mesmo tendo jogadas especiais porque não tem peça nehuma no tabuleiro
-
     private fun countPieces(piece: Piece): Int {
         var count = 0
         for (column in 0 until sideLength)
@@ -136,7 +134,10 @@ class Game(val gameData: GameData) {
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
         // Se ainda poder jogar alguma jogada especial
-        if (currentPlayer.canUseBomb() || currentPlayer.canUseTrade()) return false
+        var playerPieces = playerPieces(currentPlayer.piece)
+        if (playerPieces >= 1 && currentPlayer.canUseBomb() ||
+            playerPieces >= 2 && currentPlayer.canUseTrade()
+        ) return false
 
         var nextPlayer = currentPlayer
         while (true) {
@@ -146,7 +147,10 @@ class Game(val gameData: GameData) {
                 break
 
             // Se ainda poder jogar alguma jogada especial
-            if (nextPlayer.canUseBomb() || nextPlayer.canUseTrade()) return false
+            playerPieces = playerPieces(nextPlayer.piece)
+            if (playerPieces >= 1 && nextPlayer.canUseBomb() ||
+                playerPieces >= 2 && nextPlayer.canUseTrade()
+            ) return false
 
             // Se conseguir jogar pelo menos em 1 sitio quer dizer que o jogo ainda não acabou
             val piece = nextPlayer.piece
@@ -156,6 +160,15 @@ class Game(val gameData: GameData) {
         }
         // se não encontrar jogadas possíveis, o jogo tem de terminar
         return true
+    }
+
+    private fun playerPieces(playerPiece: Piece): Int {
+        var count = 0
+        for (column in 0 until sideLength)
+            for (line in 0 until sideLength)
+                if (board[line][column] == playerPiece)
+                    count++
+        return count
     }
 
     private fun boardIsFull(): Boolean {
@@ -178,11 +191,7 @@ class Game(val gameData: GameData) {
         players.forEach {
             it.callbacks?.updateBoardCallback?.let { it(board) }
             it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
-
-            var possibleMoves = currentPlayerPossibleMoves
-            if (!gameData.gameSettings.showPossibleMoves)
-                possibleMoves = ArrayList(0)
-            it.callbacks?.possibleMovesCallback?.let { it(possibleMoves) }
+            it.callbacks?.possibleMovesCallback?.let { it(currentPlayerPossibleMoves) }
         }
     }
 

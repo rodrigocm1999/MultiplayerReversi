@@ -24,6 +24,7 @@ import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
 import pt.isec.multiplayerreversi.game.logic.Game
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
+import kotlin.concurrent.thread
 
 class GameActivity : AppCompatActivity() {
 
@@ -54,8 +55,14 @@ class GameActivity : AppCompatActivity() {
 
         setCallbacks()
         setListeners()
-
+        //TODO scores no layout , se calhar tanto em cima como em baixo
         gamePlayer.ready()
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        gameLayout.refreshBoard()
     }
 
     private fun setListeners() {
@@ -110,11 +117,9 @@ class GameActivity : AppCompatActivity() {
         gamePlayer.possibleMovesCallback = { possibleMoves ->
             if (gamePlayer.getCurrentPlayer() == gamePlayer.getOwnPlayer()) {
                 runOnUiThread {
-                    if (possibleMoves.isNotEmpty()) {
-                        gameLayout.showPossibleMoves()
-                        binding.btnPass.visibility = View.GONE
-                    } else
-                        binding.btnPass.visibility = View.VISIBLE
+                    gameLayout.showPossibleMoves()
+                    binding.btnPass.visibility =
+                        if (possibleMoves.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -138,7 +143,8 @@ class GameActivity : AppCompatActivity() {
                 val player = gamePlayer.getPlayerById(id)
                 if (player == null) {
                     Log.e(OURTAG, "Player is null from id : $id")
-                    Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Player is null from id : $id", Toast.LENGTH_LONG)
+                        .show()
                     return@runOnUiThread
                 }
                 val isPlayerTurn = id == gamePlayer.getOwnPlayer().playerId
@@ -169,33 +175,47 @@ class GameActivity : AppCompatActivity() {
 
                 if (isPlayerTurn && !gamePlayer.playerHasAnyMoves()) {
                     gamePlayer.passPlayer()
+                    binding.btnPass.visibility = View.GONE
                     Toast.makeText(this, R.string.you_had_no_possible_moves, Toast.LENGTH_LONG)
                         .show()
                 }
             }
         }
+
         if (gamePlayer.isOnline()) {
+//        if (true) {
             val list = ArrayList<PlayerView>(3)
             gamePlayer.getPlayers().forEach { player ->
                 val linearLayout = layoutInflater.inflate( // returns binding.layoutPlayers
                     R.layout.playing_player, binding.layoutPlayers) as ViewGroup
-                val playerParentView = linearLayout[linearLayout.childCount - 1]
-                val playerView = PlayerView(player.playerId, playerParentView,
-                    ivPlayerImg = playerParentView.findViewById(R.id.imgViewPlayerIcon),
-                    tvPlayerName = playerParentView.findViewById(R.id.textViewPlayerName),
-                    ivPlayerPiece = playerParentView.findViewById(R.id.imgViewPlayerPiece),
-                    ivBomb = playerParentView.findViewById(R.id.imgViewBombState),
-                    ivTrade = playerParentView.findViewById(R.id.imgViewTradeState))
+                val parentView = linearLayout[linearLayout.childCount - 1]
+                val playerView = PlayerView(player.playerId, parentView,
+                    ivPlayerImg = parentView.findViewById(R.id.imgViewPlayerIcon),
+                    tvPlayerName = parentView.findViewById(R.id.textViewPlayerName),
+                    ivPlayerPiece = parentView.findViewById(R.id.imgViewPlayerPiece),
+                    ivBomb = parentView.findViewById(R.id.imgViewBombState),
+                    ivTrade = parentView.findViewById(R.id.imgViewTradeState))
                 playerView.ivPlayerImg.setImageDrawable(player.profile.icon)
                 playerView.tvPlayerName.text = player.profile.name
                 playerView.ivPlayerPiece.setImageDrawable(player.piece.getIsolatedDrawable(this))
+                if (!player.canUseBomb()) playerView.ivBomb.visibility = View.GONE
+                if (!player.canUseTrade()) playerView.ivTrade.visibility = View.GONE
                 list.add(playerView)
             }
             playersView = list
         }
 
-        gamePlayer.gameFinishedCallback = { runOnUiThread { openEndGameLayoutDialog(it) } }
+        gamePlayer.gameFinishedCallback = {
+            if (gamePlayer.isOnline() && app.game != null) {
+                thread { saveScoreIfThatIsThyWish() }
+            }
+            runOnUiThread { openEndGameLayoutDialog(it) }
+        }
         gamePlayer.gameTerminatedCallback = { runOnUiThread { gameTerminated() } }
+    }
+
+    private fun saveScoreIfThatIsThyWish() {
+        //TODO save the game on the table
     }
 
     private fun updatePlayerButtons() {
@@ -257,7 +277,8 @@ class GameActivity : AppCompatActivity() {
         }
         btnOk.setOnClickListener {
             dialog.dismiss()
-            leaveGame()
+            unreferenceGame()
+            finish()
         }
 
         dialog.show()
@@ -303,8 +324,8 @@ class GameActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle(R.string.exit_game)
             .setMessage(R.string.ask_leave_game)
-            .setPositiveButton(getString(R.string.yes)) { d, w -> leaveGame() }
-            .setNegativeButton(getString(R.string.no)) { dialog, w -> dialog.dismiss() }
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> leaveGame() }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
             .setCancelable(true)
             .create()
         alertDialog.show()

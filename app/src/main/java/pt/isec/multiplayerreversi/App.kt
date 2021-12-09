@@ -56,14 +56,13 @@ class App : Application() {
 
     companion object {
         const val OURTAG = "reversiTag"
-        const val listeningPort = 43338
+        const val LISTENING_PORT = 43338
         val avatarFileName: String
             get() = "avatar.jpg"
     }
 
     private val avatarFile: File
         get() = File(filesDir, avatarFileName)
-
 
     data class GameSettings(var showPossibleMoves: Boolean = true)
 

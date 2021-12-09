@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
-import pt.isec.multiplayerreversi.App.Companion.listeningPort
+import pt.isec.multiplayerreversi.App.Companion.LISTENING_PORT
 import pt.isec.multiplayerreversi.activities.others.WaitingPlayerListAdapter
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
@@ -70,7 +70,7 @@ class WaitingAreaActivity : AppCompatActivity() {
                 .setNegativeButton(R.string.cancel) { d, _ -> d.dismiss() }
                 .setPositiveButton(R.string.join) { _, _ ->
                     thread {
-                        val address = InetSocketAddress(editText.text.toString(), listeningPort)
+                        val address = InetSocketAddress(editText.text.toString(), LISTENING_PORT)
                         val socket = Socket()
                         try {
                             socket.connect(address, 2000)

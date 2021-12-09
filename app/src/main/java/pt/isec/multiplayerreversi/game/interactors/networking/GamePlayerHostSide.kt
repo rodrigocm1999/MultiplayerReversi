@@ -143,8 +143,6 @@ class GamePlayerHostSide(
 
     //The game calls these functions and we need to send it over to the other device
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = { moves ->
-        //TODO conseguir desligar as jogadas possíveis
-        //TODO scores no layout
         queueJsonWrite(JsonTypes.InGame.POSSIBLE_MOVES) { jsonWriter ->
             jsonWriter.beginArray()
             moves.forEach { jsonWriter.writeVector(it) }

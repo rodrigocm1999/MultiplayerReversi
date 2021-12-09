@@ -51,7 +51,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         profile = app.getProfile()
         binding.etNameChange.setText(profile.name)
-        binding.imgBtnProfileChange.background = profile.icon
+        profile.icon?.let { binding.imgBtnProfileChange.background = it }
 
         setOnClicks()
     }

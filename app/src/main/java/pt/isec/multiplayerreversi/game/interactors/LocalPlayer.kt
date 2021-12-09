@@ -21,9 +21,7 @@ open class LocalPlayer(protected val game: Game) : GamePlayer {
     override fun ready() {
         if (alreadyReady) return
         alreadyReady = true
-        game.players.forEach {
-            game.playerReady(it)
-        }
+        game.players.forEach { game.playerReady(it) }
     }
 
     override fun leaveGame() {} // No need to do anything
@@ -40,7 +38,8 @@ open class LocalPlayer(protected val game: Game) : GamePlayer {
     override fun getGameSideLength() = game.sideLength
     override fun getPossibleMoves() =
         if (game.gameSettings.showPossibleMoves) game.currentPlayerPossibleMoves else ArrayList()
-//TODO fazer a cena de alterar as opções do jogo tipo uma checkbox no perfil ou uma cena assim
+
+    //TODO fazer a cena de alterar as opções do jogo tipo uma checkbox no perfil ou uma cena assim
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = null
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = null
     override var changePlayerCallback: ((Int) -> Unit)? = null

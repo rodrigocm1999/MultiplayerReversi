@@ -14,6 +14,7 @@ import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Vector
+import kotlin.math.roundToInt
 
 
 class GameGrid(
@@ -44,6 +45,7 @@ class GameGrid(
         var sideLength = width
         if (height < width) sideLength = height
         sideLength /= boardSideLength
+        sideLength = (sideLength * 0.85).roundToInt()
 
         val start = System.currentTimeMillis()
 
@@ -94,6 +96,9 @@ class GameGrid(
     }
 
     fun showPossibleMoves() {
+        if (!gamePlayer.getGameData().gameSettings.showPossibleMoves ||
+            gamePlayer.getCurrentPlayer() != gamePlayer.getOwnPlayer()
+        ) return
         val possibleMoves = gamePlayer.getPossibleMoves()
         val temp = gamePlayer.getCurrentPlayer().piece.getPossibleDrawable(context)
         for (it in possibleMoves) {
@@ -103,6 +108,7 @@ class GameGrid(
         }
     }
 
+    //TODO rodar o ecrã fode esta merda toda
     fun updatePieces() {
         val board = gamePlayer.getGameBoard()
         if (board.size != boardSideLength || board[0].size != boardSideLength)

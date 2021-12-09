@@ -152,7 +152,10 @@ class GamePlayerHostSide(
     }
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = { board ->
         queueJsonWrite(JsonTypes.InGame.BOARD_CHANGED) { jsonWriter ->
-            jsonWriter.writeBoardArray(board)
+            jsonWriter.beginObject()
+            jsonWriter.name("board").writeBoardArray(board)
+            jsonWriter.name("scores").writeScoresArray(game.players)
+            jsonWriter.endObject()
             Log.i(OURTAG, "send BOARD_CHANGED")
         }
     }

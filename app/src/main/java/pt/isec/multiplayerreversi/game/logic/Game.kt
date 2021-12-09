@@ -13,6 +13,7 @@ class Game(val gameData: GameData) {
     init {
         if (!gameData.boardIsReady())
             gameData.board = prepareBoard(players)
+
     }
 
     private fun prepareBoard(players: ArrayList<Player>): Array<Array<Piece>> {
@@ -90,6 +91,7 @@ class Game(val gameData: GameData) {
     private fun updateState() {
         currentPlayer = getNext(currentPlayer, players)
         updatePossibleMovesForPlayer()
+        updateScores(players)
 
         if (checkIfFinished()) {
             val playersStats = ArrayList<PlayerEndStats>(players.size)
@@ -113,6 +115,12 @@ class Game(val gameData: GameData) {
             return
         }
         sendEventsAfterPlay()
+    }
+
+    private fun updateScores(players: ArrayList<Player>){
+        players.forEach {
+            it.score = countPieces(it.piece)
+        }
     }
 
     private fun countPieces(piece: Piece): Int {
@@ -189,7 +197,10 @@ class Game(val gameData: GameData) {
 
     private fun sendEventsAfterPlay() {
         players.forEach {
-            it.callbacks?.updateBoardCallback?.let { it(board) }
+            it.callbacks?.updateBoardCallback?.let {
+                it(board)
+                updateScores(players)
+            }
             it.callbacks?.changePlayerCallback?.let { it(currentPlayer.playerId) }
             it.callbacks?.possibleMovesCallback?.let { it(currentPlayerPossibleMoves) }
         }

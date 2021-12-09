@@ -108,7 +108,14 @@ class GamePlayerRemoteSide(
                         return@setReceiving true
                     }
                     JsonTypes.InGame.BOARD_CHANGED -> {
-                        jsonReader.readBoardArray(gameData.board)
+                        jsonReader.beginObject()
+                        while (jsonReader.hasNext()){
+                            when(jsonReader.nextName()){
+                                "board" -> jsonReader.readBoardArray(gameData.board)
+                                "scores" -> jsonReader.readScoresArray(gameData.players)
+                            }
+                        }
+                        jsonReader.endObject()
                         Log.i(OURTAG, "received BOARD_CHANGED")
                         updateBoardCallback?.invoke(gameData.board)
                         return@setReceiving true

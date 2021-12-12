@@ -28,7 +28,7 @@ class GameGrid(
 
     private val grid: Array<Array<BoardSlotView>>
     private val tradePieces = ArrayList<BoardSlotView>(3)
-
+    var gameEnded : Boolean = false
     var isUsingBombPiece = false
     var isUsingTrade = false
         set(value) {

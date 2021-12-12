@@ -140,13 +140,13 @@ class LauncherActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 //        var currentUser = auth.getCurrentUser()
-//        if (app.getProfile().name.isEmpty()){
-//            binding.signInButton!!.visibility = View.VISIBLE
-//            binding.signInButton!!.setSize(SignInButton.SIZE_STANDARD)
-//            binding.avatarIcon.visibility = View.INVISIBLE
-//        }else{
-//            binding.signInButton!!.visibility = View.INVISIBLE
-//        }
+        if (app.getProfile().name.isEmpty()){
+            binding.signInButton!!.visibility = View.VISIBLE
+            binding.signInButton!!.setSize(SignInButton.SIZE_STANDARD)
+            binding.avatarIcon.visibility = View.INVISIBLE
+        }else{
+            binding.signInButton!!.visibility = View.INVISIBLE
+        }
         thread {
             val profile = app.getProfile()
             runOnUiThread {

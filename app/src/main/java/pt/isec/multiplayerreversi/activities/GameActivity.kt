@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import pt.isec.multiplayerreversi.App
@@ -62,6 +59,7 @@ class GameActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
         gameLayout.refreshBoard()
 
         playersView?.forEach { playerView ->
@@ -72,6 +70,9 @@ class GameActivity : AppCompatActivity() {
         val player = gamePlayer.getOwnPlayer()
         if (player.playerId == gamePlayer.getCurrentPlayer().playerId) {
             updateCurrentPlayerBar(player)
+        }
+        if (gameLayout.gameEnded){
+            finish()
         }
     }
 
@@ -220,6 +221,7 @@ class GameActivity : AppCompatActivity() {
             if (gamePlayer.isOnline() && app.game != null) {
                 thread { saveScoreIfThatIsThyWish() }
             }
+            gameLayout.gameEnded = true
             runOnUiThread { openEndGameLayoutDialog(it) }
         }
         gamePlayer.gameTerminatedCallback = { runOnUiThread { gameTerminated() } }
@@ -256,11 +258,7 @@ class GameActivity : AppCompatActivity() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.end_game_dialog_layout)
         val tvWinner = dialog.findViewById(R.id.tvWinner) as TextView
-        val tvWinnerScore = dialog.findViewById(R.id.tvWinnerScore) as TextView
-        val tvOpponent1 = dialog.findViewById(R.id.tvOpponent1) as TextView
-        val tvScoreOpponent1 = dialog.findViewById(R.id.tvScoreOpponent1) as TextView
-        val tvOpponent2 = dialog.findViewById(R.id.tvOpponent2) as TextView
-        val tvScoreOpponent2 = dialog.findViewById(R.id.tvScoreOpponent2) as TextView
+        val llEndPlayers = dialog.findViewById(R.id.llEndPlayers) as LinearLayout
         val btnOk = dialog.findViewById(R.id.btnOk) as Button
 
 
@@ -269,26 +267,32 @@ class GameActivity : AppCompatActivity() {
             tvGameResult.text = getString(R.string.draw)
             tvWinner.text = gamePlayer.getOwnPlayer().profile.name
         }
+        val sortedByDescending = gameEndStats.playerStats.sortedByDescending { it.pieces }
+        val list = ArrayList<EndPlayerView>(3)
 
-        gameEndStats.playerStats.forEach {
+        sortedByDescending.forEach {
             if (it.player.playerId == gameEndStats.winningPlayerId) {
                 tvWinner.text = it.player.profile.name
-                tvWinnerScore.text = it.pieces.toString()
-            } else if (tvWinner.text != it.player.profile.name) {
-                tvOpponent1.text = it.player.profile.name
-                tvScoreOpponent1.text = it.pieces.toString()
-                if (gameEndStats.playerStats.size > 2) {
-                    val flThirdPlayer = dialog.findViewById(R.id.lnThirdPlayer) as View
-                    flThirdPlayer.visibility = View.VISIBLE
-
-                    if (tvOpponent1.text != it.player.profile.name) {
-                        tvOpponent2.text = it.player.profile.name
-                        tvScoreOpponent2.text = it.pieces.toString()
-                        //TODO mudar isto para uma lista decente
-                    }
-                }
             }
+            val linearLayout = layoutInflater.inflate( // returns binding.layoutPlayers
+                R.layout.end_game_player, llEndPlayers
+            ) as ViewGroup
+            val parentView = linearLayout[linearLayout.childCount - 1]
+            val endPlayerView = EndPlayerView(
+                mvEndPlayerIcon = parentView.findViewById(R.id.mvEndPlayerIcon),
+                tvEndPlayerName = parentView.findViewById(R.id.tvEndPlayerName),
+                tvPlayerScore = parentView.findViewById(R.id.tvPlayerScore)
+            )
+            if (!gamePlayer.isOnline()) endPlayerView.mvEndPlayerIcon.visibility = View.GONE
+
+            endPlayerView.mvEndPlayerIcon.setImageDrawable(it.player.profile.icon)
+            endPlayerView.tvEndPlayerName.text = it.player.profile.name
+            endPlayerView.tvPlayerScore.text = it.pieces.toString()
+            list.add(endPlayerView)
+
         }
+
+
         btnOk.setOnClickListener {
             dialog.dismiss()
             unreferenceGame()
@@ -353,6 +357,11 @@ class GameActivity : AppCompatActivity() {
         val ivBomb: ImageView,
         val ivTrade: ImageView,
         val tvPlayerScore: TextView,
+    )
+    data class EndPlayerView(
+        val mvEndPlayerIcon : ImageView,
+        val tvEndPlayerName : TextView,
+        val tvPlayerScore : TextView,
     )
 
     /*override fun onSupportNavigateUp(): Boolean {

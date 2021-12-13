@@ -14,10 +14,14 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
@@ -86,7 +90,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_save, menu)
+        menuInflater.inflate(R.menu.menu_edit_profile, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -149,15 +153,27 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.mnSave)
-            saveProfile()
+        when (item.itemId) {
+            R.id.mnSave -> saveProfile()
+            R.id.mnSignOut -> {
+                Firebase.auth.signOut()
+                app.resetProfile()
+                finish()
+            }
+            R.id.mnAbout -> {//TODO make this
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 
     private fun saveProfile() {
-        finish()
         val writtenName = binding.etNameChange.text.toString()
-        if (writtenName.isNotBlank() && profile.name != writtenName)
+        if (writtenName.isBlank()) {
+            Toast.makeText(this, R.string.name_is_invalid, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        if (profile.name != writtenName)
             profile.name = writtenName
 
         if (bitmapDrawable != null)
@@ -165,6 +181,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         app.saveProfile(profile, bitmapDrawable != null)
         app.tempProfile = null
+        finish()
     }
 
     private fun removeTempImgFile() {

@@ -68,9 +68,7 @@ class GameActivity : AppCompatActivity() {
             playerView.tvPlayerScore.text = playerView.player.score.toString()
         }
         val player = gamePlayer.getOwnPlayer()
-        if (player.playerId == gamePlayer.getCurrentPlayer().playerId) {
-            updateCurrentPlayerBar(player)
-        }
+        updateCurrentPlayerTopBar(player)
         if (gameLayout.gameEnded) {
             finish()
         }
@@ -185,7 +183,7 @@ class GameActivity : AppCompatActivity() {
                 binding.btnTradePiece.background = null
                 gameLayout.isUsingBombPiece = false
                 gameLayout.isUsingTrade = false
-                updateCurrentPlayerBar(player)
+                updateCurrentPlayerTopBar(player)
 
                 if (gamePlayer.isOnline()) {
                     lastPlayerView?.parentView?.background = null
@@ -229,7 +227,7 @@ class GameActivity : AppCompatActivity() {
         gamePlayer.gameTerminatedCallback = { runOnUiThread { gameTerminated() } }
     }
 
-    private fun updateCurrentPlayerBar(player: Player) {
+    private fun updateCurrentPlayerTopBar(player: Player) {
         binding.tvPlayerName.text = player.profile.name
         binding.imgViewCurrentPlayer.setImageDrawable(player.profile.getIcon(this))
         binding.imgViewCurrentPlayerPiece.setImageDrawable(

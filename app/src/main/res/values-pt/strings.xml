@@ -44,4 +44,7 @@
     <string name="game_interrupted">Jogo interrompido</string>
     <string name="ask_keep_locally">Pretendes continuar a jogar localmente?</string>
     <string name="players">Jogadores</string>
+    <string name="sign_out">Sair da conta</string>
+    <string name="about">Acerca</string>
+    <string name="name_is_invalid">Nome de utilizador inválido</string>
 </resources>

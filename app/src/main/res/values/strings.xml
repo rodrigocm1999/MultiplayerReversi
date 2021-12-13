@@ -45,4 +45,8 @@
     <string name="game_interrupted">Game Interrupted</string>
     <string name="ask_keep_locally">Do you want to continue playing locally on this device?</string>
     <string name="players">Players:</string>
+    <string name="sign_out">Sign out</string>
+    <string name="about">About</string>
+    <string name="name_is_invalid">User name is invalid</string>
+
 </resources>

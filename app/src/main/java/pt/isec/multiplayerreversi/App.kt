@@ -21,22 +21,24 @@ class App : Application() {
 
         val pref = getSharedPreferences("user", MODE_PRIVATE)
         val name = pref.getString("name", "")
+        val email = pref.getString("email", null)
         var icon: BitmapDrawable? = null
         if (avatarFile.exists()) {
             openFileInput(avatarFileName).use {
                 icon = BitmapDrawable(resources, it)
             }
         }
-        val p = Profile(name!!, icon)
+        val p = Profile(name!!, icon, email)
         profile = p
         return p
     }
 
     @Synchronized
-    fun saveProfile(p: Profile, saveImage: Boolean) {
+    fun saveProfile(p: Profile, saveImage: Boolean = false) {
         val pref = getSharedPreferences("user", MODE_PRIVATE)
         val editor = pref.edit()
         editor.putString("name", p.name)
+        editor.putString("email", p.email)
         editor.apply()
         profile = p
         if (saveImage) {
@@ -46,6 +48,16 @@ class App : Application() {
                 }
             }
         }
+    }
+
+    fun resetProfile() {
+        val pref = getSharedPreferences("user", MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.putString("name", null)
+        editor.apply()
+        profile = null
+        if (avatarFile.exists())
+            avatarFile.delete()
     }
 
     var game: Game? = null

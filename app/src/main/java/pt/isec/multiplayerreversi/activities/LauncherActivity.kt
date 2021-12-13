@@ -1,6 +1,7 @@
 package pt.isec.multiplayerreversi.activities
 
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
 import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
 import kotlin.concurrent.thread
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.util.Log
 import android.view.View
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -25,13 +27,19 @@ import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.RC_SIGN_IN
 import pt.isec.multiplayerreversi.game.logic.*
 
+import java.net.URL
+
+import java.io.IOException
+
+import java.io.BufferedInputStream
+
 
 class LauncherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLauncherBinding
     private lateinit var app: App
     private lateinit var auth: FirebaseAuth
-    private lateinit var googleSignInClient : GoogleSignInClient
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,14 +67,13 @@ class LauncherActivity : AppCompatActivity() {
             val intent = Intent(this, GameActivity::class.java)
 
             val players = ArrayList<Player>(2)
-            val p1 = Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark)
-            players.add(p1)
+            players.add(Player(Profile(resources.getString(R.string.dark_piece)), Piece.Dark))
             players.add(Player(Profile(resources.getString(R.string.light_piece)), Piece.Light))
 
             val game = Game(GameData(app.sharedGamePreferences, players))
             app.game = game
             val proxy = LocalPlayer(game)
-            p1.callbacks = proxy
+            players[0].callbacks = proxy
             app.gamePlayer = proxy
             startActivity(intent)
         }
@@ -99,35 +106,36 @@ class LauncherActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
                     Log.d(OURTAG, "signInWithCredential:success")
-                    val user = auth.currentUser
-                    //updateUI(user)
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.w(OURTAG, "signInWithCredential:failure", task.exception)
-
                 }
             }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(OURTAG, "firebaseAuthWithGoogle:" + account.id)
                 firebaseAuthWithGoogle(account.idToken!!)
+                thread {
+                    val profile = app.getProfile()
+                    profile.name = account.displayName
+                    profile.email = account.email
+                    profile.icon = downloadImageFromUrl(account.photoUrl)
+                    app.saveProfile(profile)
+                    runOnUiThread {
+                        binding.avatarIcon.visibility = View.VISIBLE
+                        binding.signInButton!!.visibility = View.INVISIBLE
 
-                app.getProfile().name = account.displayName
-                binding.avatarIcon.visibility = View.VISIBLE
-                binding.signInButton!!.visibility = View.INVISIBLE
-
-                val intent = Intent(this, EditProfileActivity::class.java)
-                startActivity(intent)
+                        val intent = Intent(this, EditProfileActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 binding.signInButton!!.visibility = View.VISIBLE
@@ -139,13 +147,12 @@ class LauncherActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-//        var currentUser = auth.getCurrentUser()
-        if (app.getProfile().name.isEmpty()){
-            binding.signInButton!!.visibility = View.VISIBLE
-            binding.signInButton!!.setSize(SignInButton.SIZE_STANDARD)
+        if (app.getProfile().name.isEmpty()) {
+            binding.signInButton?.visibility = View.VISIBLE
+            binding.signInButton?.setSize(SignInButton.SIZE_STANDARD)
             binding.avatarIcon.visibility = View.INVISIBLE
-        }else{
-            binding.signInButton!!.visibility = View.INVISIBLE
+        } else {
+            binding.signInButton?.visibility = View.INVISIBLE
         }
         thread {
             val profile = app.getProfile()
@@ -153,5 +160,20 @@ class LauncherActivity : AppCompatActivity() {
                 profile.icon?.let { binding.avatarIcon.setImageDrawable(it) }
             }
         }
+    }
+
+    private fun downloadImageFromUrl(photoUrl: Uri?): BitmapDrawable? {
+        if (photoUrl == null) return null
+        val url: String = photoUrl.toString()
+        var bitmapDrawable: BitmapDrawable? = null
+        try {
+            BufferedInputStream(URL(url).openStream()).use { inputStream ->
+                bitmapDrawable = BitmapDrawable
+                    .createFromStream(inputStream, "") as BitmapDrawable?
+            }
+        } catch (e: IOException) {
+            Log.i(OURTAG, "", e)
+        }
+        return bitmapDrawable
     }
 }

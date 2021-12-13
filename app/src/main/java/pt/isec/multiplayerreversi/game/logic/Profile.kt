@@ -9,6 +9,7 @@ import pt.isec.multiplayerreversi.R
 class Profile(
     var name: String = "",
     var icon: BitmapDrawable? = null,
+    var email: String? = null,
 ) {
     override fun toString(): String {
         return "Profile(name='$name', icon=$icon)"

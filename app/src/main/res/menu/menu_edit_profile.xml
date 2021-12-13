@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/mnSave"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="ifRoom"
+        android:title="@string/save" />
+
+    <item android:id="@+id/mnSignOut"
+        android:icon="@android:drawable/ic_lock_power_off"
+        app:showAsAction="ifRoom"
+        android:title="@string/sign_out" />
+
+    <item android:id="@+id/mnAbout"
+        android:icon="@android:drawable/ic_dialog_info"
+        app:showAsAction="ifRoom"
+        android:title="@string/about" />
+
+</menu>

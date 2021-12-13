@@ -71,7 +71,7 @@ class GameActivity : AppCompatActivity() {
         if (player.playerId == gamePlayer.getCurrentPlayer().playerId) {
             updateCurrentPlayerBar(player)
         }
-        if (gameLayout.gameEnded){
+        if (gameLayout.gameEnded) {
             finish()
         }
     }
@@ -123,12 +123,14 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setCallbacks() {
-        gamePlayer.updateBoardCallback = { runOnUiThread {
-            gameLayout.updatePieces()
-            playersView?.forEach {
-                it.tvPlayerScore.text = it.player.score.toString()
+        gamePlayer.updateBoardCallback = {
+            runOnUiThread {
+                gameLayout.updatePieces()
+                playersView?.forEach {
+                    it.tvPlayerScore.text = it.player.score.toString()
+                }
             }
-        } }
+        }
 
         gamePlayer.possibleMovesCallback = { possibleMoves ->
             if (gamePlayer.getCurrentPlayer() == gamePlayer.getOwnPlayer()) {
@@ -358,10 +360,11 @@ class GameActivity : AppCompatActivity() {
         val ivTrade: ImageView,
         val tvPlayerScore: TextView,
     )
+
     data class EndPlayerView(
-        val mvEndPlayerIcon : ImageView,
-        val tvEndPlayerName : TextView,
-        val tvPlayerScore : TextView,
+        val mvEndPlayerIcon: ImageView,
+        val tvEndPlayerName: TextView,
+        val tvPlayerScore: TextView,
     )
 
     /*override fun onSupportNavigateUp(): Boolean {

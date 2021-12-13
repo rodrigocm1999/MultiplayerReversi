@@ -5,18 +5,16 @@ import android.util.JsonWriter
 import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
-import java.io.Closeable
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
+import java.lang.Exception
 import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
 
 abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
 
-    private val osw = OutputStreamWriter((socket.getOutputStream()))
-    private val isr = InputStreamReader((socket.getInputStream()))
+    private val osw = OutputStreamWriter(BufferedOutputStream(socket.getOutputStream()))
+    private val isr = InputStreamReader(BufferedInputStream(socket.getInputStream()))
     private var jsonWriter: JsonWriter = JsonWriter(osw)
     private var jsonReader: JsonReader = JsonReader(isr)
 
@@ -120,8 +118,11 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
 
     override fun close() {
         shouldExit = true
-        osw.close()
-        isr.close()
-        socket.close()
+        try {
+            osw.close()
+            isr.close()
+            socket.close()
+        } catch (e: Exception) {
+        }
     }
 }

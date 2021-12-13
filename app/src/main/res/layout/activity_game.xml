@@ -5,175 +5,179 @@
     android:layout_height="match_parent"
     tools:context=".activities.GameActivity">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginVertical="58dp"
-        android:layout_marginTop="90dp">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
-
-            <GridLayout
-                android:id="@+id/gridContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@color/board_background">
-
-            </GridLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutPlayers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
-        </LinearLayout>
-    </ScrollView>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="3dp"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="70dp"
+            android:layout_gravity="top"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="3dp"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/imgViewCurrentPlayer"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                tools:ignore="ContentDescription" />
-
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/now_playing"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/imgViewCurrentPlayer"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    tools:ignore="ContentDescription" />
+
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/tvPlayerName"
+                    android:layout_marginStart="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-                    <TextView
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/now_playing"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:text="@string/score"/>
-                    <TextView
-                        android:id="@+id/tvPlayerNowPlaying"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvPlayerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:textSize="18sp"/>
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/score"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tvPlayerNowPlaying"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="16sp" />
+                    </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="5dp"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/imgViewCurrentPlayerPiece"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_horizontal"
-                tools:ignore="ContentDescription" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:orientation="horizontal">
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="5dp"
+                android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imgViewCurrentBombState"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/bomb_icon"
+                    android:id="@+id/imgViewCurrentPlayerPiece"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center_horizontal"
                     tools:ignore="ContentDescription" />
 
-                <ImageView
-                    android:id="@+id/imgViewCurrentTradeState"
-                    android:layout_width="30dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:src="@drawable/trade_icon"
-                    tools:ignore="ContentDescription" />
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imgViewCurrentBombState"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/bomb_icon"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageView
+                        android:id="@+id/imgViewCurrentTradeState"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/trade_icon"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+
             </LinearLayout>
-
-        </LinearLayout>
-
-    </FrameLayout>
+        </FrameLayout>
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <GridLayout
+            android:id="@+id/gridContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginHorizontal="20dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginVertical="10dp"
-            android:orientation="horizontal">
+            android:background="@color/board_background" />
 
-            <Button
-                android:id="@+id/btnPass"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:text="@string/pass"
-                android:visibility="invisible" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="65dp">
 
-            <ImageView
-                android:id="@+id/btnBombPiece"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/bomb_icon" />
+            <LinearLayout
+                android:id="@+id/layoutPlayers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btnTradePiece"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/trade_icon" />
-        </LinearLayout>
-    </FrameLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPass"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="@string/pass"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/btnBombPiece"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/bomb_icon"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/btnTradePiece"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/trade_icon"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
 
 </FrameLayout>

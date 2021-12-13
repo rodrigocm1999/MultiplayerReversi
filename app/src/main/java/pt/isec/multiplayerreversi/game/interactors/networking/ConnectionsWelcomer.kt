@@ -35,42 +35,42 @@ class ConnectionsWelcomer(
     }
 
     private fun listenForConnections() {
-        if (receivingThread == null) {
-            serverSocket = ServerSocket(LISTENING_PORT)
-            receivingThread = thread {
-                println("Listening for connections")
-                while (!shouldClose) {
-                    try {
-                        serverSocket?.let {
-                            val socket = serverSocket!!.accept()
-                            Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
-                            playersAmount++
+        if (receivingThread != null) return
+        serverSocket = ServerSocket(LISTENING_PORT)
+        receivingThread = thread {
+            println("Listening for connections")
+            while (!shouldClose) {
+                try {
+                    serverSocket?.let {
+                        val socket = serverSocket!!.accept()
+                        Log.i(OURTAG, "Recieved connection from ip: " + socket.inetAddress)
+                        playersAmount++
 
-                            thread {
-                                try {
-                                    GamePlayerHostSide(app, socket, this) { playerId ->
-                                        val player = players.find { it.playerId == playerId }
-                                        if (player != null)
-                                            Log.i(OURTAG, player.toString())
-                                        else
-                                            Log.i(OURTAG,
-                                                "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
-                                    }
-                                    Log.i(OURTAG, "finished connecting")
-                                } catch (e: Exception) {
-                                    Log.e(OURTAG, "Exception", e)
+                        thread {
+                            try {
+                                GamePlayerHostSide(app, socket, this) { playerId ->
+                                    val player = players.find { it.playerId == playerId }
+                                    if (player != null)
+                                        Log.i(OURTAG, player.toString())
+                                    else
+                                        Log.i(OURTAG,
+                                            "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
                                 }
-                            }
-
-                            if (playersAmount >= Game.PLAYER_LIMIT) {
-                                shouldClose = true
-                                serverSocket!!.close()
-                                serverSocket = null
+                                Log.i(OURTAG, "finished connecting")
+                            } catch (e: Exception) {
+                                Log.e(OURTAG, "Exception", e)
                             }
                         }
-                    } catch (e: SocketException) {
-                        shouldClose = true
+
+                        if (playersAmount >= Game.PLAYER_LIMIT) {
+                            shouldClose = true
+                            serverSocket!!.close()
+                            serverSocket = null
+                            receivingThread = null
+                        }
                     }
+                } catch (e: SocketException) {
+                    shouldClose = true
                 }
             }
         }
@@ -79,8 +79,11 @@ class ConnectionsWelcomer(
     fun getPlayers() = players
 
     fun joinPlayer(newPlayer: Player, setuper: GamePlayerHostSide) {
-        val otherPlayer = players[players.lastIndex]
-        newPlayer.piece = Piece.getByOrdinal(otherPlayer.piece.ordinal + 1)
+        val freePiece: Piece? = Piece.getPieces().find { thisPiece ->
+            val noPLayerHasPiece = players.find { p -> p.piece == thisPiece } == null
+            noPLayerHasPiece
+        }
+        newPlayer.piece = freePiece
             ?: throw IllegalStateException("Player was joining and there were no more free pieces")
 
         setupers.forEach { it.value.setuper.arrivedPlayer(newPlayer) }
@@ -124,7 +127,10 @@ class ConnectionsWelcomer(
     }
 
     private fun playersChanged() {
-        if (players.size <= 2) listenForConnections()
+        if (players.size <= 2) {
+            shouldClose = false
+            listenForConnections()
+        }
         playersChanged(players.size)
     }
 }

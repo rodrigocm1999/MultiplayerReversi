@@ -67,7 +67,6 @@ class WaitingAreaActivity : AppCompatActivity() {
         val amount = app.connectionsWelcomer!!.getPlayers().size
         binding.tvPlayerAmount.text = amount.toString()
         binding.btnStartGame.isEnabled = amount >= 2
-        Log.i(OURTAG,"update view , $amount $adapter")
     }
 
     override fun finish() {

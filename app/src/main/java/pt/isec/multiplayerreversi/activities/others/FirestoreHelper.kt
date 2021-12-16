@@ -1,8 +1,10 @@
 package pt.isec.multiplayerreversi.activities.others
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.activities.HistoryActivity
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import java.lang.Exception
@@ -37,15 +39,16 @@ class FirestoreHelper() {
         getPlayerDocument(email)?.set(scores)
     }
     private fun updateTopScores(email: String, newGame : HistoryActivity.Game): MutableList<HistoryActivity.Game> {
-        val gamesHistory = getGamesHistory(email)
-        gamesHistory.add(newGame)
-        val sortedByDescending = gamesHistory.sortedByDescending { it.playerScore }
-        if (sortedByDescending.size > 5){
-            val toMutableList = sortedByDescending.toMutableList()
-            toMutableList.removeLast()
-            return toMutableList
+        var gamesHistory = getGamesHistory(email)
+        if (gamesHistory == null) {
+            gamesHistory = ArrayList<HistoryActivity.Game>(5)
         }
-        return sortedByDescending.toMutableList()
+        gamesHistory.add(newGame)
+        val sortedByDescending = gamesHistory.sortedByDescending { it.playerScore }.toMutableList()
+        if (sortedByDescending.size > 5)
+            sortedByDescending.removeLast()
+
+        return sortedByDescending
     }
 
 
@@ -53,8 +56,17 @@ class FirestoreHelper() {
     fun getTopScore(email: String) : Int{
         return getPlayerDocument(email)!!.get().result.get("topscore") as Int
     }
-    fun getGamesHistory(email: String) : ArrayList<HistoryActivity.Game> {
-        return getPlayerDocument(email)!!.get().result.get("games") as ArrayList<HistoryActivity.Game>
+    fun getGamesHistory(email: String) : ArrayList<HistoryActivity.Game>? {
+        var created = false
+        getPlayerDocument(email)!!.get().addOnSuccessListener {
+            created = true
+        }.addOnFailureListener {
+            created = false
+            Log.i(OURTAG,"firastore doc does not exist:" + it.stackTrace)
+        }
+        return if (created)
+            getPlayerDocument(email)!!.get().result.get("games") as ArrayList<HistoryActivity.Game>
+        else null
     }
 
 }

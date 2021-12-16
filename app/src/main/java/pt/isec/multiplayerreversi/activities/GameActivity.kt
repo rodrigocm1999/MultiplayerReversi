@@ -38,7 +38,7 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var gamePlayer: GamePlayer
     private lateinit var gameLayout: GameGrid
-    private lateinit var db : FirebaseFirestore
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -224,7 +224,7 @@ class GameActivity : AppCompatActivity() {
 
         gamePlayer.gameFinishedCallback = {
             if (gamePlayer.isOnline() && app.game != null) {
-                thread { saveScoreIfThatIsThyWish(it) }
+                saveScoreIfThatIsThyWish(it)
             }
             gameLayout.gameEnded = true
             runOnUiThread { openEndGameLayoutDialog(it) }
@@ -246,12 +246,13 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun saveScoreIfThatIsThyWish(gameEndStats: GameEndStats) {
-        var helper = FirestoreHelper()
-        val ownPlayerStatus = gameEndStats.playerStats.find { playerEndStats ->
-            gamePlayer.getOwnPlayer().playerId == playerEndStats.player.playerId
-        }!!
-        helper.insertData(ownPlayerStatus.player.profile.email!!,gameEndStats, ownPlayerStatus.pieces)
-
+        thread {
+            val ownPlayerStatus = gameEndStats.playerStats.find { playerEndStats ->
+                gamePlayer.getOwnPlayer().playerId == playerEndStats.player.playerId
+            }!!
+            val helper = FirestoreHelper(ownPlayerStatus.player.profile.email!!)
+            helper.insertData(gameEndStats, ownPlayerStatus.pieces)
+        }
     }
 
     private fun updatePlayerButtons(player: Player) {
@@ -317,25 +318,29 @@ class GameActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle(R.string.game_interrupted)
             .setMessage(R.string.ask_keep_locally)
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                val game = Game(gamePlayer.getGameData())
-                val gamePlayer = LocalPlayer(game)
-                game.players.forEach { it.callbacks = null }
-                game.players[0].callbacks = gamePlayer
-                app.game = game
-                app.gamePlayer = gamePlayer
-                val intent = Intent(this, GameActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            .setNegativeButton(getString(R.string.no)) { _, _ ->
-                finish()
-            }
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> startGameLocallyFromCurrentOnlineGame() }
+            .setNegativeButton(getString(R.string.no)) { _, _ -> finish() }
             .setCancelable(false)
             .create()
         alertDialog.show()
     }
 
+    private fun startGameLocallyFromCurrentOnlineGame() {
+        val game = Game(gamePlayer.getGameData())
+        val gamePlayer = LocalPlayer(game)
+        game.players.forEach { it.callbacks = null }
+        game.players[0].callbacks = gamePlayer
+        app.game = game
+        app.gamePlayer = gamePlayer
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        app.gamePlayer?.leaveGame() // TODO verificar se isto causa algum problema
+    }
 
 
     private fun leaveGame() {

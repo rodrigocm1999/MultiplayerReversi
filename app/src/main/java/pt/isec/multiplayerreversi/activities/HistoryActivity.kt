@@ -26,6 +26,8 @@ class HistoryActivity : AppCompatActivity() {
 
         //TODO ir fazer o layout + fazer aparecer
 
+        //TODO dentro do llHistoryGames fazer inflate dos history_row_game e dentro de cada um desses fazer inflates history_player_stats
+
     }
 
 

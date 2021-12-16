@@ -45,7 +45,7 @@ class FirestoreHelper(private val id: String) {
 
 
     fun getTopScore(): Int {
-        return getPlayerDocument().get().result.get("topscore") as Int
+        return getGamesHistory().topscore
     }
 
     fun getGamesHistory(): History {

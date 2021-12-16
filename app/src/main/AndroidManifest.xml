@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MultiplayerReversi">
         <activity
+            android:name=".activities.HistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.WaitingAreaRemoteActivity"
             android:exported="false" />
         <activity

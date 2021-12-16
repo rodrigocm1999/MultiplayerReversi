@@ -12,9 +12,13 @@ import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
+import pt.isec.multiplayerreversi.activities.others.FirestoreHelper
 import pt.isec.multiplayerreversi.databinding.ActivityGameBinding
 import pt.isec.multiplayerreversi.game.GameGrid
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
@@ -34,6 +38,7 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var gamePlayer: GamePlayer
     private lateinit var gameLayout: GameGrid
+    private lateinit var db : FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +48,7 @@ class GameActivity : AppCompatActivity() {
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
+        db = Firebase.firestore
 
         app = application as App
         gamePlayer = app.gamePlayer
@@ -55,7 +61,6 @@ class GameActivity : AppCompatActivity() {
         setListeners()
         gamePlayer.ready()
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -219,10 +224,11 @@ class GameActivity : AppCompatActivity() {
 
         gamePlayer.gameFinishedCallback = {
             if (gamePlayer.isOnline() && app.game != null) {
-                thread { saveScoreIfThatIsThyWish() }
+                thread { saveScoreIfThatIsThyWish(it) }
             }
             gameLayout.gameEnded = true
             runOnUiThread { openEndGameLayoutDialog(it) }
+
         }
         gamePlayer.gameTerminatedCallback = { runOnUiThread { gameTerminated() } }
     }
@@ -239,8 +245,13 @@ class GameActivity : AppCompatActivity() {
         binding.tvPlayerNowPlaying.text = player.score.toString()
     }
 
-    private fun saveScoreIfThatIsThyWish() {
-        //TODO save the game on the table
+    private fun saveScoreIfThatIsThyWish(gameEndStats: GameEndStats) {
+        var helper = FirestoreHelper()
+        val ownPlayerStatus = gameEndStats.playerStats.find { playerEndStats ->
+            gamePlayer.getOwnPlayer().playerId == playerEndStats.player.playerId
+        }!!
+        helper.insertData(ownPlayerStatus.player.profile.email!!,gameEndStats, ownPlayerStatus.pieces)
+
     }
 
     private fun updatePlayerButtons(player: Player) {
@@ -325,12 +336,13 @@ class GameActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+
+
     private fun leaveGame() {
         gamePlayer.leaveGame()
         unreferenceGame()
         finish()
     }
-
 
     private fun unreferenceGame() {
         app.gamePlayer = null

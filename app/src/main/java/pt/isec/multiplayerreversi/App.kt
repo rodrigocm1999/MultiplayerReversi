@@ -3,10 +3,12 @@ package pt.isec.multiplayerreversi
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import com.google.firebase.firestore.FirebaseFirestore
 import pt.isec.multiplayerreversi.game.interactors.GamePlayer
 import pt.isec.multiplayerreversi.game.interactors.networking.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.networking.GamePlayerRemoteSide
 import pt.isec.multiplayerreversi.game.logic.Game
+import pt.isec.multiplayerreversi.game.logic.GameEndStats
 import pt.isec.multiplayerreversi.game.logic.Profile
 import java.io.File
 import kotlin.concurrent.thread
@@ -112,4 +114,5 @@ class App : Application() {
         editor.apply()
         sharedGamePreferences = settings
     }
+
 }

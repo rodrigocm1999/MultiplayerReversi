@@ -223,9 +223,8 @@ class GameActivity : AppCompatActivity() {
         }
 
         gamePlayer.gameFinishedCallback = {
-            if (gamePlayer.isOnline() && app.game != null) {
+            if (gamePlayer.isOnline() && it.winningPlayerId == gamePlayer.getOwnPlayer().playerId)
                 saveScoreIfThatIsThyWish(it)
-            }
             gameLayout.gameEnded = true
             runOnUiThread { openEndGameLayoutDialog(it) }
 

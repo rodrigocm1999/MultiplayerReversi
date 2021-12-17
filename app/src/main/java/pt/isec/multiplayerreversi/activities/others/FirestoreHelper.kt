@@ -20,28 +20,28 @@ class FirestoreHelper(private val id: String) {
     fun insertData(gameEndStats: GameEndStats, playerScore: Int) {
         val playerStats = gameEndStats.playerStats
         val players: ArrayList<Player> = ArrayList(3)
-        var topScore = getGamesHistory().topscore
+        val gamesHistory = getGamesHistory()
+        var topScore = gamesHistory.topscore
         playerStats.forEach {
             val imgString = it.player.profile.icon?.let { it1 -> encodeDrawableToString(it1) }
-            val player = Player(it.player.profile.name, it.pieces,imgString)
+            val player = Player(it.player.profile.name, it.pieces, imgString)
             if (it.player.playerId == gameEndStats.winningPlayerId && topScore < playerScore)
                 topScore = it.pieces
             players.add(player)
         }
         val game = Game(players, playerScore)
-        val updatedGames = updateTopScores(game)
-        val scores = hashMapOf("games" to updatedGames, "topscore" to topScore)
-        getPlayerDocument().set(scores)
+        updateTopScores(gamesHistory, game)
+        gamesHistory.topscore = topScore
+//        val scores = hashMapOf("games" to updatedGames, "topscore" to topScore)
+        getPlayerDocument().set(gamesHistory)
     }
 
-    private fun updateTopScores(newGame: Game): MutableList<Game> {
-        val gamesHistory = getGamesHistory()
+    private fun updateTopScores(gamesHistory: History, newGame: Game) {
         val games = gamesHistory.games
         games.add(newGame)
-        val sortedByDescending =
-            games.sortedByDescending { it.playerScore }.toMutableList()
+        val sortedByDescending = games.sortedByDescending { it.playerScore }.toMutableList()
         if (sortedByDescending.size > 5) sortedByDescending.removeLast()
-        return sortedByDescending
+        gamesHistory.games = sortedByDescending
     }
 
 
@@ -59,16 +59,16 @@ class FirestoreHelper(private val id: String) {
     class Player(
         var name: String = "",
         var score: Int = 0,
-        var imgString: String? = null
+        var imgString: String? = null,
     )
 
     class Game(
-        var players: ArrayList<Player> = ArrayList(0),
+        var players: MutableList<Player> = ArrayList(0),
         var playerScore: Int = 0,
     )
 
     class History(
-        var games: ArrayList<Game> = ArrayList(0),
+        var games: MutableList<Game> = ArrayList(0),
         var topscore: Int = 0,
     )
 

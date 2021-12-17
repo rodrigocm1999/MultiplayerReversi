@@ -37,7 +37,8 @@ class HistoryActivity : AppCompatActivity() {
         db = FirestoreHelper(app.getProfile().email!!)
 
         //TODO testar melhor isto e talvez fazer alguns ajustos graficos
-
+        //TODO imagem default parece um cavalo
+        //TODO falta atualizar o topscore no firebase
         updateView()
         threadUpdateHistory()
 
@@ -58,10 +59,10 @@ class HistoryActivity : AppCompatActivity() {
     }
 
 
-    private fun setupGamesViews(games: ArrayList<FirestoreHelper.Game>) {
+    private fun setupGamesViews(games: MutableList<FirestoreHelper.Game>) {
         if (games.size > 0) {
             val defaultAvatar = AppCompatResources.getDrawable(this, R.drawable.avatar_icon)!!
-            var listGamesViews = ArrayList<RowGameView>(0)
+            val listGamesViews = ArrayList<RowGameView>(0)
 
             games.forEach { game ->
                 val linearLayoutGames = layoutInflater.inflate(
@@ -73,7 +74,7 @@ class HistoryActivity : AppCompatActivity() {
                 )
 
                 game.players.forEach { player ->
-                    var listPlayersView = ArrayList<PlayerHistoryStatsView>(2)
+                    val listPlayersView = ArrayList<PlayerHistoryStatsView>(2)
                     val linearLayoutPlayers = layoutInflater.inflate(
                         R.layout.history_player_stats, rowGameView.llHistoryRow
                     ) as ViewGroup

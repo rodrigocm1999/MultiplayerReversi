@@ -13,7 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:minWidth="50dp"
-        android:minHeight="50dp" />
+        android:minHeight="50dp"
+        android:maxHeight="75dp"
+        android:maxWidth="65dp"/>
 
     <TextView
         android:id="@+id/tvHistoryPlayerName"

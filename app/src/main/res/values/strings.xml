@@ -48,5 +48,6 @@
     <string name="sign_out">Sign out</string>
     <string name="about">About</string>
     <string name="name_is_invalid">User name is invalid</string>
+    <string name="best_score">Best score:</string>
 
 </resources>

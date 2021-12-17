@@ -5,6 +5,8 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import org.json.JSONException
+import pt.isec.multiplayerreversi.game.interactors.networking.encodeDrawableToString
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 
 class FirestoreHelper(private val id: String) {
@@ -18,15 +20,14 @@ class FirestoreHelper(private val id: String) {
     fun insertData(gameEndStats: GameEndStats, playerScore: Int) {
         val playerStats = gameEndStats.playerStats
         val players: ArrayList<Player> = ArrayList(3)
-        var topScore = 0
+        var topScore = getGamesHistory().topscore
         playerStats.forEach {
-            val player = Player(it.player.profile.name, it.pieces)
-            if (it.player.playerId == gameEndStats.winningPlayerId)
+            val imgString = it.player.profile.icon?.let { it1 -> encodeDrawableToString(it1) }
+            val player = Player(it.player.profile.name, it.pieces,imgString)
+            if (it.player.playerId == gameEndStats.winningPlayerId && topScore < playerScore)
                 topScore = it.pieces
             players.add(player)
         }
-
-        //TODO addcionar as imagems dos players
         val game = Game(players, playerScore)
         val updatedGames = updateTopScores(game)
         val scores = hashMapOf("games" to updatedGames, "topscore" to topScore)
@@ -58,6 +59,7 @@ class FirestoreHelper(private val id: String) {
     class Player(
         var name: String = "",
         var score: Int = 0,
+        var imgString: String? = null
     )
 
     class Game(

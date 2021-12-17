@@ -47,4 +47,5 @@
     <string name="sign_out">Sair da conta</string>
     <string name="about">Acerca</string>
     <string name="name_is_invalid">Nome de utilizador inválido</string>
+    <string name="best_score">Melhor pontuação</string>
 </resources>

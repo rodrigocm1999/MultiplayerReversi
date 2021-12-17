@@ -178,11 +178,11 @@ fun JsonWriter.writeStartingInformation(game: Game) {
     this.endObject()
 }
 
-private fun encodeDrawableToString(drawable: BitmapDrawable): String {
+fun encodeDrawableToString(drawable: BitmapDrawable): String {
     return Base64.encodeToString(convertDrawableToByteArray(drawable), Base64.DEFAULT)
 }
 
-private fun decodeDrawableFromString(encodedImg: String): BitmapDrawable {
+fun decodeDrawableFromString(encodedImg: String): BitmapDrawable {
     return convertByteArrayToDrawable(Base64.decode(encodedImg, Base64.DEFAULT))
 }
 

@@ -36,9 +36,6 @@ class HistoryActivity : AppCompatActivity() {
 
         db = FirestoreHelper(app.getProfile().email!!)
 
-        //TODO testar melhor isto e talvez fazer alguns ajustos graficos
-        //TODO imagem default parece um cavalo
-        //TODO falta atualizar o topscore no firebase
         updateView()
         threadUpdateHistory()
 

@@ -2,6 +2,7 @@ package pt.isec.multiplayerreversi.activities
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
@@ -14,6 +15,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -153,7 +155,8 @@ class EditProfileActivity : AppCompatActivity() {
                 app.resetProfile()
                 finish()
             }
-            R.id.mnAbout -> {//TODO make this
+            R.id.mnAbout -> {
+                aboutDialog()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -188,6 +191,14 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         confirmationToLeave()
         return true
+    }
+    private fun aboutDialog(){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.about_layout)
+
+        dialog.show()
     }
 
     private fun confirmationToLeave() {

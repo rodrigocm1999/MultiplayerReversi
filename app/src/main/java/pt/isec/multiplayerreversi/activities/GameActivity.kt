@@ -338,7 +338,7 @@ class GameActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        app.gamePlayer?.leaveGame() // TODO verificar se isto causa algum problema
+        app.gamePlayer?.leaveGame()
     }
 
 

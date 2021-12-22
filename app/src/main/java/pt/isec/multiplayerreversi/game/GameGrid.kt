@@ -108,7 +108,7 @@ class GameGrid(
         }
     }
 
-    //TODO rodar o ecrã fode esta merda toda
+
     fun updatePieces() {
         val board = gamePlayer.getGameBoard()
         if (board.size != boardSideLength || board[0].size != boardSideLength)

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.EditProfileActivity">
+    tools:context=".activities.EditProfileActivity"
+    android:paddingTop="50dp">
 
     <ImageButton
         android:id="@+id/imgBtnProfileChange"
@@ -38,7 +39,6 @@
         android:maxLength="25"
         android:maxLines="1"
         android:paddingHorizontal="20dp"
-        android:text=""
         android:textSize="26sp" />
 
 </LinearLayout>

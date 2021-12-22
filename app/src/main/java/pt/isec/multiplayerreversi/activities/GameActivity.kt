@@ -142,12 +142,12 @@ class GameActivity : AppCompatActivity() {
                     binding.btnPass.visibility =
                         if (possibleMoves.isEmpty()) View.VISIBLE else View.GONE
 
-                    if (!gamePlayer.playerHasAnyMoves()) {
-                        gamePlayer.passPlayer()
-                        binding.btnPass.visibility = View.GONE
-                        Toast.makeText(this, R.string.you_had_no_possible_moves, Toast.LENGTH_LONG)
-                            .show()
-                    }
+//                    if (!gamePlayer.playerHasAnyMoves()) {
+//                        gamePlayer.passPlayer()
+//                        binding.btnPass.visibility = View.GONE
+//                        Toast.makeText(this, R.string.you_had_no_possible_moves, Toast.LENGTH_LONG)
+//                            .show()
+//                    }
                 }
             }
         }

@@ -3,6 +3,8 @@ package pt.isec.multiplayerreversi.game.logic
 import android.util.Log
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Game(val gameData: GameData) {
 
@@ -72,8 +74,8 @@ class Game(val gameData: GameData) {
 
     fun passPlayer(player: Player) {
         if (player !== currentPlayer) return
-        updateState()
         countPasses++
+        updateState()
     }
 
     fun playAt(player: Player, line: Int, column: Int): Boolean {
@@ -97,8 +99,9 @@ class Game(val gameData: GameData) {
             val playersStats = ArrayList<PlayerEndStats>(players.size)
             var highestScoreId = -1
             var highestScore = -1
+            val boardStats = getBoardStats()
             players.forEach { player ->
-                val score = countPieces(player.piece)
+                val score = boardStats.pbs[player.piece]!!.piecesCount
                 playersStats.add(PlayerEndStats(player, score))
 
                 if (score > highestScore) {
@@ -117,32 +120,28 @@ class Game(val gameData: GameData) {
         sendEventsAfterPlay()
     }
 
-    private fun updateScores(players: ArrayList<Player>){
+    private fun updateScores(players: ArrayList<Player>) {
+        val boardStats = getBoardStats()
         players.forEach {
-            it.score = countPieces(it.piece)
+            it.score = boardStats.pbs[it.piece]!!.piecesCount
         }
-    }
-
-    private fun countPieces(piece: Piece): Int {
-        var count = 0
-        for (column in 0 until sideLength)
-            for (line in 0 until sideLength)
-                if (board[line][column] == piece)
-                    count++
-        return count
     }
 
     private fun checkIfFinished(): Boolean {
         //Se todos os jogadores fizerem pass acaba
         if (countPasses >= players.size) return true
+
+        val boardStats = getBoardStats()
         //Se o tabuleiro estiver cheio
-        if (boardIsFull()) return true
-        //Se o tabuleiro estiver fazio
-        if (boardIsEmpty()) return true
+        if (boardStats.totalPieces == sideLength * sideLength) return true
+        //Se o tabuleiro estiver vazio
+        if (boardStats.totalPieces == 0) return true
         //Se tiver jogadas o jogo não acabou
         if (currentPlayerPossibleMoves.size > 0) return false
+        //Se um player for o unico com peças
+        if (boardStats.pbs.any { entry -> entry.value.piecesCount == boardStats.totalPieces }) return true
         // Se ainda poder jogar alguma jogada especial
-        var playerPieces = playerPieces(currentPlayer.piece)
+        var playerPieces = boardStats.pbs[currentPlayer.piece]!!.piecesCount
         if (playerPieces >= 1 && currentPlayer.canUseBomb() ||
             playerPieces >= 2 && currentPlayer.canUseTrade()
         ) return false
@@ -155,7 +154,7 @@ class Game(val gameData: GameData) {
                 break
 
             // Se ainda poder jogar alguma jogada especial
-            playerPieces = playerPieces(nextPlayer.piece)
+            playerPieces = boardStats.pbs[nextPlayer.piece]!!.piecesCount
             if (playerPieces >= 1 && nextPlayer.canUseBomb() ||
                 playerPieces >= 2 && nextPlayer.canUseTrade()
             ) return false
@@ -170,29 +169,60 @@ class Game(val gameData: GameData) {
         return true
     }
 
-    private fun playerPieces(playerPiece: Piece): Int {
-        var count = 0
-        for (column in 0 until sideLength)
-            for (line in 0 until sideLength)
-                if (board[line][column] == playerPiece)
-                    count++
-        return count
-    }
 
-    private fun boardIsFull(): Boolean {
-        for (column in 0 until sideLength)
-            for (line in 0 until sideLength)
-                if (board[line][column] == Piece.Empty)
-                    return false
-        return true
-    }
+//    private fun countPieces(piece: Piece): Int {
+//        var count = 0
+//        for (column in 0 until sideLength)
+//            for (line in 0 until sideLength)
+//                if (board[line][column] == piece)
+//                    count++
+//        return count
+//    }
 
-    private fun boardIsEmpty(): Boolean {
-        for (column in 0 until sideLength)
-            for (line in 0 until sideLength)
-                if (board[line][column] != Piece.Empty)
-                    return false
-        return true
+//    private fun playerPieces(playerPiece: Piece): Int {
+//        var count = 0
+//        for (column in 0 until sideLength)
+//            for (line in 0 until sideLength)
+//                if (board[line][column] == playerPiece)
+//                    count++
+//        return count
+//    }
+
+//    private fun boardIsFull(boardStats: BoardStats): Boolean {
+//        for (column in 0 until sideLength)
+//            for (line in 0 until sideLength)
+//                if (board[line][column] == Piece.Empty)
+//                    return false
+//        return true
+//    }
+
+//    private fun boardIsEmpty(boardStats: BoardStats): Boolean {
+//        for (column in 0 until sideLength)
+//            for (line in 0 until sideLength)
+//                if (board[line][column] != Piece.Empty)
+//                    return false
+//        return true
+//    }
+
+    data class BoardStats(
+        val pbs: TreeMap<Piece, PlayerBoardStats> = TreeMap(), var totalPieces: Int = 0,
+    )
+
+    data class PlayerBoardStats(val piece: Piece, var piecesCount: Int = 0)
+
+    private fun getBoardStats(): BoardStats {
+        val boardStats = BoardStats()
+        players.forEach { boardStats.pbs[it.piece] = PlayerBoardStats(it.piece) }
+
+        for (column in 0 until sideLength) {
+            for (line in 0 until sideLength) {
+                val playerStats = boardStats.pbs[board[line][column]]
+                playerStats?.let { it.piecesCount++ }
+            }
+        }
+
+        boardStats.pbs.forEach { boardStats.totalPieces += it.value.piecesCount }
+        return boardStats
     }
 
     private fun sendEventsAfterPlay() {

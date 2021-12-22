@@ -147,7 +147,6 @@ class GamePlayerHostSide(
             jsonWriter.beginArray()
             moves.forEach { jsonWriter.writeVector(it) }
             jsonWriter.endArray()
-            Log.i(OURTAG, "send POSSIBLE_MOVES")
         }
     }
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = { board ->
@@ -156,13 +155,11 @@ class GamePlayerHostSide(
             jsonWriter.name("board").writeBoardArray(board)
             jsonWriter.name("scores").writeScoresArray(game.players)
             jsonWriter.endObject()
-            Log.i(OURTAG, "send BOARD_CHANGED")
         }
     }
     override var changePlayerCallback: ((Int) -> Unit)? = { playerId ->
         queueJsonWrite(JsonTypes.InGame.PLAYER_CHANGED) { jsonWriter ->
             jsonWriter.value(playerId)
-            Log.i(OURTAG, "send PLAYER_CHANGED")
         }
     }
     override var gameFinishedCallback: ((GameEndStats) -> Unit)? = {
@@ -175,25 +172,21 @@ class GamePlayerHostSide(
                 jsonWriter.endObject()
             }
             jsonWriter.endArray()
-            Log.i(OURTAG, "send GAME_FINISHED")
         }
     }
     override var playerUsedBombCallback: ((Int) -> Unit)? = { pId ->
         queueJsonWrite(JsonTypes.InGame.PLAYER_USED_BOMB) { jsonWriter ->
             jsonWriter.value(pId)
-            Log.i(OURTAG, "send PLAYER_USED_BOMB")
         }
     }
     override var playerUsedTradeCallback: ((Int) -> Unit)? = { pId ->
         queueJsonWrite(JsonTypes.InGame.PLAYER_USED_TRADE) { jsonWriter ->
             jsonWriter.value(pId)
-            Log.i(OURTAG, "send PLAYER_USED_TRADE")
         }
     }
     override var gameTerminatedCallback: (() -> Unit)? = {
         queueJsonWrite(JsonTypes.InGame.GAME_TERMINATED) { jsonWriter ->
             jsonWriter.nullValue()
-            Log.i(OURTAG, "send GAME_TERMINATED")
         }
         queueClose()
     }
@@ -220,7 +213,6 @@ class GamePlayerHostSide(
     override fun sendStart(game: Game) {
         queueJsonWrite(JsonTypes.Setup.STARTING) { jsonWriter ->
             jsonWriter.writeStartingInformation(game)
-            Log.i(OURTAG, "Send STARTING correu")
         }
     }
 

@@ -47,7 +47,6 @@ class WaitingAreaActivity : AppCompatActivity() {
             val players = ArrayList<Player>(Game.PLAYER_LIMIT)
             players.add(Player(app.getProfile(), Piece.Light))
             app.connectionsWelcomer = ConnectionsWelcomer(app, players)
-            Log.i(OURTAG,"Created ConnectionsWelcomer")
         }
 
         val connWelcom = app.connectionsWelcomer!!

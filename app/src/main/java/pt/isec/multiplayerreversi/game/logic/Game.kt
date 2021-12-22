@@ -67,7 +67,6 @@ class Game(val gameData: GameData) {
     }
 
     private fun startGame() {
-        Log.i(OURTAG, "Jogo começou")
         updatePossibleMovesForPlayer()
         sendEventsAfterPlay()
     }

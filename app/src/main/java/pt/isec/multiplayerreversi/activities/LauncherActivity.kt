@@ -109,11 +109,8 @@ class LauncherActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    Log.d(OURTAG, "signInWithCredential:success")
-                } else {
+                if (!task.isSuccessful)
                     Log.w(OURTAG, "signInWithCredential:failure", task.exception)
-                }
             }
     }
 

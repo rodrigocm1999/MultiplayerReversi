@@ -30,7 +30,7 @@ class GamePlayerRemoteSide(
                 when (jsonReader.nextName()) {
                     "showPossibleMoves" -> settings.showPossibleMoves = jsonReader.nextBoolean()
                     else -> {
-                        Log.i(OURTAG, "Invalid gameSettings received")
+                        Log.e(OURTAG, "Invalid gameSettings received")
                         jsonReader.skipValue()
                     }
                 }
@@ -202,7 +202,6 @@ class GamePlayerRemoteSide(
         queueJsonWrite(JsonTypes.InGame.NORMAL_PLAY) { jsonWriter ->
             val v = Vector(column, line)
             jsonWriter.writeVector(v)
-            Log.i(OURTAG, "send NORMAL_PLAY : $v")
         }
     }
 
@@ -210,7 +209,6 @@ class GamePlayerRemoteSide(
         queueJsonWrite(JsonTypes.InGame.BOMB_PLAY) { jsonWriter ->
             val v = Vector(column, line)
             jsonWriter.writeVector(v)
-            Log.i(OURTAG, "send BOMB_PLAY : $v")
         }
     }
 
@@ -219,22 +217,18 @@ class GamePlayerRemoteSide(
             jsonWriter.beginArray()
             tradePieces.forEach { jsonWriter.writeVector(it) }
             jsonWriter.endArray()
-            Log.i(OURTAG,
-                "send TRADE_PLAY : ${tradePieces[0]}, ${tradePieces[1]}, ${tradePieces[2]}")
         }
     }
 
     override fun ready() {
         queueJsonWrite(JsonTypes.InGame.PLAYER_DEVICE_READY) { jsonWriter ->
             jsonWriter.nullValue()
-            Log.i(OURTAG, "send PLAYER_READY")
         }
     }
 
     override fun leaveGame() {
         queueJsonWrite(JsonTypes.InGame.PLAYER_LEFT_RUNNING_GAME) { jsonWriter ->
             jsonWriter.nullValue()
-            Log.i(OURTAG, "send PLAYER_LEFT")
         }
         queueClose()
     }
@@ -242,14 +236,12 @@ class GamePlayerRemoteSide(
     override fun passPlayer() {
         queueJsonWrite(JsonTypes.InGame.PLAYER_PASSED_TURN) { jsonWriter ->
             jsonWriter.nullValue()
-            Log.i(OURTAG, "send PLAYER_PASSED")
         }
     }
 
     override fun leaveWaitingArea() {
         queueJsonWrite(JsonTypes.Setup.PLAYER_LEFT_WAITING_ROOM) { jsonWriter ->
             jsonWriter.value(ownPlayer.playerId)
-            Log.i(OURTAG, "send LEFT_PLAYER")
         }
         queueClose()
     }

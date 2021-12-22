@@ -56,7 +56,6 @@ class ConnectionsWelcomer(
                                         Log.i(OURTAG,
                                             "player that got ready with id $playerId is null for some reason that is unknown to the writer of this message")
                                 }
-                                Log.i(OURTAG, "finished connecting")
                             } catch (e: Exception) {
                                 Log.e(OURTAG, "Exception", e)
                             }

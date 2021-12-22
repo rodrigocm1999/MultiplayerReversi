@@ -56,6 +56,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
         beginSendWithType(type)
         block(jsonWriter)
         endSend()
+        Log.i(OURTAG, "Send $type")
     }
 
     protected fun receiveThrough(block: (type: String, jsonReader: JsonReader) -> Boolean) {

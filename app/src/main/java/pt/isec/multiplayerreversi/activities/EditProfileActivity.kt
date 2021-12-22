@@ -76,7 +76,6 @@ class EditProfileActivity : AppCompatActivity() {
                     addFlags(FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 }
-                Log.i(OURTAG, "Image path -> $tempImageFile -----------------")
                 startActivityForResultFoto.launch(intent)
             }
         }
@@ -101,7 +100,6 @@ class EditProfileActivity : AppCompatActivity() {
             app.tempProfile = profile
             outState.putBoolean("changes", true)
         } else if (tempImageFile != null) {
-            Log.i(OURTAG, "saved state after taking picture -> ${tempImageFile?.absoluteFile}")
             outState.putString("newImageFile", tempImageFile?.absolutePath)
         }
     }
@@ -110,16 +108,11 @@ class EditProfileActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         val tempImagePath = savedInstanceState.getString("newImageFile")
         if (savedInstanceState.getBoolean("changes")) {
-            Log.i(OURTAG, "recovered state after rotating")
             profile = app.tempProfile!!
             bitmapDrawable = profile.icon
-
-        } else if (tempImagePath != null) {
-            Log.i(OURTAG, "recovered state after taking picture -> $tempImagePath")
-            tempImagePath.let {
-                val file = File(tempImagePath)
-                tempImageFile = file
-            }
+        } else tempImagePath?.let {
+            val file = File(tempImagePath)
+            tempImageFile = file
         }
     }
 

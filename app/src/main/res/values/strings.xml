@@ -53,5 +53,7 @@
     <string name="about_us">About us:</string>
     <string name="rodrigo_mendes_n2019114072" translatable="false">Rodrigo Mendes\n2019114072</string>
     <string name="dorin_bosii_n2019112586" translatable="false">Dorin Bosii\n2019112586</string>
+    <string name="show_possible_moves">Show possible moves</string>
+    <string name="your_name">Your name:</string>
 
 </resources>

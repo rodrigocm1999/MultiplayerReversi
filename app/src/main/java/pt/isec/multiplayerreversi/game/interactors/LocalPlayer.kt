@@ -39,7 +39,6 @@ open class LocalPlayer(protected val game: Game) : GamePlayer {
     override fun getPossibleMoves() =
         if (game.gameSettings.showPossibleMoves) game.currentPlayerPossibleMoves else ArrayList()
 
-    //TODO fazer a cena de alterar as opções do jogo tipo uma checkbox no perfil ou uma cena assim
     override var possibleMovesCallback: ((List<Vector>) -> Unit)? = null
     override var updateBoardCallback: ((Array<Array<Piece>>) -> Unit)? = null
     override var changePlayerCallback: ((Int) -> Unit)? = null

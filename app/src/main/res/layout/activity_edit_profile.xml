@@ -25,13 +25,18 @@
         android:text="@string/press_to_change_profile_image"
         android:textSize="20sp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="@string/your_name"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="20dp"/>
     <EditText
         android:id="@+id/etNameChange"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginHorizontal="30dp"
         android:autofillHints="name"
         android:background="@drawable/square_border"
         android:hint="@string/name"
@@ -40,5 +45,14 @@
         android:maxLines="1"
         android:paddingHorizontal="20dp"
         android:textSize="26sp" />
+    <Switch
+        android:id="@+id/switchPossibleMoves"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_possible_moves"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:textSize="20sp"/>
 
 </LinearLayout>

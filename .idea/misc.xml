@@ -14,9 +14,10 @@
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/round_corner_pieces_with.xml" value="0.3828125" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.3828125" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout-land/activity_edit_profile.xml" value="0.33" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout-land/activity_launcher.xml" value="0.17372134038800705" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/about_layout.xml" value="0.234375" />
-        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20520833333333333" />
+        <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.33" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.271286231884058" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_history.xml" value="0.2" />
         <entry key="..\:/Licenciatura/AMOV/Reversi/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.25407608695652173" />

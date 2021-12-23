@@ -43,6 +43,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var permissionsHelper: PermissionsHelper
     private var bitmapDrawable: BitmapDrawable? = null
     private var tempImageFile: File? = null
+    private lateinit var gameSettings: App.GameSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,22 +55,29 @@ class EditProfileActivity : AppCompatActivity() {
         permissionsHelper = PermissionsHelper(this)
 
         app = application as App
+        gameSettings= app.sharedGamePreferences
 
         profile = app.getProfile()
         binding.etNameChange.setText(profile.name)
         profile.icon?.let { binding.imgBtnProfileChange.background = it }
+        binding.switchPossibleMoves.isChecked = gameSettings.showPossibleMoves
 
         setOnClicks()
     }
 
     private fun setOnClicks() {
         binding.imgBtnProfileChange.setOnClickListener {
-            permissionsHelper.withPermissions(arrayOf(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            permissionsHelper.withPermissions(
+                arrayOf(
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
             {
-                tempImageFile = File.createTempFile("avatar", ".img",
-                    getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                tempImageFile = File.createTempFile(
+                    "avatar", ".img",
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                )
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                     val fileUri = FileProvider.getUriForFile(
                         this@EditProfileActivity,
@@ -80,6 +88,9 @@ class EditProfileActivity : AppCompatActivity() {
                 }
                 startActivityForResultFoto.launch(intent)
             }
+        }
+        binding.switchPossibleMoves.setOnCheckedChangeListener { _, isChecked ->
+            gameSettings.showPossibleMoves = isChecked
         }
     }
 
@@ -134,8 +145,10 @@ class EditProfileActivity : AppCompatActivity() {
                 if (bitmap.width >= bitmap.height) {
                     val rotationMatrix = Matrix()
                     rotationMatrix.setRotate(-90f)
-                    bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                        bitmap.width, bitmap.height, rotationMatrix, true)
+                    bitmap = Bitmap.createBitmap(
+                        bitmap, 0, 0,
+                        bitmap.width, bitmap.height, rotationMatrix, true
+                    )
                 }
 
                 bitmap = bitmap.scale(300, 400)
@@ -192,7 +205,8 @@ class EditProfileActivity : AppCompatActivity() {
         confirmationToLeave()
         return true
     }
-    private fun aboutDialog(){
+
+    private fun aboutDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)

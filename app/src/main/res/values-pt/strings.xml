@@ -49,4 +49,6 @@
     <string name="name_is_invalid">Nome de utilizador inválido</string>
     <string name="best_score">Melhor pontuação</string>
     <string name="about_us">Sobre nós:</string>
+    <string name="show_possible_moves">Mostrar jogadas possíveis</string>
+    <string name="your_name">Teu nome:</string>
 </resources>

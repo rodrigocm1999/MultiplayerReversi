@@ -4,19 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.EditProfileActivity"
-    android:paddingTop="50dp">
+    android:paddingTop="50dp"
+    tools:context=".activities.EditProfileActivity">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/imgBtnProfileChange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_gravity="center"
-        android:maxWidth="200dp"
-        android:maxHeight="200dp"
-        android:minWidth="200dp"
-        android:minHeight="200dp"
-        android:background="@drawable/avatar_icon" />
+        android:src="@drawable/avatar_icon"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,10 +25,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/your_name"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:text="@string/your_name"
+        android:textSize="20sp" />
+
     <EditText
         android:id="@+id/etNameChange"
         android:layout_width="match_parent"
@@ -45,14 +43,15 @@
         android:maxLines="1"
         android:paddingHorizontal="20dp"
         android:textSize="26sp" />
+
     <Switch
         android:id="@+id/switchPossibleMoves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/show_possible_moves"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
         android:paddingHorizontal="20dp"
-        android:textSize="20sp"/>
+        android:text="@string/show_possible_moves"
+        android:textSize="20sp" />
 
 </LinearLayout>

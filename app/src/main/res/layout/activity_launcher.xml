@@ -11,12 +11,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp"
         android:src="@drawable/logo" />
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="20dp"/>
+        android:layout_margin="20dp" />
 
     <ImageView
         android:id="@+id/avatarIcon"
@@ -24,8 +25,8 @@
         android:layout_height="80dp"
         android:layout_gravity="top|end"
         android:layout_margin="20dp"
-        android:background="@android:color/darker_gray"
-        android:src="@drawable/avatar_icon" />
+        android:src="@drawable/avatar_icon"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,6 +44,7 @@
             android:id="@+id/btnRemote"
             style="@style/MainMenuBtn"
             android:text="@string/remote" />
+
         <Button
             android:id="@+id/btnHistory"
             style="@style/MainMenuBtn"

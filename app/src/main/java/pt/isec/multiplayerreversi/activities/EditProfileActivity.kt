@@ -59,7 +59,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         profile = app.getProfile()
         binding.etNameChange.setText(profile.name)
-        profile.icon?.let { binding.imgBtnProfileChange.background = it }
+        profile.icon?.let { binding.imgBtnProfileChange.setImageDrawable(it) }
         binding.switchPossibleMoves.isChecked = gameSettings.showPossibleMoves
 
         setOnClicks()
@@ -155,7 +155,7 @@ class EditProfileActivity : AppCompatActivity() {
 
                 bitmapDrawable = BitmapDrawable(resources, bitmap)
                 profile.icon = bitmapDrawable
-                runOnUiThread { binding.imgBtnProfileChange.background = profile.icon }
+                runOnUiThread { binding.imgBtnProfileChange.setImageDrawable(profile.icon) }
             }
         }
     }

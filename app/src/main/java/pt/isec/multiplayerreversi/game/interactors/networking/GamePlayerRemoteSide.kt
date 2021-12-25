@@ -109,8 +109,8 @@ class GamePlayerRemoteSide(
                     }
                     JsonTypes.InGame.BOARD_CHANGED -> {
                         jsonReader.beginObject()
-                        while (jsonReader.hasNext()){
-                            when(jsonReader.nextName()){
+                        while (jsonReader.hasNext()) {
+                            when (jsonReader.nextName()) {
                                 "board" -> jsonReader.readBoardArray(gameData.board)
                                 "scores" -> jsonReader.readScoresArray(gameData.players)
                             }

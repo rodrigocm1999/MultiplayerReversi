@@ -4,25 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context=".activities.EditProfileActivity"
-    >
+    tools:context=".activities.EditProfileActivity">
 
     <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="20dp">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/imgBtnProfileChange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
-            android:maxWidth="200dp"
-            android:maxHeight="200dp"
-            android:minWidth="200dp"
-            android:minHeight="200dp"
-            android:background="@drawable/avatar_icon" />
+            android:src="@drawable/avatar_icon"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,17 +27,19 @@
             android:text="@string/press_to_change_profile_image"
             android:textSize="20sp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Your Name:"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:text="Your Name:"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/etNameChange"
@@ -60,14 +58,12 @@
             android:id="@+id/switchPossibleMoves"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Show possible moves"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
-            android:textSize="20sp"
-            />
+            android:text="Show possible moves"
+            android:textSize="20sp" />
 
     </LinearLayout>
-
 
 
 </LinearLayout>

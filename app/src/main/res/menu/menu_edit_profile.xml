@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/mnSave"
-        android:icon="@drawable/save_icon"
-        app:showAsAction="ifRoom"
-        android:title="@string/save" />
 
-    <item android:id="@+id/mnSignOut"
-        android:icon="@drawable/logout_icon"
-        app:showAsAction="ifRoom"
-        android:title="@string/sign_out" />
+    <item
+        android:id="@+id/mnSignOut"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="@string/sign_out"
+        app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/mnAbout"
+    <item
+        android:id="@+id/mnAbout"
         android:icon="@drawable/about_icon"
-        app:showAsAction="ifRoom"
-        android:title="@string/about" />
+        android:title="@string/about"
+        app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/mnSave"
+        android:icon="@drawable/save_icon"
+        android:title="@string/save"
+        app:showAsAction="ifRoom" />
 </menu>

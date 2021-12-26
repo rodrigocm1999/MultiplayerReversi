@@ -44,6 +44,7 @@ class EditProfileActivity : AppCompatActivity() {
     private var bitmapDrawable: BitmapDrawable? = null
     private var tempImageFile: File? = null
     private lateinit var gameSettings: App.GameSettings
+    private var showPossibleMovesChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +62,7 @@ class EditProfileActivity : AppCompatActivity() {
         binding.etNameChange.setText(profile.name)
         profile.icon?.let { binding.imgBtnProfileChange.setImageDrawable(it) }
         binding.switchPossibleMoves.isChecked = gameSettings.showPossibleMoves
+        showPossibleMovesChange = gameSettings.showPossibleMoves
 
         setOnClicks()
     }
@@ -90,7 +92,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         binding.switchPossibleMoves.setOnCheckedChangeListener { _, isChecked ->
-            gameSettings.showPossibleMoves = isChecked
+            showPossibleMovesChange = isChecked
         }
     }
 
@@ -181,6 +183,8 @@ class EditProfileActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.name_is_invalid, Toast.LENGTH_LONG).show()
             return
         }
+        if (showPossibleMovesChange != gameSettings.showPossibleMoves)
+            gameSettings.showPossibleMoves = showPossibleMovesChange
 
         if (profile.name != writtenName)
             profile.name = writtenName
@@ -217,7 +221,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun confirmationToLeave() {
         val writtenName = binding.etNameChange.text.toString()
-        if (profile.name != writtenName || bitmapDrawable != null) {
+        if (profile.name != writtenName || bitmapDrawable != null || showPossibleMovesChange != gameSettings.showPossibleMoves) {
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle(supportActionBar?.title)
                 .setMessage(getString(R.string.question_leave_without_save))

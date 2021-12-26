@@ -336,12 +336,7 @@ class GameActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        app.gamePlayer?.leaveGame()
-    }
-
-
+    
     private fun leaveGame() {
         gamePlayer.leaveGame()
         unreferenceGame()

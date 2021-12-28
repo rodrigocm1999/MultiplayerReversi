@@ -6,7 +6,6 @@ import android.util.Log
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import java.io.*
-import java.lang.Exception
 import java.net.Socket
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.concurrent.thread
@@ -122,8 +121,11 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
         try {
             osw.close()
             isr.close()
-            socket.close()
         } catch (e: Exception) {
+            try {
+                socket.close()
+            } catch (e: Exception) {
+            }
         }
     }
 }

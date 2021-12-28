@@ -8,7 +8,6 @@ import pt.isec.multiplayerreversi.game.interactors.JsonTypes
 import pt.isec.multiplayerreversi.game.logic.*
 import java.io.IOException
 import java.net.Socket
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class GamePlayerRemoteSide(

@@ -17,7 +17,7 @@ import pt.isec.multiplayerreversi.game.logic.Vector
 import kotlin.math.roundToInt
 
 
-class GameGrid(
+    class GameGrid(
     private val context: Activity,
     private val gridLayout: GridLayout,
     screenSize: DisplayMetrics,

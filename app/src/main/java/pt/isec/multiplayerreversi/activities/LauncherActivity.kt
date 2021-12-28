@@ -2,18 +2,13 @@ package pt.isec.multiplayerreversi.activities
 
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
-import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import pt.isec.multiplayerreversi.App
-import pt.isec.multiplayerreversi.R
-import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
-import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
-import kotlin.concurrent.thread
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,17 +17,18 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.RC_SIGN_IN
+import pt.isec.multiplayerreversi.R
+import pt.isec.multiplayerreversi.databinding.ActivityLauncherBinding
+import pt.isec.multiplayerreversi.game.interactors.LocalPlayer
 import pt.isec.multiplayerreversi.game.logic.*
-
-import java.net.URL
-
-import java.io.IOException
-
 import java.io.BufferedInputStream
+import java.io.IOException
+import java.net.URL
+import kotlin.concurrent.thread
 
 
 class LauncherActivity : AppCompatActivity() {
@@ -125,7 +121,7 @@ class LauncherActivity : AppCompatActivity() {
                 firebaseAuthWithGoogle(account.idToken!!)
                 thread {
                     val profile = app.getProfile()
-                    profile.name = account.displayName
+                    profile.name = account.displayName!!
                     profile.email = account.email
                     profile.icon = downloadImageFromUrl(account.photoUrl)
                     app.saveProfile(profile)

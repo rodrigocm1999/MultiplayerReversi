@@ -1,23 +1,18 @@
 package pt.isec.multiplayerreversi.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.get
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import pt.isec.multiplayerreversi.App
 import pt.isec.multiplayerreversi.R
 import pt.isec.multiplayerreversi.activities.others.FirestoreHelper
 import pt.isec.multiplayerreversi.databinding.ActivityHistoryBinding
 import pt.isec.multiplayerreversi.game.interactors.networking.decodeDrawableFromString
-import pt.isec.multiplayerreversi.game.logic.GameEndStats
-import pt.isec.multiplayerreversi.game.logic.Player
 import kotlin.concurrent.thread
 
 class HistoryActivity : AppCompatActivity() {

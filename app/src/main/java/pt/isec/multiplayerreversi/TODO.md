@@ -1,5 +1,5 @@
 ~~Jogador inicial aleatório~~
-Visualização das jogadas possíveis é opcional dependendo do contexto
+~~Visualização das jogadas possíveis é opcional dependendo do contexto~~
 ~~Jogo termina quando não há peças possíveis, ou jogadas possíveis~~
 ~~Ganha jogador com mais peças~~
 
@@ -29,11 +29,11 @@ Perfil (único):
 ~~Modo 2 e 3 - Possível ver o nome e fotografia dos jogadores~~
 
 Scores:
-Manter 5 top scores de cada jogador
-Utilizar FireStore para armazenar as cenas
-Cenas - score de cada jogador, nome e fotografia
+~~Manter 5 top scores de cada jogador~~
+~~Utilizar FireStore para armazenar as cenas~~
+~~Cenas - score de cada jogador, nome e fotografia~~
 
 Outros:
-Permitir rodar o ecrã (fazer layouts para cada direção)
+~~Permitir rodar o ecrã (fazer layouts para cada direção)~~
 ~~Suportar pelo menos PT, EN~~
-Página de "About"
+~~Página de "About"~~ 

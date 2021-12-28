@@ -5,7 +5,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import org.json.JSONException
 import pt.isec.multiplayerreversi.game.interactors.networking.encodeDrawableToString
 import pt.isec.multiplayerreversi.game.logic.GameEndStats
 

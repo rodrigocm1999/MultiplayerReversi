@@ -2,30 +2,30 @@ package pt.isec.multiplayerreversi.activities
 
 import android.content.Context
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.text.format.Formatter
 import android.util.Log
+import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.multiplayerreversi.App
-import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.App.Companion.LISTENING_PORT
-import pt.isec.multiplayerreversi.activities.others.WaitingPlayerListAdapter
+import pt.isec.multiplayerreversi.App.Companion.OURTAG
 import pt.isec.multiplayerreversi.R
+import pt.isec.multiplayerreversi.activities.others.WaitingPlayerListAdapter
 import pt.isec.multiplayerreversi.databinding.ActivityWaitingAreaBinding
-import pt.isec.multiplayerreversi.game.interactors.networking.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.interactors.LocalOnline
+import pt.isec.multiplayerreversi.game.interactors.networking.ConnectionsWelcomer
 import pt.isec.multiplayerreversi.game.logic.Game
+import pt.isec.multiplayerreversi.game.logic.GameData
 import pt.isec.multiplayerreversi.game.logic.Piece
 import pt.isec.multiplayerreversi.game.logic.Player
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlin.concurrent.thread
-import android.net.wifi.WifiManager
-import android.text.format.Formatter
-import android.widget.BaseAdapter
-import pt.isec.multiplayerreversi.game.logic.GameData
 
 
 class WaitingAreaActivity : AppCompatActivity() {

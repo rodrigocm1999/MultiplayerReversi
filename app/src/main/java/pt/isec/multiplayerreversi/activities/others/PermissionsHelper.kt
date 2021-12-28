@@ -15,14 +15,14 @@ class PermissionsHelper(private val activity: Activity) {
     private val callbacks = ArrayList<CallbackCode>()
 
     fun withPermissions(permissions: Array<String>, callback: () -> Unit) {
-        if (permissions.any {
-                ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+        if (permissions.all {
+                ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED
             }) {
+            callback()
+        } else {
             val code = codeCounter++
             callbacks.add(CallbackCode(code, callback, permissions))
             ActivityCompat.requestPermissions(activity, permissions, code)
-        } else {
-            callback()
         }
     }
 

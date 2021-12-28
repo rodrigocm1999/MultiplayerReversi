@@ -1,6 +1,9 @@
 package pt.isec.multiplayerreversi.game.interactors
 
-import pt.isec.multiplayerreversi.game.logic.*
+import pt.isec.multiplayerreversi.game.logic.Game
+import pt.isec.multiplayerreversi.game.logic.GameEndStats
+import pt.isec.multiplayerreversi.game.logic.Piece
+import pt.isec.multiplayerreversi.game.logic.Vector
 
 open class LocalPlayer(protected val game: Game) : GamePlayer {
 

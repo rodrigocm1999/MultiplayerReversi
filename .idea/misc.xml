@@ -44,8 +44,10 @@
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/drawable/square_border.xml" value="0.2125" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout-land/activity_edit_profile.xml" value="0.18518518518518517" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout-land/activity_game.xml" value="0.21296296296296297" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/about_layout.xml" value="0.3046875" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_edit_profile.xml" value="0.20260416666666667" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_game.xml" value="0.33" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_history.xml" value="0.3046875" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_laucher.xml" value="0.18" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_launcher.xml" value="0.25104166666666666" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/activity_online_game.xml" value="0.171875" />
@@ -54,6 +56,7 @@
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/end_game_dialog_layout.xml" value="0.25" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/end_game_player.xml" value="0.5" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/history_player_stats.xml" value="0.29322916666666665" />
+        <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/history_row_game_layout.xml" value="0.3046875" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/piece_layout.xml" value="0.19635416666666666" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/playing_player.xml" value="0.5" />
         <entry key="..\:/Users/rodri/AndroidStudioProjects/MultiplayerReversi/app/src/main/res/layout/row_waiting_player.xml" value="0.33" />

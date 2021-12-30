@@ -51,4 +51,5 @@
     <string name="about_us">Sobre nós:</string>
     <string name="show_possible_moves">Mostrar jogadas possíveis</string>
     <string name="your_name">Teu nome:</string>
+    <string name="need_to_setup_user_history">Precisa de iniciar sessão para ver histórico</string>
 </resources>

@@ -96,6 +96,11 @@ class LauncherActivity : AppCompatActivity() {
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
         binding.btnHistory.setOnClickListener {
+            val profile = app.getProfile()
+            if (profile.name.isBlank()) {
+                Toast.makeText(this, R.string.need_to_setup_user_history, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
@@ -114,8 +119,8 @@ class LauncherActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(OURTAG, "firebaseAuthWithGoogle:" + account.id)
                 firebaseAuthWithGoogle(account.idToken!!)
@@ -134,10 +139,9 @@ class LauncherActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
                 binding.signInButton!!.visibility = View.VISIBLE
                 binding.avatarIcon.visibility = View.INVISIBLE
-                Log.w(OURTAG, "Google sign in failed", e)
+                Log.w(OURTAG, "Google sign in failed")
             }
         }
     }

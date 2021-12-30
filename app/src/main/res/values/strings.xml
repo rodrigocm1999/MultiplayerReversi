@@ -55,5 +55,6 @@
     <string name="dorin_bosii_n2019112586" translatable="false">Dorin Bosii\n2019112586</string>
     <string name="show_possible_moves">Show possible moves</string>
     <string name="your_name">Your name:</string>
+    <string name="need_to_setup_user_history">Need to signin to see history</string>
 
 </resources>

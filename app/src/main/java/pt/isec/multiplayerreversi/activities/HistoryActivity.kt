@@ -33,7 +33,6 @@ class HistoryActivity : AppCompatActivity() {
 
         updateView()
         threadUpdateHistory()
-
     }
 
     private fun threadUpdateHistory() {

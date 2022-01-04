@@ -58,7 +58,7 @@ class WaitingAreaActivity : AppCompatActivity() {
         val ip: String = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
         binding.tvRoomAddress.text = ip
 
-       setOnClickListeners()
+        setOnClickListeners()
     }
 
     private fun updateView() {

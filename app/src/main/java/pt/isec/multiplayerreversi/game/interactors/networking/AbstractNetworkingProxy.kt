@@ -44,9 +44,12 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
                     Log.e(OURTAG, "Exception", e)
                 }
             }
-            while (queuedActions.isNotEmpty()) {
-                val block = queuedActions.take()
-                sendThrough(block.type, block.block)
+            try {
+                while (queuedActions.isNotEmpty()) {
+                    val block = queuedActions.take()
+                    sendThrough(block.type, block.block)
+                }
+            } catch (e: Throwable) {
             }
         }
     }
@@ -90,6 +93,7 @@ abstract class AbstractNetworkingProxy(private val socket: Socket) : Closeable {
             } catch (e: Throwable) {
                 Log.e(OURTAG, "Throwable in Thread with name : $threadName", e)
             }
+            this.close()
         }
     }
 

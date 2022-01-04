@@ -216,4 +216,8 @@ class GamePlayerHostSide(
         }
     }
 
+    override fun close() {
+        gameTerminatedCallback?.let { it() }
+        super.close()
+    }
 }

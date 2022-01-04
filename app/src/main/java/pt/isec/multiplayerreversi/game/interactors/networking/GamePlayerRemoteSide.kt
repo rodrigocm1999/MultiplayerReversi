@@ -245,6 +245,10 @@ class GamePlayerRemoteSide(
         queueClose()
     }
 
+    override fun close() {
+        gameTerminatedCallback?.let { it() }
+        super.close()
+    }
 
     override fun isOnline() = true
     override fun getPlayers() = gameData.players
